@@ -63,12 +63,14 @@ class OutputUnit : public Consumer
     void set_credit_link(CreditLink *credit_link);
     void wakeup();
     flitBuffer* getOutQueue();
+    const flitBuffer* getOutQueue() const;
     void print(std::ostream& out) const {};
     void decrement_credit(int out_vc);
     void increment_credit(int out_vc);
     bool has_credit(int out_vc);
-    bool has_free_vc(int vnet);
-    int select_free_vc(int vnet);
+    bool has_free_vc(int vnet, bool escape = false);
+    int select_free_vc(int vnet, bool escape = false);
+    double congestion(int vnet, bool escape = false);
 
     inline PortDirection get_direction() { return m_direction; }
 

@@ -32,6 +32,9 @@
 #define __MEM_RUBY_NETWORK_GARNET_0_COMMONTYPES_HH__
 
 #include "mem/ruby/common/NetDest.hh"
+#include "base/types.hh"
+
+#include <vector>
 
 namespace gem5
 {
@@ -57,7 +60,8 @@ struct RouteInfo
 {
     RouteInfo()
         : vnet(0), src_ni(0), src_router(0), dest_ni(0), dest_router(0),
-          hops_traversed(0)
+          hops_traversed(0), escape_vc(false), source_routed(false),
+          express_count(0), express_stage(0), express_traversed(0), express_ids()
     {}
 
     // destination format for table-based routing
@@ -70,6 +74,16 @@ struct RouteInfo
     int dest_ni;
     int dest_router;
     int hops_traversed;
+    bool escape_vc;
+    Tick injection_tick = 0;
+    Tick escape_transition_tick = 0;
+
+    // Reserved source-route metadata. Legacy routes leave these at defaults.
+    bool source_routed;
+    uint8_t express_count;
+    uint8_t express_stage;
+    uint8_t express_traversed;
+    std::vector<uint16_t> express_ids;
 };
 
 #define INFINITE_ 10000

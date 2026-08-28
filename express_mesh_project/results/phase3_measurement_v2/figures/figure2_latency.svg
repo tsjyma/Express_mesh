@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="460">
+<style>text{font-family:Arial,sans-serif;font-size:12px}.title{font-size:18px;font-weight:bold}.axis{stroke:#444}.grid{stroke:#ddd}</style>
+<text x="380.0" y="26" text-anchor="middle" class="title">Average packet latency</text>
+<line x1="82" y1="390.0" x2="736" y2="390.0" class="grid"/>
+<text x="74" y="394.0" text-anchor="end">0</text>
+<line x1="82" y1="322.40000000000003" x2="736" y2="322.40000000000003" class="grid"/>
+<text x="74" y="326.40000000000003" text-anchor="end">6.31e+03</text>
+<line x1="82" y1="254.79999999999998" x2="736" y2="254.79999999999998" class="grid"/>
+<text x="74" y="258.79999999999995" text-anchor="end">1.26e+04</text>
+<line x1="82" y1="187.20000000000002" x2="736" y2="187.20000000000002" class="grid"/>
+<text x="74" y="191.20000000000002" text-anchor="end">1.89e+04</text>
+<line x1="82" y1="119.59999999999998" x2="736" y2="119.59999999999998" class="grid"/>
+<text x="74" y="123.59999999999998" text-anchor="end">2.52e+04</text>
+<line x1="82" y1="52.000000000000036" x2="736" y2="52.000000000000036" class="grid"/>
+<text x="74" y="56.000000000000036" text-anchor="end">3.15e+04</text>
+<line x1="82" y1="52" x2="82" y2="390" class="axis"/>
+<line x1="82" y1="390" x2="736" y2="390" class="axis"/>
+<polyline points="82.0,389.8 409.0,131.4 735.7,52.0" fill="none" stroke="#333333" stroke-width="2.5"/>
+<circle cx="82.0" cy="389.8" r="4" fill="#333333"/>
+<circle cx="409.0" cy="131.4" r="4" fill="#333333"/>
+<circle cx="735.7" cy="52.0" r="4" fill="#333333"/>
+<polyline points="82.0,389.8 409.2,270.5 736.0,70.6" fill="none" stroke="#d47700" stroke-width="2.5"/>
+<circle cx="82.0" cy="389.8" r="4" fill="#d47700"/>
+<circle cx="409.2" cy="270.5" r="4" fill="#d47700"/>
+<circle cx="736.0" cy="70.6" r="4" fill="#d47700"/>
+<polyline points="82.7,389.8 409.4,159.6 735.8,64.8" fill="none" stroke="#16856b" stroke-width="2.5"/>
+<circle cx="82.7" cy="389.8" r="4" fill="#16856b"/>
+<circle cx="409.4" cy="159.6" r="4" fill="#16856b"/>
+<circle cx="735.8" cy="64.8" r="4" fill="#16856b"/>
+<text x="82.0" y="410" text-anchor="middle">0.2</text>
+<text x="212.79999999999998" y="410" text-anchor="middle">0.22</text>
+<text x="343.59999999999997" y="410" text-anchor="middle">0.24</text>
+<text x="474.40000000000003" y="410" text-anchor="middle">0.26</text>
+<text x="605.2000000000003" y="410" text-anchor="middle">0.28</text>
+<text x="736.0" y="410" text-anchor="middle">0.3</text>
+<text x="380.0" y="442" text-anchor="middle">actual offered packet throughput</text>
+<text x="18" y="230.0" transform="rotate(-90 18 230.0)" text-anchor="middle">cycles</text>
+<line x1="82" y1="418" x2="106" y2="418" stroke="#333333" stroke-width="3"/>
+<text x="112" y="422">Mesh</text>
+<line x1="227" y1="418" x2="251" y2="418" stroke="#d47700" stroke-width="3"/>
+<text x="257" y="422">Random</text>
+<line x1="372" y1="418" x2="396" y2="418" stroke="#16856b" stroke-width="3"/>
+<text x="402" y="422">Hybrid</text>
+</svg>

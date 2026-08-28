@@ -80,6 +80,13 @@ class flitBuffer
         m_buffer.push_back(flt);
     }
 
+    void
+    updateRoute(const RouteInfo &route)
+    {
+        for (flit *item : m_buffer)
+            item->set_route(route);
+    }
+
     bool functionalRead(Packet *pkt, WriteMask &mask);
     uint32_t functionalWrite(Packet *pkt);
 

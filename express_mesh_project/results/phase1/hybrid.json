@@ -1,0 +1,111 @@
+{
+  "constraints": {
+    "max_degree": 1,
+    "wire_cost": 16
+  },
+  "dimension": 8,
+  "express_links": [
+    {
+      "latency": 1,
+      "u": 2,
+      "u_coord": [
+        2,
+        0
+      ],
+      "v": 16,
+      "v_coord": [
+        0,
+        2
+      ],
+      "wire_length": 4
+    },
+    {
+      "latency": 1,
+      "u": 4,
+      "u_coord": [
+        4,
+        0
+      ],
+      "v": 10,
+      "v_coord": [
+        2,
+        1
+      ],
+      "wire_length": 3
+    },
+    {
+      "latency": 1,
+      "u": 31,
+      "u_coord": [
+        7,
+        3
+      ],
+      "v": 46,
+      "v_coord": [
+        6,
+        5
+      ],
+      "wire_length": 3
+    },
+    {
+      "latency": 1,
+      "u": 39,
+      "u_coord": [
+        7,
+        4
+      ],
+      "v": 54,
+      "v_coord": [
+        6,
+        6
+      ],
+      "wire_length": 3
+    },
+    {
+      "latency": 1,
+      "u": 49,
+      "u_coord": [
+        1,
+        6
+      ],
+      "v": 59,
+      "v_coord": [
+        3,
+        7
+      ],
+      "wire_length": 3
+    }
+  ],
+  "latency_model": "ideal",
+  "metrics": {
+    "cutstress": {
+      "aspl": 4.0,
+      "diameter": 13,
+      "equal_cost_path_count": 1.84375,
+      "l_max": 0.16458333333333333,
+      "load_cv": 1.1736672492711544,
+      "near_shortest_diversity": 1.75,
+      "p95_load": 0.125
+    },
+    "hotspot": {
+      "aspl": 4.532490079364887,
+      "diameter": 13,
+      "equal_cost_path_count": 18.54755704365083,
+      "l_max": 0.12840678664617353,
+      "load_cv": 0.6593166559765307,
+      "near_shortest_diversity": 2.6270461309523085,
+      "p95_load": 0.09830064822549876
+    },
+    "uniform": {
+      "aspl": 5.033730158730176,
+      "diameter": 13,
+      "equal_cost_path_count": 27.681051587300896,
+      "l_max": 0.07050316782826241,
+      "load_cv": 0.38452343384991117,
+      "near_shortest_diversity": 3.136904761904737,
+      "p95_load": 0.06810629226965158
+    }
+  },
+  "name": "hybrid",
+  "node_count": 64
+}

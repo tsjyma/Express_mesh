@@ -169,6 +169,8 @@ NetworkInterface::incrementStats(flit *t_flit)
 
     if (t_flit->get_type() == TAIL_ || t_flit->get_type() == HEAD_TAIL_) {
         m_net_ptr->increment_received_packets(vnet);
+        m_net_ptr->recordDeliveredSourceRoute(t_flit->get_route());
+        m_net_ptr->recordDeliveredEscape(t_flit->get_route());
         m_net_ptr->increment_packet_network_latency(network_delay, vnet);
         m_net_ptr->increment_packet_queueing_latency(queueing_delay, vnet);
     }
@@ -429,6 +431,8 @@ NetworkInterface::flitisizeMessage(MsgPtr msg_ptr, int vnet)
         route.src_router = oPort->routerID();
         route.dest_ni = destID;
         route.dest_router = m_net_ptr->get_router_id(destID, vnet);
+        route.injection_tick = curTick();
+        m_net_ptr->initializeSourceRoute(route);
 
         // initialize hops_traversed to -1
         // so that the first router increments it to 0
@@ -459,10 +463,16 @@ NetworkInterface::flitisizeMessage(MsgPtr msg_ptr, int vnet)
 int
 NetworkInterface::calculateVC(int vnet)
 {
-    for (int i = 0; i < m_vc_per_vnet; i++) {
+    const int usable_vcs =
+        m_net_ptr->getRoutingAlgorithm() == CUSTOM_ &&
+        m_net_ptr->isExpressEscapeEnabled() ? m_vc_per_vnet - 1 :
+                                                     m_vc_per_vnet;
+    fatal_if(usable_vcs < 1,
+             "Custom routing needs at least two VCs per vnet");
+    for (int i = 0; i < usable_vcs; i++) {
         int delta = m_vc_allocator[vnet];
         m_vc_allocator[vnet]++;
-        if (m_vc_allocator[vnet] == m_vc_per_vnet)
+        if (m_vc_allocator[vnet] == usable_vcs)
             m_vc_allocator[vnet] = 0;
 
         if (outVcState[(vnet*m_vc_per_vnet) + delta].isInState(

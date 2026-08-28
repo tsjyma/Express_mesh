@@ -27,9 +27,11 @@
 # Author: Tushar Krishna
 
 import m5
+from _m5 import core as m5_core
 from m5.objects import *
 from m5.defines import buildEnv
 from m5.util import addToPath
+from m5.util.convert import toFrequency
 import os, argparse, sys
 
 addToPath("../")
@@ -57,6 +59,8 @@ parser.add_argument(
         "neighbor",
         "shuffle",
         "transpose",
+        "cutstress",
+        "hotspot",
     ],
 )
 
@@ -81,6 +85,20 @@ parser.add_argument(
 
 parser.add_argument(
     "--sim-cycles", type=int, default=1000, help="Number of simulation cycles"
+)
+
+parser.add_argument(
+    "--warmup-cycles",
+    type=int,
+    default=0,
+    help="Network cycles to run before resetting statistics",
+)
+
+parser.add_argument(
+    "--measurement-cycles",
+    type=int,
+    default=0,
+    help="Network cycles to measure after warmup (0 keeps legacy behavior)",
 )
 
 parser.add_argument(
@@ -116,6 +134,7 @@ parser.add_argument(
                         0 and 1 are 1-flit, 2 is 5-flit.\
                         Set to -1 to inject randomly in all vnets.",
 )
+parser.add_argument("--traffic-seed", type=int, default=1)
 
 #
 # Add the ruby specific and protocol specific options
@@ -123,18 +142,25 @@ parser.add_argument(
 Ruby.define_options(parser)
 
 args = parser.parse_args()
+if args.warmup_cycles < 0 or args.measurement_cycles < 0:
+    parser.error("warmup and measurement cycles must be non-negative")
+if args.warmup_cycles and not args.measurement_cycles:
+    parser.error("--warmup-cycles requires --measurement-cycles")
+m5_core.seedRandom(args.traffic_seed)
 
 cpus = [
     GarnetSyntheticTraffic(
         num_packets_max=args.num_packets_max,
         single_sender=args.single_sender_id,
         single_dest=args.single_dest_id,
-        sim_cycles=args.sim_cycles,
+        sim_cycles=(2_000_000_000 if args.measurement_cycles else
+                    args.sim_cycles),
         traffic_type=args.synthetic,
         inj_rate=args.injectionrate,
         inj_vnet=args.inj_vnet,
         precision=args.precision,
         num_dest=args.num_dirs,
+        memory_size=AddrRange(args.mem_size).size(),
     )
     for i in range(args.num_cpus)
 ]
@@ -178,7 +204,22 @@ m5.ticks.setGlobalFrequency("1ps")
 # instantiate configuration
 m5.instantiate()
 
-# simulate until program terminates
-exit_event = m5.simulate(args.abs_max_tick)
+# A Ruby clock period is expressed in simulation ticks after instantiate().
+# Split execution here so every resettable statistic covers only the requested
+# measurement window while traffic and queues remain warm.
+if args.measurement_cycles:
+    ruby_clock_period = m5.ticks.fromSeconds(1.0 / toFrequency(args.ruby_clock))
+    warmup_ticks = args.warmup_cycles * ruby_clock_period
+    measurement_ticks = args.measurement_cycles * ruby_clock_period
+    if warmup_ticks:
+        warmup_event = m5.simulate(warmup_ticks)
+        if warmup_event.getCause() != "simulate() limit reached":
+            print("Warmup exited early @ tick", m5.curTick(), "because",
+                  warmup_event.getCause())
+            sys.exit(1)
+    m5.stats.reset()
+    exit_event = m5.simulate(measurement_ticks)
+else:
+    exit_event = m5.simulate(args.abs_max_tick)
 
 print("Exiting @ tick", m5.curTick(), "because", exit_event.getCause())

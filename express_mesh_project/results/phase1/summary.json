@@ -1,0 +1,651 @@
+{
+  "config": {
+    "alpha": 0.5,
+    "budget": 16,
+    "d_min": 3,
+    "latency_model": "ideal",
+    "max_degree": 1,
+    "n": 8,
+    "output_dir": "express_mesh/results/phase1",
+    "random_seed": 1,
+    "rho": 1.5
+  },
+  "placements": {
+    "aspl": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 16
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 14,
+          "u_coord": [
+            6,
+            1
+          ],
+          "v": 46,
+          "v_coord": [
+            6,
+            5
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 18,
+          "u_coord": [
+            2,
+            2
+          ],
+          "v": 22,
+          "v_coord": [
+            6,
+            2
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 19,
+          "u_coord": [
+            3,
+            2
+          ],
+          "v": 51,
+          "v_coord": [
+            3,
+            6
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 50,
+          "u_coord": [
+            2,
+            6
+          ],
+          "v": 54,
+          "v_coord": [
+            6,
+            6
+          ],
+          "wire_length": 4
+        }
+      ],
+      "latency_model": "ideal",
+      "metrics": {
+        "cutstress": {
+          "aspl": 3.3125,
+          "diameter": 10,
+          "equal_cost_path_count": 1.75,
+          "l_max": 0.21875,
+          "load_cv": 1.3998338574728617,
+          "near_shortest_diversity": 1.75,
+          "p95_load": 0.125
+        },
+        "hotspot": {
+          "aspl": 3.996403769841079,
+          "diameter": 10,
+          "equal_cost_path_count": 4.8675595238093345,
+          "l_max": 0.15168084512008131,
+          "load_cv": 0.7612555666648962,
+          "near_shortest_diversity": 2.05673363095234,
+          "p95_load": 0.08655055782536708
+        },
+        "uniform": {
+          "aspl": 4.1959325396826435,
+          "diameter": 10,
+          "equal_cost_path_count": 4.110119047619009,
+          "l_max": 0.16176829329091877,
+          "load_cv": 0.7491821189795212,
+          "near_shortest_diversity": 2.1994047619048174,
+          "p95_load": 0.09350391799454487
+        }
+      },
+      "name": "aspl",
+      "node_count": 64
+    },
+    "bottleneck": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 16
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 2,
+          "u_coord": [
+            2,
+            0
+          ],
+          "v": 16,
+          "v_coord": [
+            0,
+            2
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 4,
+          "u_coord": [
+            4,
+            0
+          ],
+          "v": 10,
+          "v_coord": [
+            2,
+            1
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 31,
+          "u_coord": [
+            7,
+            3
+          ],
+          "v": 46,
+          "v_coord": [
+            6,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 39,
+          "u_coord": [
+            7,
+            4
+          ],
+          "v": 54,
+          "v_coord": [
+            6,
+            6
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 49,
+          "u_coord": [
+            1,
+            6
+          ],
+          "v": 59,
+          "v_coord": [
+            3,
+            7
+          ],
+          "wire_length": 3
+        }
+      ],
+      "latency_model": "ideal",
+      "metrics": {
+        "cutstress": {
+          "aspl": 4.0,
+          "diameter": 13,
+          "equal_cost_path_count": 1.84375,
+          "l_max": 0.16458333333333333,
+          "load_cv": 1.1736672492711544,
+          "near_shortest_diversity": 1.75,
+          "p95_load": 0.125
+        },
+        "hotspot": {
+          "aspl": 4.532490079364887,
+          "diameter": 13,
+          "equal_cost_path_count": 18.54755704365083,
+          "l_max": 0.12840678664617353,
+          "load_cv": 0.6593166559765307,
+          "near_shortest_diversity": 2.6270461309523085,
+          "p95_load": 0.09830064822549876
+        },
+        "uniform": {
+          "aspl": 5.033730158730176,
+          "diameter": 13,
+          "equal_cost_path_count": 27.681051587300896,
+          "l_max": 0.07050316782826241,
+          "load_cv": 0.38452343384991117,
+          "near_shortest_diversity": 3.136904761904737,
+          "p95_load": 0.06810629226965158
+        }
+      },
+      "name": "bottleneck",
+      "node_count": 64
+    },
+    "handcrafted": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 16
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 11,
+          "u_coord": [
+            3,
+            1
+          ],
+          "v": 43,
+          "v_coord": [
+            3,
+            5
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 12,
+          "u_coord": [
+            4,
+            1
+          ],
+          "v": 44,
+          "v_coord": [
+            4,
+            5
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 25,
+          "u_coord": [
+            1,
+            3
+          ],
+          "v": 29,
+          "v_coord": [
+            5,
+            3
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 26,
+          "u_coord": [
+            2,
+            3
+          ],
+          "v": 30,
+          "v_coord": [
+            6,
+            3
+          ],
+          "wire_length": 4
+        }
+      ],
+      "latency_model": "ideal",
+      "metrics": {
+        "cutstress": {
+          "aspl": 3.65625,
+          "diameter": 11,
+          "equal_cost_path_count": 1.96875,
+          "l_max": 0.125,
+          "load_cv": 1.1978523976159576,
+          "near_shortest_diversity": 1.9375,
+          "p95_load": 0.109375
+        },
+        "hotspot": {
+          "aspl": 4.078621031745851,
+          "diameter": 11,
+          "equal_cost_path_count": 5.774057539682372,
+          "l_max": 0.12973392096035943,
+          "load_cv": 0.6434181948261616,
+          "near_shortest_diversity": 2.648127480158624,
+          "p95_load": 0.07814740581997448
+        },
+        "uniform": {
+          "aspl": 4.4072420634921246,
+          "diameter": 11,
+          "equal_cost_path_count": 6.673115079364938,
+          "l_max": 0.1124332044970918,
+          "load_cv": 0.5362368809383266,
+          "near_shortest_diversity": 2.585317460317461,
+          "p95_load": 0.07250233868674337
+        }
+      },
+      "name": "handcrafted",
+      "node_count": 64
+    },
+    "hybrid": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 16
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 2,
+          "u_coord": [
+            2,
+            0
+          ],
+          "v": 16,
+          "v_coord": [
+            0,
+            2
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 4,
+          "u_coord": [
+            4,
+            0
+          ],
+          "v": 10,
+          "v_coord": [
+            2,
+            1
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 31,
+          "u_coord": [
+            7,
+            3
+          ],
+          "v": 46,
+          "v_coord": [
+            6,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 39,
+          "u_coord": [
+            7,
+            4
+          ],
+          "v": 54,
+          "v_coord": [
+            6,
+            6
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 49,
+          "u_coord": [
+            1,
+            6
+          ],
+          "v": 59,
+          "v_coord": [
+            3,
+            7
+          ],
+          "wire_length": 3
+        }
+      ],
+      "latency_model": "ideal",
+      "metrics": {
+        "cutstress": {
+          "aspl": 4.0,
+          "diameter": 13,
+          "equal_cost_path_count": 1.84375,
+          "l_max": 0.16458333333333333,
+          "load_cv": 1.1736672492711544,
+          "near_shortest_diversity": 1.75,
+          "p95_load": 0.125
+        },
+        "hotspot": {
+          "aspl": 4.532490079364887,
+          "diameter": 13,
+          "equal_cost_path_count": 18.54755704365083,
+          "l_max": 0.12840678664617353,
+          "load_cv": 0.6593166559765307,
+          "near_shortest_diversity": 2.6270461309523085,
+          "p95_load": 0.09830064822549876
+        },
+        "uniform": {
+          "aspl": 5.033730158730176,
+          "diameter": 13,
+          "equal_cost_path_count": 27.681051587300896,
+          "l_max": 0.07050316782826241,
+          "load_cv": 0.38452343384991117,
+          "near_shortest_diversity": 3.136904761904737,
+          "p95_load": 0.06810629226965158
+        }
+      },
+      "name": "hybrid",
+      "node_count": 64
+    },
+    "hybrid_cutstress": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 15
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 0,
+          "u_coord": [
+            0,
+            0
+          ],
+          "v": 4,
+          "v_coord": [
+            4,
+            0
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 2,
+          "u_coord": [
+            2,
+            0
+          ],
+          "v": 5,
+          "v_coord": [
+            5,
+            0
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 8,
+          "u_coord": [
+            0,
+            1
+          ],
+          "v": 12,
+          "v_coord": [
+            4,
+            1
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 56,
+          "u_coord": [
+            0,
+            7
+          ],
+          "v": 60,
+          "v_coord": [
+            4,
+            7
+          ],
+          "wire_length": 4
+        }
+      ],
+      "latency_model": "ideal",
+      "metrics": {
+        "cutstress": {
+          "aspl": 3.46875,
+          "diameter": 11,
+          "equal_cost_path_count": 1.21875,
+          "l_max": 0.125,
+          "load_cv": 1.2100947045826305,
+          "near_shortest_diversity": 1.875,
+          "p95_load": 0.09375
+        },
+        "hotspot": {
+          "aspl": 4.402095734126804,
+          "diameter": 11,
+          "equal_cost_path_count": 9.67478918650767,
+          "l_max": 0.1486983597727006,
+          "load_cv": 0.7260790121273961,
+          "near_shortest_diversity": 1.811197916666628,
+          "p95_load": 0.10845328922688847
+        },
+        "uniform": {
+          "aspl": 4.905753968254015,
+          "diameter": 11,
+          "equal_cost_path_count": 12.779265873015534,
+          "l_max": 0.09053091106330437,
+          "load_cv": 0.4628369127984596,
+          "near_shortest_diversity": 2.1770833333333286,
+          "p95_load": 0.08050242973762652
+        }
+      },
+      "name": "hybrid_cutstress",
+      "node_count": 64
+    },
+    "mesh": {
+      "constraints": {
+        "max_degree": 0,
+        "wire_cost": 0
+      },
+      "dimension": 8,
+      "express_links": [],
+      "latency_model": "ideal",
+      "metrics": {
+        "cutstress": {
+          "aspl": 4.0,
+          "diameter": 14,
+          "equal_cost_path_count": 1.0,
+          "l_max": 0.125,
+          "load_cv": 1.1858541225631425,
+          "near_shortest_diversity": 1.0,
+          "p95_load": 0.125
+        },
+        "hotspot": {
+          "aspl": 4.682291666666459,
+          "diameter": 14,
+          "equal_cost_path_count": 28.261656746032543,
+          "l_max": 0.1370789676593248,
+          "load_cv": 0.6910470802058883,
+          "near_shortest_diversity": 0.9999999999999692,
+          "p95_load": 0.10645513340825839
+        },
+        "uniform": {
+          "aspl": 5.333333333333334,
+          "diameter": 14,
+          "equal_cost_path_count": 47.86706349206415,
+          "l_max": 0.08487222103293535,
+          "load_cv": 0.42077161016256004,
+          "near_shortest_diversity": 1.0000000000001084,
+          "p95_load": 0.07890729062604064
+        }
+      },
+      "name": "mesh",
+      "node_count": 64
+    },
+    "random": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 16
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 1,
+          "u_coord": [
+            1,
+            0
+          ],
+          "v": 35,
+          "v_coord": [
+            3,
+            4
+          ],
+          "wire_length": 6
+        },
+        {
+          "latency": 1,
+          "u": 5,
+          "u_coord": [
+            5,
+            0
+          ],
+          "v": 27,
+          "v_coord": [
+            3,
+            3
+          ],
+          "wire_length": 5
+        },
+        {
+          "latency": 1,
+          "u": 17,
+          "u_coord": [
+            1,
+            2
+          ],
+          "v": 50,
+          "v_coord": [
+            2,
+            6
+          ],
+          "wire_length": 5
+        }
+      ],
+      "latency_model": "ideal",
+      "metrics": {
+        "cutstress": {
+          "aspl": 3.9375,
+          "diameter": 11,
+          "equal_cost_path_count": 1.0,
+          "l_max": 0.125,
+          "load_cv": 1.1852796636567917,
+          "near_shortest_diversity": 1.34375,
+          "p95_load": 0.125
+        },
+        "hotspot": {
+          "aspl": 4.105282738095081,
+          "diameter": 11,
+          "equal_cost_path_count": 7.915612599206185,
+          "l_max": 0.17195344510260402,
+          "load_cv": 0.802451260666659,
+          "near_shortest_diversity": 1.954675099206316,
+          "p95_load": 0.10228223878182965
+        },
+        "uniform": {
+          "aspl": 4.632440476190517,
+          "diameter": 11,
+          "equal_cost_path_count": 9.760912698412474,
+          "l_max": 0.1232289721252095,
+          "load_cv": 0.5430452484937645,
+          "near_shortest_diversity": 2.1671626984127195,
+          "p95_load": 0.08423458464748639
+        }
+      },
+      "name": "random",
+      "node_count": 64
+    }
+  }
+}

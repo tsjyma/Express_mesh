@@ -106,11 +106,19 @@ class InputUnit : public Consumer
     }
 
     void increment_credit(int in_vc, bool free_signal, Tick curTime);
+    void rerouteToEscape(int vc);
+    void advanceSourceRouteStage(int vc);
 
     inline flit*
     peekTopFlit(int vc)
     {
         return virtualChannels[vc].peekTopFlit();
+    }
+
+    bool
+    is_escape(int vc)
+    {
+        return peekTopFlit(vc)->get_route().escape_vc;
     }
 
     inline flit*

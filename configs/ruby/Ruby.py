@@ -37,6 +37,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import importlib
 import math
 import m5
 from m5.objects import *
@@ -120,8 +121,8 @@ def define_options(parser):
     )
 
     protocol = buildEnv["PROTOCOL"]
-    exec(f"from . import {protocol}")
-    eval(f"{protocol}.define_options(parser)")
+    protocol_module = importlib.import_module(f".{protocol}", __package__)
+    protocol_module.define_options(parser)
     Network.define_options(parser)
 
 
@@ -207,9 +208,9 @@ def create_topology(controllers, options):
     found in configs/topologies/BaseTopology.py
     This is a wrapper for the legacy topologies.
     """
-    exec(f"import topologies.{options.topology} as Topo")
-    topology = eval(f"Topo.{options.topology}(controllers)")
-    return topology
+    topology_module = importlib.import_module(f"topologies.{options.topology}")
+    topology_class = getattr(topology_module, options.topology)
+    return topology_class(controllers)
 
 
 def create_system(
@@ -242,12 +243,12 @@ def create_system(
         cpus = system.cpu
 
     protocol = buildEnv["PROTOCOL"]
-    exec(f"from . import {protocol}")
+    protocol_module = importlib.import_module(f".{protocol}", __package__)
     try:
-        (cpu_sequencers, dir_cntrls, topology) = eval(
-            "%s.create_system(options, full_system, system, dma_ports,\
-                                    bootmem, ruby, cpus)"
-            % protocol
+        (cpu_sequencers, dir_cntrls, topology) = (
+            protocol_module.create_system(
+                options, full_system, system, dma_ports, bootmem, ruby, cpus
+            )
         )
     except:
         print(f"Error: could not create sytem for ruby protocol {protocol}")

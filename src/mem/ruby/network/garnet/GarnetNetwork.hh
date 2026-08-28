@@ -80,6 +80,33 @@ class GarnetNetwork : public Network
     uint32_t getBuffersPerDataVC() { return m_buffers_per_data_vc; }
     uint32_t getBuffersPerCtrlVC() { return m_buffers_per_ctrl_vc; }
     int getRoutingAlgorithm() const { return m_routing_algorithm; }
+    int getExpressNextHop(int source, int destination) const;
+    const std::vector<int>& getExpressNeighbors(int router) const;
+    uint32_t getExpressDistance(int source, int destination) const;
+    uint32_t getExpressEdgeLatency(int source, int destination) const;
+    int getExpressRouteSource(int directed_id) const;
+    int getExpressRouteDestination(int directed_id) const;
+    bool isSourceRouteEnabled() const { return m_source_route_enabled; }
+    void initializeSourceRoute(RouteInfo &route);
+    void reserveSourceRoute(const RouteInfo &route);
+    void releaseSourceRouteExpress(int directed_id);
+    double expressQueue(int directed_id) const;
+    bool isExpressAdaptive() const { return m_express_adaptive; }
+    double getExpressAdaptiveThreshold() const
+    { return m_express_adaptive_threshold; }
+    double getExpressAdaptiveLambda() const { return m_express_adaptive_lambda; }
+    double getExpressDetourRatio() const { return m_express_detour_ratio; }
+    uint32_t getExpressEscapeTimeout() const
+    { return m_express_escape_timeout; }
+    bool isExpressEscapeEnabled() const { return m_express_escape_enabled; }
+    void incrementExpressLinkTraversal() { m_express_link_traversals++; }
+    void incrementEscapeTraversal() { m_escape_vc_traversals++; }
+    void recordEscapeTransition(RouteInfo &route, Tick tick);
+    void incrementNonminimalDecision() { m_nonminimal_route_decisions++; }
+    void recordSourceRouteSelection(const RouteInfo &route);
+    void recordDeliveredSourceRoute(const RouteInfo &route);
+    void recordDeliveredEscape(const RouteInfo &route);
+    void sampleExpressState();
 
     bool isFaultModelEnabled() const { return m_enable_fault_model; }
     FaultModel* fault_model;
@@ -166,6 +193,27 @@ class GarnetNetwork : public Network
     uint32_t m_buffers_per_ctrl_vc;
     uint32_t m_buffers_per_data_vc;
     int m_routing_algorithm;
+    uint32_t m_express_mesh_link_latency;
+    std::vector<uint32_t> m_express_link_endpoints;
+    std::vector<uint32_t> m_express_link_latencies;
+    bool m_source_route_enabled;
+    std::vector<uint32_t> m_source_route_express_counts;
+    std::vector<uint32_t> m_source_route_express_ids;
+    std::vector<uint32_t> m_source_route_candidate_counts;
+    std::vector<uint32_t> m_source_route_candidate_latencies;
+    std::vector<uint32_t> m_source_route_candidate_express_counts;
+    std::vector<uint32_t> m_source_route_candidate_express_ids;
+    uint32_t m_source_route_policy;
+    std::vector<std::vector<int>> m_express_next_hop;
+    std::vector<std::vector<int>> m_express_neighbors;
+    std::vector<std::vector<uint32_t>> m_express_edge_latency;
+    std::vector<std::vector<uint32_t>> m_express_distance;
+    bool m_express_adaptive;
+    double m_express_adaptive_threshold;
+    double m_express_adaptive_lambda;
+    double m_express_detour_ratio;
+    uint32_t m_express_escape_timeout;
+    bool m_express_escape_enabled;
     bool m_enable_fault_model;
 
     // Statistical variables
@@ -198,6 +246,24 @@ class GarnetNetwork : public Network
     statistics::Vector m_average_vc_load;
 
     statistics::Scalar  m_total_hops;
+    statistics::Scalar m_express_link_traversals;
+    statistics::Scalar m_escape_vc_traversals;
+    statistics::Scalar m_escape_vc_transitions;
+    statistics::Scalar m_escape_transition_delay_ticks;
+    statistics::Scalar m_delivered_escape_packets;
+    statistics::Scalar m_nonminimal_route_decisions;
+    statistics::Vector m_express_reservation_current;
+    statistics::Vector m_express_reservation_increments;
+    statistics::Vector m_express_reservation_decrements;
+    statistics::Vector m_source_route_packets_planned;
+    statistics::Vector m_source_route_packets_delivered;
+    statistics::Vector m_express_edge_packets_selected;
+    statistics::Vector m_express_q_sample_sum;
+    statistics::Vector m_express_q_sample_max;
+    statistics::Vector m_express_r_sample_sum;
+    statistics::Vector m_express_r_sample_max;
+    statistics::Scalar m_express_state_sample_count;
+    statistics::Vector m_int_link_utilization;
     statistics::Formula m_avg_hops;
 
     std::vector<std::vector<statistics::Scalar *>> m_data_traffic_distribution;
@@ -214,6 +280,12 @@ class GarnetNetwork : public Network
     std::vector<CreditLink *> m_creditlinks; // All credit links in the network
     std::vector<NetworkInterface *> m_nis;   // All NI's in Network
     int m_next_packet_id; // static vairable for packet id allocation
+    std::vector<int64_t> m_reservation_current;
+    std::vector<uint64_t> m_q_sample_sum;
+    std::vector<uint64_t> m_q_sample_max;
+    std::vector<uint64_t> m_r_sample_sum;
+    std::vector<uint64_t> m_r_sample_max;
+    uint64_t m_express_state_samples = 0;
 };
 
 inline std::ostream&

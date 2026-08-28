@@ -95,10 +95,14 @@ OutputUnit::has_credit(int out_vc)
 
 // Check if the output port (i.e., input port at next router) has free VCs.
 bool
-OutputUnit::has_free_vc(int vnet)
+OutputUnit::has_free_vc(int vnet, bool escape)
 {
     int vc_base = vnet*m_vc_per_vnet;
-    for (int vc = vc_base; vc < vc_base + m_vc_per_vnet; vc++) {
+    const bool use_escape = escape && m_router->get_net_ptr()->isExpressEscapeEnabled();
+    int begin = use_escape ? vc_base + m_vc_per_vnet - 1 : vc_base;
+    int end = use_escape ? vc_base + m_vc_per_vnet :
+                       vc_base + m_vc_per_vnet - 1;
+    for (int vc = begin; vc < end; vc++) {
         if (is_vc_idle(vc, curTick()))
             return true;
     }
@@ -108,10 +112,14 @@ OutputUnit::has_free_vc(int vnet)
 
 // Assign a free output VC to the winner of Switch Allocation
 int
-OutputUnit::select_free_vc(int vnet)
+OutputUnit::select_free_vc(int vnet, bool escape)
 {
     int vc_base = vnet*m_vc_per_vnet;
-    for (int vc = vc_base; vc < vc_base + m_vc_per_vnet; vc++) {
+    const bool use_escape = escape && m_router->get_net_ptr()->isExpressEscapeEnabled();
+    int begin = use_escape ? vc_base + m_vc_per_vnet - 1 : vc_base;
+    int end = use_escape ? vc_base + m_vc_per_vnet :
+                       vc_base + m_vc_per_vnet - 1;
+    for (int vc = begin; vc < end; vc++) {
         if (is_vc_idle(vc, curTick())) {
             outVcState[vc].setState(ACTIVE_, curTick());
             return vc;
@@ -119,6 +127,22 @@ OutputUnit::select_free_vc(int vnet)
     }
 
     return -1;
+}
+
+double
+OutputUnit::congestion(int vnet, bool escape)
+{
+    const int vc_base = vnet * m_vc_per_vnet;
+    const bool use_escape = escape && m_router->get_net_ptr()->isExpressEscapeEnabled();
+    const int begin = use_escape ? vc_base + m_vc_per_vnet - 1 : vc_base;
+    const int end = use_escape ? vc_base + m_vc_per_vnet :
+                            vc_base + m_vc_per_vnet - 1;
+    int occupied = 0;
+    for (int vc = begin; vc < end; ++vc) {
+        if (!outVcState[vc].isInState(IDLE_, curTick()))
+            ++occupied;
+    }
+    return double(occupied) / double(end - begin);
 }
 
 /*
@@ -149,6 +173,12 @@ OutputUnit::wakeup()
 
 flitBuffer*
 OutputUnit::getOutQueue()
+{
+    return &outBuffer;
+}
+
+const flitBuffer*
+OutputUnit::getOutQueue() const
 {
     return &outBuffer;
 }

@@ -121,6 +121,18 @@ SwitchAllocator::arbitrate_inports()
             if (input_unit->need_stage(invc, SA_, curTick())) {
                 // This flit is in SA stage
 
+                if (input_unit->get_outvc(invc) == -1 &&
+                    m_router->get_net_ptr()->getRoutingAlgorithm() == CUSTOM_ &&
+                    m_router->get_net_ptr()->isExpressEscapeEnabled() &&
+                    !input_unit->is_escape(invc)) {
+                    const Tick waited =
+                        curTick() - input_unit->get_enqueue_time(invc);
+                    const Tick timeout = m_router->clockPeriod() *
+                        m_router->get_net_ptr()->getExpressEscapeTimeout();
+                    if (waited >= timeout)
+                        input_unit->rerouteToEscape(invc);
+                }
+
                 int outport = input_unit->get_outport(invc);
                 int outvc = input_unit->get_outvc(invc);
 
@@ -185,8 +197,23 @@ SwitchAllocator::arbitrate_outports()
                     outvc = vc_allocate(outport, inport, invc);
                 }
 
-                // remove flit from Input VC
-                flit *t_flit = input_unit->getTopFlit(invc);
+                // Inspect the head before removing it so source-route stage
+                // updates are propagated to all remaining packet flits.
+                flit *t_flit = input_unit->peekTopFlit(invc);
+
+                if (t_flit->get_type() == HEAD_ ||
+                    t_flit->get_type() == HEAD_TAIL_) {
+                    const PortDirection direction = output_unit->get_direction();
+                    if (direction.compare(0, 9, "ExpressTo") == 0) {
+                        m_router->get_net_ptr()->incrementExpressLinkTraversal();
+                        input_unit->advanceSourceRouteStage(invc);
+                    }
+                    if (t_flit->get_route().escape_vc)
+                        m_router->get_net_ptr()->incrementEscapeTraversal();
+                }
+
+                // Remove the flit only after route metadata has been synced.
+                t_flit = input_unit->getTopFlit(invc);
 
                 DPRINTF(RubyNetwork, "SwitchAllocator at Router %d "
                                      "granted outvc %d at outport %d "
@@ -297,7 +324,9 @@ SwitchAllocator::send_allowed(int inport, int invc, int outport, int outvc)
         // needs outvc
         // this is only true for HEAD and HEAD_TAIL flits.
 
-        if (output_unit->has_free_vc(vnet)) {
+        const bool escape =
+            m_router->getInputUnit(inport)->is_escape(invc);
+        if (output_unit->has_free_vc(vnet, escape)) {
 
             has_outvc = true;
 
@@ -342,8 +371,9 @@ int
 SwitchAllocator::vc_allocate(int outport, int inport, int invc)
 {
     // Select a free VC from the output port
-    int outvc =
-        m_router->getOutputUnit(outport)->select_free_vc(get_vnet(invc));
+    const bool escape = m_router->getInputUnit(inport)->is_escape(invc);
+    int outvc = m_router->getOutputUnit(outport)->select_free_vc(
+        get_vnet(invc), escape);
 
     // has to get a valid VC since it checked before performing SA
     assert(outvc != -1);

@@ -1,0 +1,40 @@
+{
+  "constraints": {
+    "max_degree": 0,
+    "wire_cost": 0
+  },
+  "dimension": 8,
+  "express_links": [],
+  "latency_model": "ideal",
+  "metrics": {
+    "cutstress": {
+      "aspl": 4.0,
+      "diameter": 14,
+      "equal_cost_path_count": 1.0,
+      "l_max": 0.125,
+      "load_cv": 1.1858541225631425,
+      "near_shortest_diversity": 1.0,
+      "p95_load": 0.125
+    },
+    "hotspot": {
+      "aspl": 4.682291666666459,
+      "diameter": 14,
+      "equal_cost_path_count": 28.261656746032543,
+      "l_max": 0.1370789676593248,
+      "load_cv": 0.6910470802058883,
+      "near_shortest_diversity": 0.9999999999999692,
+      "p95_load": 0.10645513340825839
+    },
+    "uniform": {
+      "aspl": 5.333333333333334,
+      "diameter": 14,
+      "equal_cost_path_count": 47.86706349206415,
+      "l_max": 0.08487222103293535,
+      "load_cv": 0.42077161016256004,
+      "near_shortest_diversity": 1.0000000000001084,
+      "p95_load": 0.07890729062604064
+    }
+  },
+  "name": "mesh",
+  "node_count": 64
+}

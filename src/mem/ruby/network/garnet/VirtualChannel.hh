@@ -76,6 +76,11 @@ class VirtualChannel
         inputBuffer.insert(t_flit);
     }
 
+    inline void updateRoute(const RouteInfo &route)
+    {
+        inputBuffer.updateRoute(route);
+    }
+
     inline void
     set_state(VC_state_type m_state, Tick curTime)
     {

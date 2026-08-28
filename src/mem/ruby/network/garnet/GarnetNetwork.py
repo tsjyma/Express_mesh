@@ -46,6 +46,43 @@ class GarnetNetwork(RubyNetwork):
     buffers_per_data_vc = Param.UInt32(4, "buffers per data virtual channel")
     buffers_per_ctrl_vc = Param.UInt32(1, "buffers per ctrl virtual channel")
     routing_algorithm = Param.Int(0, "0: Weight-based Table, 1: XY, 2: Custom")
+    express_mesh_link_latency = Param.UInt32(
+        1, "latency of base mesh links used by custom shortest-path routing"
+    )
+    express_link_endpoints = VectorParam.UInt32(
+        [], "flattened pairs of bidirectional express-link endpoints"
+    )
+    express_link_latencies = VectorParam.UInt32(
+        [], "latency of each bidirectional express link"
+    )
+    source_route_enabled = Param.Bool(
+        False, "inject and execute a precomputed committed source route"
+    )
+    source_route_express_counts = VectorParam.UInt32(
+        [], "number of directed express IDs for each source/destination pair"
+    )
+    source_route_express_ids = VectorParam.UInt32(
+        [], "flattened two-entry directed express IDs for each pair"
+    )
+    source_route_candidate_counts = VectorParam.UInt32([], "candidate count per pair")
+    source_route_candidate_latencies = VectorParam.UInt32([], "candidate static latencies")
+    source_route_candidate_express_counts = VectorParam.UInt32([], "candidate express counts")
+    source_route_candidate_express_ids = VectorParam.UInt32([], "candidate express IDs")
+    source_route_policy = Param.UInt32(0, "0 static, 1 global q, 2 global q+r, 3 random candidate")
+    express_escape_enabled = Param.Bool(True, "reserve one escape VC")
+    express_adaptive = Param.Bool(False, "enable congestion-aware routing")
+    express_adaptive_threshold = Param.Float(
+        0.25, "minimum-output congestion that enables adaptive selection"
+    )
+    express_adaptive_lambda = Param.Float(
+        1.0, "congestion weight in adaptive path scoring"
+    )
+    express_detour_ratio = Param.Float(
+        1.5, "maximum local bounded-detour stretch"
+    )
+    express_escape_timeout = Param.UInt32(
+        32, "cycles before an adaptive VC irreversibly enters escape VC"
+    )
     enable_fault_model = Param.Bool(False, "enable network fault model")
     fault_model = Param.FaultModel(NULL, "network fault model")
     garnet_deadlock_threshold = Param.UInt32(

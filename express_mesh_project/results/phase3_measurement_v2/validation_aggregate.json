@@ -1,0 +1,300 @@
+{
+  "run_count": 172,
+  "groups": [
+    {
+      "topology": "hybrid",
+      "rate": 0.4,
+      "escape_enabled": true,
+      "placement_seeds": [
+        1
+      ],
+      "traffic_seeds": [
+        1,
+        2,
+        3
+      ],
+      "samples": 3,
+      "completed": 3,
+      "failures": 0,
+      "schema_versions": [
+        5
+      ],
+      "throughput_mean_completed": 0.19994364583333332,
+      "actual_offered_throughput_mean": 0.19994552083333333,
+      "throughput_stdev_completed": 2.226305114265906e-05,
+      "latency_mean_completed": 16.666753589333336,
+      "escape_metric_samples": 3,
+      "escape_fraction_mean": 0.0,
+      "avg_cycles_before_escape_mean": 0.0
+    },
+    {
+      "topology": "hybrid",
+      "rate": 0.5,
+      "escape_enabled": true,
+      "placement_seeds": [
+        1
+      ],
+      "traffic_seeds": [
+        1,
+        2,
+        3
+      ],
+      "samples": 3,
+      "completed": 3,
+      "failures": 0,
+      "schema_versions": [
+        5
+      ],
+      "throughput_mean_completed": 0.14357989583333333,
+      "actual_offered_throughput_mean": 0.2498309375,
+      "throughput_stdev_completed": 0.0002937649689596171,
+      "latency_mean_completed": 21490.985538912668,
+      "escape_metric_samples": 3,
+      "escape_fraction_mean": 0.39980912849072414,
+      "avg_cycles_before_escape_mean": 49.34370048048727
+    },
+    {
+      "topology": "hybrid",
+      "rate": 0.5,
+      "escape_enabled": false,
+      "placement_seeds": [
+        1
+      ],
+      "traffic_seeds": [
+        1,
+        2,
+        3
+      ],
+      "samples": 3,
+      "completed": 0,
+      "failures": 3,
+      "schema_versions": [
+        3
+      ],
+      "throughput_mean_completed": null,
+      "actual_offered_throughput_mean": null,
+      "throughput_stdev_completed": 0.0,
+      "latency_mean_completed": null,
+      "escape_metric_samples": 0,
+      "escape_fraction_mean": null,
+      "avg_cycles_before_escape_mean": null
+    },
+    {
+      "topology": "hybrid",
+      "rate": 0.6,
+      "escape_enabled": true,
+      "placement_seeds": [
+        1
+      ],
+      "traffic_seeds": [
+        1,
+        2,
+        3
+      ],
+      "samples": 3,
+      "completed": 3,
+      "failures": 0,
+      "schema_versions": [
+        5
+      ],
+      "throughput_mean_completed": 0.14377828125,
+      "actual_offered_throughput_mean": 0.2996636458333333,
+      "throughput_stdev_completed": 0.0009372540562812313,
+      "latency_mean_completed": 30334.184492537333,
+      "escape_metric_samples": 3,
+      "escape_fraction_mean": 0.400907532692971,
+      "avg_cycles_before_escape_mean": 49.35989082087941
+    },
+    {
+      "topology": "mesh",
+      "rate": 0.4,
+      "escape_enabled": true,
+      "placement_seeds": [
+        1
+      ],
+      "traffic_seeds": [
+        1,
+        2,
+        3
+      ],
+      "samples": 3,
+      "completed": 3,
+      "failures": 0,
+      "schema_versions": [
+        5
+      ],
+      "throughput_mean_completed": 0.19984510416666668,
+      "actual_offered_throughput_mean": 0.19984760416666666,
+      "throughput_stdev_completed": 2.3131450864516355e-05,
+      "latency_mean_completed": 17.653465,
+      "escape_metric_samples": 3,
+      "escape_fraction_mean": 3.127433981701992e-06,
+      "avg_cycles_before_escape_mean": 38.71111111111111
+    },
+    {
+      "topology": "mesh",
+      "rate": 0.5,
+      "escape_enabled": true,
+      "placement_seeds": [
+        1
+      ],
+      "traffic_seeds": [
+        1,
+        2,
+        3
+      ],
+      "samples": 3,
+      "completed": 3,
+      "failures": 0,
+      "schema_versions": [
+        5
+      ],
+      "throughput_mean_completed": 0.1419478125,
+      "actual_offered_throughput_mean": 0.24976994791666665,
+      "throughput_stdev_completed": 0.00046877522501572594,
+      "latency_mean_completed": 24121.763928090666,
+      "escape_metric_samples": 3,
+      "escape_fraction_mean": 0.4176955441714564,
+      "avg_cycles_before_escape_mean": 50.074635993707226
+    },
+    {
+      "topology": "mesh",
+      "rate": 0.5,
+      "escape_enabled": false,
+      "placement_seeds": [
+        1
+      ],
+      "traffic_seeds": [
+        1,
+        2,
+        3
+      ],
+      "samples": 3,
+      "completed": 0,
+      "failures": 3,
+      "schema_versions": [
+        3
+      ],
+      "throughput_mean_completed": null,
+      "actual_offered_throughput_mean": null,
+      "throughput_stdev_completed": 0.0,
+      "latency_mean_completed": null,
+      "escape_metric_samples": 0,
+      "escape_fraction_mean": null,
+      "avg_cycles_before_escape_mean": null
+    },
+    {
+      "topology": "mesh",
+      "rate": 0.6,
+      "escape_enabled": true,
+      "placement_seeds": [
+        1
+      ],
+      "traffic_seeds": [
+        1,
+        2,
+        3
+      ],
+      "samples": 3,
+      "completed": 3,
+      "failures": 0,
+      "schema_versions": [
+        5
+      ],
+      "throughput_mean_completed": 0.1418376041666667,
+      "actual_offered_throughput_mean": 0.29965734375,
+      "throughput_stdev_completed": 0.0003623878313646595,
+      "latency_mean_completed": 31532.301035226,
+      "escape_metric_samples": 3,
+      "escape_fraction_mean": 0.4184633871477132,
+      "avg_cycles_before_escape_mean": 50.030596487780656
+    },
+    {
+      "topology": "random",
+      "rate": 0.4,
+      "escape_enabled": true,
+      "placement_seeds": [
+        1,
+        2,
+        3
+      ],
+      "traffic_seeds": [
+        1,
+        2,
+        3
+      ],
+      "samples": 12,
+      "completed": 12,
+      "failures": 0,
+      "schema_versions": [
+        4,
+        5
+      ],
+      "throughput_mean_completed": 0.19984540364583334,
+      "actual_offered_throughput_mean": 0.199844296875,
+      "throughput_stdev_completed": 7.480496174159069e-05,
+      "latency_mean_completed": 16.075941612166666,
+      "escape_metric_samples": 9,
+      "escape_fraction_mean": 1.3027909060304012e-06,
+      "avg_cycles_before_escape_mean": 30.166666666666668
+    },
+    {
+      "topology": "random",
+      "rate": 0.5,
+      "escape_enabled": true,
+      "placement_seeds": [
+        1,
+        2,
+        3
+      ],
+      "traffic_seeds": [
+        1,
+        2,
+        3
+      ],
+      "samples": 12,
+      "completed": 12,
+      "failures": 0,
+      "schema_versions": [
+        4,
+        5
+      ],
+      "throughput_mean_completed": 0.19281903645833334,
+      "actual_offered_throughput_mean": 0.24979619791666666,
+      "throughput_stdev_completed": 0.048691551216935275,
+      "latency_mean_completed": 11152.790952572499,
+      "escape_metric_samples": 9,
+      "escape_fraction_mean": 0.15922845938562216,
+      "avg_cycles_before_escape_mean": 44.474579675057605
+    },
+    {
+      "topology": "random",
+      "rate": 0.6,
+      "escape_enabled": true,
+      "placement_seeds": [
+        1,
+        2,
+        3
+      ],
+      "traffic_seeds": [
+        1,
+        2,
+        3
+      ],
+      "samples": 12,
+      "completed": 12,
+      "failures": 0,
+      "schema_versions": [
+        4,
+        5
+      ],
+      "throughput_mean_completed": 0.1471336328125,
+      "actual_offered_throughput_mean": 0.2996990625,
+      "throughput_stdev_completed": 0.005933036220626647,
+      "latency_mean_completed": 29793.6715664605,
+      "escape_metric_samples": 9,
+      "escape_fraction_mean": 0.3960482392642123,
+      "avg_cycles_before_escape_mean": 48.85251622721633
+    }
+  ]
+}

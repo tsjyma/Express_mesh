@@ -121,6 +121,7 @@ class Router : public BasicRouter, public Consumer
     void schedule_wakeup(Cycles time);
 
     std::string getPortDirectionName(PortDirection direction);
+    uint32_t expressOutputQueue(int destination) const;
     void printFaultVector(std::ostream& out);
     void printAggregateFaultProbability(std::ostream& out);
 

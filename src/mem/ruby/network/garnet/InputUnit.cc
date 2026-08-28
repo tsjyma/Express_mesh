@@ -93,8 +93,15 @@ InputUnit::wakeup()
             assert(virtualChannels[vc].get_state() == IDLE_);
             set_vc_active(vc, curTick());
 
+            RouteInfo route = t_flit->get_route();
+            if (m_router->get_net_ptr()->isExpressEscapeEnabled() &&
+                vc % m_vc_per_vnet == m_vc_per_vnet - 1) {
+                route.escape_vc = true;
+                t_flit->set_route(route);
+            }
+
             // Route computation for this vc
-            int outport = m_router->route_compute(t_flit->get_route(),
+            int outport = m_router->route_compute(route,
                 m_id, m_direction);
 
             // Update output port in VC
@@ -137,6 +144,44 @@ InputUnit::wakeup()
             m_router->schedule_wakeup(Cycles(1));
         }
     }
+}
+
+void
+InputUnit::rerouteToEscape(int vc)
+{
+    flit *head = peekTopFlit(vc);
+    assert(head->get_type() == HEAD_ || head->get_type() == HEAD_TAIL_);
+    RouteInfo route = head->get_route();
+    if (route.escape_vc)
+        return;
+    if (route.source_routed) {
+        for (uint8_t stage = route.express_stage;
+             stage < route.express_count; ++stage)
+            m_router->get_net_ptr()->releaseSourceRouteExpress(
+                route.express_ids[stage]);
+        // Preserve packet-level source-route history for delivery stats.  The
+        // escape_vc flag takes precedence in route computation, and setting
+        // the stage to count marks every remaining reservation consumed.
+        route.express_stage = route.express_count;
+    }
+    route.escape_vc = true;
+    m_router->get_net_ptr()->recordEscapeTransition(route, curTick());
+    virtualChannels[vc].updateRoute(route);
+    grant_outport(vc, m_router->route_compute(route, m_id, m_direction));
+}
+
+void
+InputUnit::advanceSourceRouteStage(int vc)
+{
+    flit *head = peekTopFlit(vc);
+    RouteInfo route = head->get_route();
+    if (!route.source_routed || route.express_stage >= route.express_count)
+        return;
+    const int directed_id = route.express_ids[route.express_stage];
+    m_router->get_net_ptr()->releaseSourceRouteExpress(directed_id);
+    route.express_stage++;
+    route.express_traversed++;
+    virtualChannels[vc].updateRoute(route);
 }
 
 // Send a credit back to upstream router for this VC.

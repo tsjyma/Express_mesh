@@ -187,6 +187,18 @@ Router::getPortDirectionName(PortDirection direction)
     return direction;
 }
 
+uint32_t
+Router::expressOutputQueue(int destination) const
+{
+    const PortDirection expected =
+        "ExpressTo" + std::to_string(destination);
+    for (const auto &unit : m_output_unit) {
+        if (unit->get_direction() == expected)
+            return unit->getOutQueue()->getSize();
+    }
+    fatal("Router %d has no express output to %d", m_id, destination);
+}
+
 void
 Router::regStats()
 {

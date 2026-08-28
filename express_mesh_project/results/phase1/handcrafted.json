@@ -1,0 +1,97 @@
+{
+  "constraints": {
+    "max_degree": 1,
+    "wire_cost": 16
+  },
+  "dimension": 8,
+  "express_links": [
+    {
+      "latency": 1,
+      "u": 11,
+      "u_coord": [
+        3,
+        1
+      ],
+      "v": 43,
+      "v_coord": [
+        3,
+        5
+      ],
+      "wire_length": 4
+    },
+    {
+      "latency": 1,
+      "u": 12,
+      "u_coord": [
+        4,
+        1
+      ],
+      "v": 44,
+      "v_coord": [
+        4,
+        5
+      ],
+      "wire_length": 4
+    },
+    {
+      "latency": 1,
+      "u": 25,
+      "u_coord": [
+        1,
+        3
+      ],
+      "v": 29,
+      "v_coord": [
+        5,
+        3
+      ],
+      "wire_length": 4
+    },
+    {
+      "latency": 1,
+      "u": 26,
+      "u_coord": [
+        2,
+        3
+      ],
+      "v": 30,
+      "v_coord": [
+        6,
+        3
+      ],
+      "wire_length": 4
+    }
+  ],
+  "latency_model": "ideal",
+  "metrics": {
+    "cutstress": {
+      "aspl": 3.65625,
+      "diameter": 11,
+      "equal_cost_path_count": 1.96875,
+      "l_max": 0.125,
+      "load_cv": 1.1978523976159576,
+      "near_shortest_diversity": 1.9375,
+      "p95_load": 0.109375
+    },
+    "hotspot": {
+      "aspl": 4.078621031745851,
+      "diameter": 11,
+      "equal_cost_path_count": 5.774057539682372,
+      "l_max": 0.12973392096035943,
+      "load_cv": 0.6434181948261616,
+      "near_shortest_diversity": 2.648127480158624,
+      "p95_load": 0.07814740581997448
+    },
+    "uniform": {
+      "aspl": 4.4072420634921246,
+      "diameter": 11,
+      "equal_cost_path_count": 6.673115079364938,
+      "l_max": 0.1124332044970918,
+      "load_cv": 0.5362368809383266,
+      "near_shortest_diversity": 2.585317460317461,
+      "p95_load": 0.07250233868674337
+    }
+  },
+  "name": "handcrafted",
+  "node_count": 64
+}

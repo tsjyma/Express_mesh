@@ -51,6 +51,8 @@ enum TrafficType {BIT_COMPLEMENT_ = 0,
                   TORNADO_ = 5,
                   TRANSPOSE_ = 6,
                   UNIFORM_RANDOM_ = 7,
+                  CUTSTRESS_ = 8,
+                  HOTSPOT_ = 9,
                   NUM_TRAFFIC_PATTERNS_};
 
 class Packet;
@@ -134,6 +136,20 @@ class GarnetSyntheticTraffic : public ClockedObject
     const Cycles responseLimit;
 
     RequestorID requestorId;
+
+    struct StatGroup : public statistics::Group
+    {
+        StatGroup(statistics::Group *parent);
+
+        statistics::Scalar injectionAttempts;
+        statistics::Scalar offeredRequests;
+        statistics::Scalar generatedRequests;
+        statistics::Scalar sourceBlockedOffers;
+        statistics::Scalar initialSendSuccesses;
+        statistics::Scalar initialSendRetries;
+        statistics::Scalar retrySuccesses;
+        statistics::Scalar completedRequests;
+    } stats;
 
     void completeRequest(PacketPtr pkt);
 

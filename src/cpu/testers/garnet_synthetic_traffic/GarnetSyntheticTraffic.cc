@@ -68,6 +68,9 @@ GarnetSyntheticTraffic::sendPkt(PacketPtr pkt)
 {
     if (!cachePort.sendTimingReq(pkt)) {
         retryPkt = pkt; // RubyPort will retry sending
+        stats.initialSendRetries++;
+    } else {
+        stats.initialSendSuccesses++;
     }
     numPacketsSent++;
 }
@@ -91,7 +94,8 @@ GarnetSyntheticTraffic::GarnetSyntheticTraffic(const Params &p)
       injVnet(p.inj_vnet),
       precision(p.precision),
       responseLimit(p.response_limit),
-      requestorId(p.system->getRequestorId(this))
+      requestorId(p.system->getRequestorId(this)),
+      stats(this)
 {
     // set up counters
     noResponseCycles = 0;
@@ -123,7 +127,6 @@ GarnetSyntheticTraffic::init()
     numPacketsSent = 0;
 }
 
-
 void
 GarnetSyntheticTraffic::completeRequest(PacketPtr pkt)
 {
@@ -133,6 +136,7 @@ GarnetSyntheticTraffic::completeRequest(PacketPtr pkt)
             pkt->req->getPaddr());
 
     assert(pkt->isResponse());
+    stats.completedRequests++;
     noResponseCycles = 0;
     delete pkt;
 }
@@ -159,6 +163,7 @@ GarnetSyntheticTraffic::tick()
 
     // always generatePkt unless fixedPkts or singleSender is enabled
     if (sendAllowedThisCycle) {
+        stats.injectionAttempts++;
         bool senderEnable = true;
 
         if (numPacketsMax >= 0 && numPacketsSent >= numPacketsMax)
@@ -167,8 +172,21 @@ GarnetSyntheticTraffic::tick()
         if (singleSender >= 0 && id != singleSender)
             senderEnable = false;
 
-        if (senderEnable)
-            generatePkt();
+        if (traffic == CUTSTRESS_) {
+            const int radix = (int)sqrt(numDestinations);
+            if (id % radix >= radix / 2)
+                senderEnable = false;
+        }
+
+        if (senderEnable) {
+            stats.offeredRequests++;
+            if (retryPkt == NULL) {
+                stats.generatedRequests++;
+                generatePkt();
+            } else {
+                stats.sourceBlockedOffers++;
+            }
+        }
     }
 
     // Schedule wakeup
@@ -236,6 +254,24 @@ GarnetSyntheticTraffic::generatePkt()
         dest_x = (src_x + (int) ceil(radix/2) - 1) % radix;
         dest_y = src_y;
         destination = dest_y*radix + dest_x;
+    } else if (traffic == CUTSTRESS_) {
+        dest_x = radix - src_x - 1;
+        dest_y = src_y;
+        destination = dest_y * radix + dest_x;
+    } else if (traffic == HOTSPOT_) {
+        const unsigned hotspot0 = (radix / 2 - 1) * radix + radix / 2 - 1;
+        const unsigned hotspot1 = (radix / 2) * radix + radix / 2;
+        if (random_mt.random<unsigned>(0, 1) == 0) {
+            destination = random_mt.random<unsigned>(0, 1) == 0 ?
+                hotspot0 : hotspot1;
+            if (destination == unsigned(source))
+                destination = destination == hotspot0 ? hotspot1 : hotspot0;
+        } else {
+            do {
+                destination = random_mt.random<unsigned>(
+                    0, num_destinations - 1);
+            } while (destination == unsigned(source));
+        }
     }
     else {
         fatal("Unknown Traffic Type: %s!\n", traffic);
@@ -244,7 +280,12 @@ GarnetSyntheticTraffic::generatePkt()
     // The source of the packets is a cache.
     // The destination of the packets is a directory.
     // The destination bits are embedded in the address after byte-offset.
-    Addr paddr =  destination;
+    const Addr num_blocks = size >> blockSizeBits;
+    const Addr tags_per_destination = num_blocks / num_destinations;
+    fatal_if(tags_per_destination == 0,
+             "Traffic tester memory is too small for all destinations");
+    Addr paddr = destination + num_destinations *
+        (numPacketsSent % tags_per_destination);
     paddr <<= blockSizeBits;
     unsigned access_size = 1; // Does not affect Ruby simulation
 
@@ -334,14 +375,38 @@ GarnetSyntheticTraffic::initTrafficType()
     trafficStringToEnum["tornado"] = TORNADO_;
     trafficStringToEnum["transpose"] = TRANSPOSE_;
     trafficStringToEnum["uniform_random"] = UNIFORM_RANDOM_;
+    trafficStringToEnum["cutstress"] = CUTSTRESS_;
+    trafficStringToEnum["hotspot"] = HOTSPOT_;
 }
 
 void
 GarnetSyntheticTraffic::doRetry()
 {
     if (cachePort.sendTimingReq(retryPkt)) {
+        stats.retrySuccesses++;
         retryPkt = NULL;
     }
+}
+
+GarnetSyntheticTraffic::StatGroup::StatGroup(statistics::Group *parent)
+    : statistics::Group(parent),
+      ADD_STAT(injectionAttempts, statistics::units::Count::get(),
+               "Bernoulli injection decisions that passed"),
+      ADD_STAT(offeredRequests, statistics::units::Count::get(),
+               "Requests offered after sender and traffic eligibility"),
+      ADD_STAT(generatedRequests, statistics::units::Count::get(),
+               "Offered requests materialized as timing packets"),
+      ADD_STAT(sourceBlockedOffers, statistics::units::Count::get(),
+               "Offered requests suppressed while a retry was outstanding"),
+      ADD_STAT(initialSendSuccesses, statistics::units::Count::get(),
+               "Requests accepted on their initial timing send"),
+      ADD_STAT(initialSendRetries, statistics::units::Count::get(),
+               "Initial timing sends rejected by backpressure"),
+      ADD_STAT(retrySuccesses, statistics::units::Count::get(),
+               "Previously rejected requests accepted on retry"),
+      ADD_STAT(completedRequests, statistics::units::Count::get(),
+               "Tester requests receiving a timing response")
+{
 }
 
 void
