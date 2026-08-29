@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="780" viewBox="0 0 1240 780">
+<rect width="100%" height="100%" fill="white"/>
+<style>text{font-family:Arial,sans-serif;fill:#222}.axis{stroke:#555}.grid{stroke:#ddd}.curve{fill:none;stroke-width:2.5}.point{stroke:white;stroke-width:1}</style>
+<text x="620" y="28" text-anchor="middle" font-size="20" font-weight="bold">Path-planning upper bounds on Stride-ASPL (3-seed standalone)</text>
+<text x="335.0" y="51" text-anchor="middle" font-size="16" font-weight="bold">Uniform: accepted throughput</text>
+<line class="axis" x1="75" y1="65" x2="75" y2="335"/>
+<line class="axis" x1="75" y1="335" x2="595" y2="335"/>
+<line class="grid" x1="75.0" y1="65" x2="75.0" y2="335"/>
+<text x="75.0" y="353" text-anchor="middle" font-size="11">0.5</text>
+<line class="grid" x1="421.7" y1="65" x2="421.7" y2="335"/>
+<text x="421.7" y="353" text-anchor="middle" font-size="11">0.7</text>
+<line class="grid" x1="595.0" y1="65" x2="595.0" y2="335"/>
+<text x="595.0" y="353" text-anchor="middle" font-size="11">0.8</text>
+<line class="grid" x1="75" y1="335.0" x2="595" y2="335.0"/>
+<text x="66" y="339.0" text-anchor="end" font-size="11">0.00</text>
+<line class="grid" x1="75" y1="281.0" x2="595" y2="281.0"/>
+<text x="66" y="285.0" text-anchor="end" font-size="11">0.09</text>
+<line class="grid" x1="75" y1="227.0" x2="595" y2="227.0"/>
+<text x="66" y="231.0" text-anchor="end" font-size="11">0.17</text>
+<line class="grid" x1="75" y1="173.0" x2="595" y2="173.0"/>
+<text x="66" y="177.0" text-anchor="end" font-size="11">0.26</text>
+<line class="grid" x1="75" y1="119.0" x2="595" y2="119.0"/>
+<text x="66" y="123.0" text-anchor="end" font-size="11">0.35</text>
+<line class="grid" x1="75" y1="65.0" x2="595" y2="65.0"/>
+<text x="66" y="69.0" text-anchor="end" font-size="11">0.43</text>
+<polyline class="curve" stroke="#333333" points="75.0,178.8 421.7,116.4 595.0,115.2"/>
+<circle class="point" fill="#333333" cx="75.0" cy="178.8" r="3.5"/>
+<circle class="point" fill="#333333" cx="421.7" cy="116.4" r="3.5"/>
+<circle class="point" fill="#333333" cx="595.0" cy="115.2" r="3.5"/>
+<polyline class="curve" stroke="#e69f00" points="75.0,178.8 421.7,116.4 595.0,126.0"/>
+<circle class="point" fill="#e69f00" cx="75.0" cy="178.8" r="3.5"/>
+<circle class="point" fill="#e69f00" cx="421.7" cy="116.4" r="3.5"/>
+<circle class="point" fill="#e69f00" cx="595.0" cy="126.0" r="3.5"/>
+<polyline class="curve" stroke="#0072b2" points="75.0,178.8 421.7,116.4 595.0,85.0"/>
+<circle class="point" fill="#0072b2" cx="75.0" cy="178.8" r="3.5"/>
+<circle class="point" fill="#0072b2" cx="421.7" cy="116.4" r="3.5"/>
+<circle class="point" fill="#0072b2" cx="595.0" cy="85.0" r="3.5"/>
+<text x="950.0" y="51" text-anchor="middle" font-size="16" font-weight="bold">CutStress: accepted throughput</text>
+<line class="axis" x1="690" y1="65" x2="690" y2="335"/>
+<line class="axis" x1="690" y1="335" x2="1210" y2="335"/>
+<line class="grid" x1="690.0" y1="65" x2="690.0" y2="335"/>
+<text x="690.0" y="353" text-anchor="middle" font-size="11">0.5</text>
+<line class="grid" x1="1036.7" y1="65" x2="1036.7" y2="335"/>
+<text x="1036.7" y="353" text-anchor="middle" font-size="11">0.7</text>
+<line class="grid" x1="1210.0" y1="65" x2="1210.0" y2="335"/>
+<text x="1210.0" y="353" text-anchor="middle" font-size="11">0.8</text>
+<line class="grid" x1="690" y1="335.0" x2="1210" y2="335.0"/>
+<text x="681" y="339.0" text-anchor="end" font-size="11">0.00</text>
+<line class="grid" x1="690" y1="281.0" x2="1210" y2="281.0"/>
+<text x="681" y="285.0" text-anchor="end" font-size="11">0.04</text>
+<line class="grid" x1="690" y1="227.0" x2="1210" y2="227.0"/>
+<text x="681" y="231.0" text-anchor="end" font-size="11">0.08</text>
+<line class="grid" x1="690" y1="173.0" x2="1210" y2="173.0"/>
+<text x="681" y="177.0" text-anchor="end" font-size="11">0.11</text>
+<line class="grid" x1="690" y1="119.0" x2="1210" y2="119.0"/>
+<text x="681" y="123.0" text-anchor="end" font-size="11">0.15</text>
+<line class="grid" x1="690" y1="65.0" x2="1210" y2="65.0"/>
+<text x="681" y="69.0" text-anchor="end" font-size="11">0.19</text>
+<polyline class="curve" stroke="#333333" points="690.0,166.1 1036.7,137.6 1210.0,133.6"/>
+<circle class="point" fill="#333333" cx="690.0" cy="166.1" r="3.5"/>
+<circle class="point" fill="#333333" cx="1036.7" cy="137.6" r="3.5"/>
+<circle class="point" fill="#333333" cx="1210.0" cy="133.6" r="3.5"/>
+<polyline class="curve" stroke="#e69f00" points="690.0,157.8 1036.7,121.4 1210.0,111.6"/>
+<circle class="point" fill="#e69f00" cx="690.0" cy="157.8" r="3.5"/>
+<circle class="point" fill="#e69f00" cx="1036.7" cy="121.4" r="3.5"/>
+<circle class="point" fill="#e69f00" cx="1210.0" cy="111.6" r="3.5"/>
+<polyline class="curve" stroke="#0072b2" points="690.0,157.2 1036.7,97.2 1210.0,85.0"/>
+<circle class="point" fill="#0072b2" cx="690.0" cy="157.2" r="3.5"/>
+<circle class="point" fill="#0072b2" cx="1036.7" cy="97.2" r="3.5"/>
+<circle class="point" fill="#0072b2" cx="1210.0" cy="85.0" r="3.5"/>
+<text x="335.0" y="416" text-anchor="middle" font-size="16" font-weight="bold">Uniform: latency (log scale)</text>
+<line class="axis" x1="75" y1="430" x2="75" y2="700"/>
+<line class="axis" x1="75" y1="700" x2="595" y2="700"/>
+<line class="grid" x1="75.0" y1="430" x2="75.0" y2="700"/>
+<text x="75.0" y="718" text-anchor="middle" font-size="11">0.5</text>
+<line class="grid" x1="421.7" y1="430" x2="421.7" y2="700"/>
+<text x="421.7" y="718" text-anchor="middle" font-size="11">0.7</text>
+<line class="grid" x1="595.0" y1="430" x2="595.0" y2="700"/>
+<text x="595.0" y="718" text-anchor="middle" font-size="11">0.8</text>
+<line class="grid" x1="75" y1="700.0" x2="595" y2="700.0"/>
+<text x="66" y="704.0" text-anchor="end" font-size="11">10</text>
+<line class="grid" x1="75" y1="610.0" x2="595" y2="610.0"/>
+<text x="66" y="614.0" text-anchor="end" font-size="11">100</text>
+<line class="grid" x1="75" y1="520.0" x2="595" y2="520.0"/>
+<text x="66" y="524.0" text-anchor="end" font-size="11">1000</text>
+<line class="grid" x1="75" y1="430.0" x2="595" y2="430.0"/>
+<text x="66" y="434.0" text-anchor="end" font-size="11">10000</text>
+<polyline class="curve" stroke="#333333" points="75.0,689.1 421.7,680.8 595.0,490.3"/>
+<circle class="point" fill="#333333" cx="75.0" cy="689.1" r="3.5"/>
+<circle class="point" fill="#333333" cx="421.7" cy="680.8" r="3.5"/>
+<circle class="point" fill="#333333" cx="595.0" cy="490.3" r="3.5"/>
+<polyline class="curve" stroke="#e69f00" points="75.0,689.8 421.7,683.1 595.0,477.6"/>
+<circle class="point" fill="#e69f00" cx="75.0" cy="689.8" r="3.5"/>
+<circle class="point" fill="#e69f00" cx="421.7" cy="683.1" r="3.5"/>
+<circle class="point" fill="#e69f00" cx="595.0" cy="477.6" r="3.5"/>
+<polyline class="curve" stroke="#0072b2" points="75.0,689.6 421.7,687.5 595.0,684.6"/>
+<circle class="point" fill="#0072b2" cx="75.0" cy="689.6" r="3.5"/>
+<circle class="point" fill="#0072b2" cx="421.7" cy="687.5" r="3.5"/>
+<circle class="point" fill="#0072b2" cx="595.0" cy="684.6" r="3.5"/>
+<text x="950.0" y="416" text-anchor="middle" font-size="16" font-weight="bold">CutStress: latency (log scale)</text>
+<line class="axis" x1="690" y1="430" x2="690" y2="700"/>
+<line class="axis" x1="690" y1="700" x2="1210" y2="700"/>
+<line class="grid" x1="690.0" y1="430" x2="690.0" y2="700"/>
+<text x="690.0" y="718" text-anchor="middle" font-size="11">0.5</text>
+<line class="grid" x1="1036.7" y1="430" x2="1036.7" y2="700"/>
+<text x="1036.7" y="718" text-anchor="middle" font-size="11">0.7</text>
+<line class="grid" x1="1210.0" y1="430" x2="1210.0" y2="700"/>
+<text x="1210.0" y="718" text-anchor="middle" font-size="11">0.8</text>
+<line class="grid" x1="690" y1="700.0" x2="1210" y2="700.0"/>
+<text x="681" y="704.0" text-anchor="end" font-size="11">10</text>
+<line class="grid" x1="690" y1="610.0" x2="1210" y2="610.0"/>
+<text x="681" y="614.0" text-anchor="end" font-size="11">100</text>
+<line class="grid" x1="690" y1="520.0" x2="1210" y2="520.0"/>
+<text x="681" y="524.0" text-anchor="end" font-size="11">1000</text>
+<line class="grid" x1="690" y1="430.0" x2="1210" y2="430.0"/>
+<text x="681" y="434.0" text-anchor="end" font-size="11">10000</text>
+<polyline class="curve" stroke="#333333" points="690.0,533.3 1036.7,484.6 1210.0,468.9"/>
+<circle class="point" fill="#333333" cx="690.0" cy="533.3" r="3.5"/>
+<circle class="point" fill="#333333" cx="1036.7" cy="484.6" r="3.5"/>
+<circle class="point" fill="#333333" cx="1210.0" cy="468.9" r="3.5"/>
+<polyline class="curve" stroke="#e69f00" points="690.0,628.4 1036.7,498.6 1210.0,480.4"/>
+<circle class="point" fill="#e69f00" cx="690.0" cy="628.4" r="3.5"/>
+<circle class="point" fill="#e69f00" cx="1036.7" cy="498.6" r="3.5"/>
+<circle class="point" fill="#e69f00" cx="1210.0" cy="480.4" r="3.5"/>
+<polyline class="curve" stroke="#0072b2" points="690.0,690.8 1036.7,541.7 1210.0,504.7"/>
+<circle class="point" fill="#0072b2" cx="690.0" cy="690.8" r="3.5"/>
+<circle class="point" fill="#0072b2" cx="1036.7" cy="541.7" r="3.5"/>
+<circle class="point" fill="#0072b2" cx="1210.0" cy="504.7" r="3.5"/>
+<line x1="305.0" y1="752" x2="331.0" y2="752" stroke="#333333" stroke-width="3"/>
+<text x="337.0" y="757" font-size="12">K=8 pressure</text>
+<line x1="515.0" y1="752" x2="541.0" y2="752" stroke="#e69f00" stroke-width="3"/>
+<text x="547.0" y="757" font-size="12">Dijkstra express-only</text>
+<line x1="725.0" y1="752" x2="751.0" y2="752" stroke="#0072b2" stroke-width="3"/>
+<text x="757.0" y="757" font-size="12">Dijkstra global oracle</text>
+</svg>

@@ -110,6 +110,43 @@ def cutstress_demand(n: int) -> Demand:
     return {pair: weight for pair in pairs}
 
 
+def permutation_demand(n: int, mapping) -> Demand:
+    """Balanced one-to-one traffic: every router injects to one router.
+
+    Unlike hotspot traffic, this does not create an unavoidable concentration
+    at one destination NI.  It is therefore useful for measuring whether a
+    topology actually matches a non-uniform communication pattern.
+    """
+    pairs = []
+    for source in range(n * n):
+        dest = mapping(source)
+        if not 0 <= dest < n * n or dest == source:
+            raise ValueError(f"invalid permutation mapping {source} -> {dest}")
+        pairs.append((source, dest))
+    if len({dest for _, dest in pairs}) != n * n:
+        raise ValueError("traffic mapping is not a permutation")
+    weight = 1.0 / len(pairs)
+    return {pair: weight for pair in pairs}
+
+
+def bit_complement_demand(n: int) -> Demand:
+    """Common synthetic traffic: (x, y) -> (n-1-x, n-1-y)."""
+    if n % 2:
+        raise ValueError("bit-complement traffic requires an even dimension")
+    return permutation_demand(n, lambda source: n * n - 1 - source)
+
+
+def tornado_demand(n: int) -> Demand:
+    """Common synthetic traffic: a fixed horizontal displacement."""
+    if n < 4:
+        raise ValueError("tornado traffic requires dimension >= 4")
+    offset = n // 2 - 1
+    return permutation_demand(
+        n,
+        lambda source: (source // n) * n + (source % n + offset) % n,
+    )
+
+
 def hotspot_demand(n: int, hotspot_probability: float = 0.5) -> Demand:
     if not 0.0 <= hotspot_probability <= 1.0:
         raise ValueError("hotspot probability must be in [0, 1]")

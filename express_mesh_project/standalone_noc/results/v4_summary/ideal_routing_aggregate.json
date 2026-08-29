@@ -1,0 +1,344 @@
+[
+  {
+    "traffic": "cutstress",
+    "series": "Dijkstra_express",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.124379340278,
+    "accepted_throughput_sd": 8.543607215520183e-05,
+    "average_packet_latency_cycles_mean": 62.39503286366667,
+    "average_packet_latency_cycles_sd": 12.11142759022993,
+    "express_traversals_per_packet_mean": 0.5011336611238889,
+    "escape_fraction_mean": 4.4666428601333334e-05,
+    "max_link_utilization_mean": 0.711911111111,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "cutstress",
+    "series": "Dijkstra_express",
+    "configured_injection_rate": 0.7,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.14991770833366666,
+    "accepted_throughput_sd": 0.00010564574911256986,
+    "average_packet_latency_cycles_mean": 1730.6069654733335,
+    "average_packet_latency_cycles_sd": 8.143457694787264,
+    "express_traversals_per_packet_mean": 0.41899963140057817,
+    "escape_fraction_mean": 0.0007307797417860001,
+    "max_link_utilization_mean": 0.754911111111,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "cutstress",
+    "series": "Dijkstra_express",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.15677743055533333,
+    "accepted_throughput_sd": 7.9823361392071e-06,
+    "average_packet_latency_cycles_mean": 2756.93812725,
+    "average_packet_latency_cycles_sd": 21.33454463898126,
+    "express_traversals_per_packet_mean": 0.40665398596871666,
+    "escape_fraction_mean": 0.002594568449073333,
+    "max_link_utilization_mean": 0.7717000000003332,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "cutstress",
+    "series": "Dijkstra_global",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.12478888888900001,
+    "accepted_throughput_sd": 2.4914252975960142e-05,
+    "average_packet_latency_cycles_mean": 12.655598628,
+    "average_packet_latency_cycles_sd": 0.013489262692512608,
+    "express_traversals_per_packet_mean": 0.6070919336367551,
+    "escape_fraction_mean": 0.0,
+    "max_link_utilization_mean": 0.7111777777776668,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "cutstress",
+    "series": "Dijkstra_global",
+    "configured_injection_rate": 0.7,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.16693333333333335,
+    "accepted_throughput_sd": 3.041714257999333e-05,
+    "average_packet_latency_cycles_mean": 574.02945864,
+    "average_packet_latency_cycles_sd": 1.4216539128819627,
+    "express_traversals_per_packet_mean": 0.5717238055064996,
+    "escape_fraction_mean": 0.00016640280587766667,
+    "max_link_utilization_mean": 0.7418888888890001,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "cutstress",
+    "series": "Dijkstra_global",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.17546927083333333,
+    "accepted_throughput_sd": 3.295960164893223e-05,
+    "average_packet_latency_cycles_mean": 1478.9572446733334,
+    "average_packet_latency_cycles_sd": 15.763071084441608,
+    "express_traversals_per_packet_mean": 0.5546604884627507,
+    "escape_fraction_mean": 0.0028782009249433333,
+    "max_link_utilization_mean": 0.7418111111110001,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "cutstress",
+    "series": "K8_pressure",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.118546527778,
+    "accepted_throughput_sd": 0.00013179061742770568,
+    "average_packet_latency_cycles_mean": 711.6509147433334,
+    "average_packet_latency_cycles_sd": 11.913741537066645,
+    "express_traversals_per_packet_mean": 0.37330478601048794,
+    "escape_fraction_mean": 4.5423494314633336e-05,
+    "max_link_utilization_mean": 0.7502444444443332,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "cutstress",
+    "series": "K8_pressure",
+    "configured_injection_rate": 0.7,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.13855104166666665,
+    "accepted_throughput_sd": 9.933317166513238e-05,
+    "average_packet_latency_cycles_mean": 2474.84142183,
+    "average_packet_latency_cycles_sd": 7.0661135763278216,
+    "express_traversals_per_packet_mean": 0.3412111042433646,
+    "escape_fraction_mean": 9.773869428926665e-05,
+    "max_link_utilization_mean": 0.7506777777776668,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "cutstress",
+    "series": "K8_pressure",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.14136840277766669,
+    "accepted_throughput_sd": 5.133196423889839e-05,
+    "average_packet_latency_cycles_mean": 3693.09022497,
+    "average_packet_latency_cycles_sd": 9.968289413901852,
+    "express_traversals_per_packet_mean": 0.338975859856603,
+    "escape_fraction_mean": 2.2109960062966668e-05,
+    "max_link_utilization_mean": 0.7500777777776667,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "uniform_random",
+    "series": "Dijkstra_express",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.24966093749966667,
+    "accepted_throughput_sd": 0.00021177239608376037,
+    "average_packet_latency_cycles_mean": 12.9910047029,
+    "average_packet_latency_cycles_sd": 0.007304067592246674,
+    "express_traversals_per_packet_mean": 0.7995374032238232,
+    "escape_fraction_mean": 0.0,
+    "max_link_utilization_mean": 0.4406333333333334,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "uniform_random",
+    "series": "Dijkstra_express",
+    "configured_injection_rate": 0.7,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.34949322916700004,
+    "accepted_throughput_sd": 8.922226167929045e-05,
+    "average_packet_latency_cycles_mean": 15.425670160400001,
+    "average_packet_latency_cycles_sd": 0.04905383333625212,
+    "express_traversals_per_packet_mean": 0.695051722115541,
+    "escape_fraction_mean": 0.0003789998529696666,
+    "max_link_utilization_mean": 0.5284888888886666,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "uniform_random",
+    "series": "Dijkstra_express",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.3340296875,
+    "accepted_throughput_sd": 0.0007477833029722353,
+    "average_packet_latency_cycles_mean": 2961.6884998166665,
+    "average_packet_latency_cycles_sd": 41.023907283365155,
+    "express_traversals_per_packet_mean": 0.523712364616372,
+    "escape_fraction_mean": 0.05442131462006666,
+    "max_link_utilization_mean": 0.5636777777776666,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "uniform_random",
+    "series": "Dijkstra_global",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.24966319444433335,
+    "accepted_throughput_sd": 0.00021042411511642135,
+    "average_packet_latency_cycles_mean": 13.057844105466666,
+    "average_packet_latency_cycles_sd": 0.002361011917702364,
+    "express_traversals_per_packet_mean": 0.7142510271128467,
+    "escape_fraction_mean": 0.0,
+    "max_link_utilization_mean": 0.40762222222233335,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "uniform_random",
+    "series": "Dijkstra_global",
+    "configured_injection_rate": 0.7,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.34948489583333336,
+    "accepted_throughput_sd": 9.109770533277069e-05,
+    "average_packet_latency_cycles_mean": 13.775752290200002,
+    "average_packet_latency_cycles_sd": 0.00042572225467699836,
+    "express_traversals_per_packet_mean": 0.703313464258643,
+    "escape_fraction_mean": 0.0,
+    "max_link_utilization_mean": 0.5504555555556667,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "uniform_random",
+    "series": "Dijkstra_global",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.3996118055553333,
+    "accepted_throughput_sd": 5.263996522792273e-05,
+    "average_packet_latency_cycles_mean": 14.830432706433333,
+    "average_packet_latency_cycles_sd": 0.00385875329863984,
+    "express_traversals_per_packet_mean": 0.6930102193499305,
+    "escape_fraction_mean": 4.345166089633333e-07,
+    "max_link_utilization_mean": 0.6080444444446667,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "uniform_random",
+    "series": "K8_pressure",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.24965972222199997,
+    "accepted_throughput_sd": 0.0002098048437643374,
+    "average_packet_latency_cycles_mean": 13.2290917921,
+    "average_packet_latency_cycles_sd": 0.0074788625225689995,
+    "express_traversals_per_packet_mean": 0.6242275182098469,
+    "escape_fraction_mean": 0.0,
+    "max_link_utilization_mean": 0.3781777777776667,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "uniform_random",
+    "series": "K8_pressure",
+    "configured_injection_rate": 0.7,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.34947968749999997,
+    "accepted_throughput_sd": 0.00010041238039376399,
+    "average_packet_latency_cycles_mean": 16.337757554833335,
+    "average_packet_latency_cycles_sd": 0.09418349017930543,
+    "express_traversals_per_packet_mean": 0.5306432078410325,
+    "escape_fraction_mean": 0.0011172357249100001,
+    "max_link_utilization_mean": 0.5658333333333333,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "uniform_random",
+    "series": "K8_pressure",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.3514067708333333,
+    "accepted_throughput_sd": 0.0004937084265495884,
+    "average_packet_latency_cycles_mean": 2136.1933325200002,
+    "average_packet_latency_cycles_sd": 38.206443177722285,
+    "express_traversals_per_packet_mean": 0.4278054048254624,
+    "escape_fraction_mean": 0.032125592342933336,
+    "max_link_utilization_mean": 0.6009888888886666,
+    "no_progress_runs": 0
+  }
+]

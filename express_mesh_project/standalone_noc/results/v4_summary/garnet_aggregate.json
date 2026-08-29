@@ -1,0 +1,325 @@
+[
+  {
+    "traffic": "bit_complement",
+    "series": "aspl",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.19759057291666668,
+    "accepted_throughput_sd": 0.010331966671847128,
+    "average_packet_latency_cycles_mean": 33288.707911179335,
+    "average_packet_latency_cycles_sd": 2010.175144594033,
+    "express_traversals_per_packet_mean": 0.43580135805470316,
+    "escape_fraction_mean": 0.1125081282408954,
+    "max_link_utilization_mean": 0.41462,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "bit_complement",
+    "series": "bitcomp_aspl",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.16709197916666665,
+    "accepted_throughput_sd": 0.006639463629245297,
+    "average_packet_latency_cycles_mean": 44338.084665516675,
+    "average_packet_latency_cycles_sd": 6651.460116658466,
+    "express_traversals_per_packet_mean": 0.24903878287943496,
+    "escape_fraction_mean": 0.10930792847203326,
+    "max_link_utilization_mean": 0.30044,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "bit_complement",
+    "series": "mesh",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.20434020833333333,
+    "accepted_throughput_sd": 0.0020735805665810115,
+    "average_packet_latency_cycles_mean": 35855.951386696,
+    "average_packet_latency_cycles_sd": 357.8294686831288,
+    "express_traversals_per_packet_mean": 0.0,
+    "escape_fraction_mean": 0.08146570876974146,
+    "max_link_utilization_mean": 0.47730999999999996,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "bit_complement",
+    "series": "random",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.22540520833333333,
+    "accepted_throughput_sd": 0.0015831547545263841,
+    "average_packet_latency_cycles_mean": 32003.598915647333,
+    "average_packet_latency_cycles_sd": 116.92406036271488,
+    "express_traversals_per_packet_mean": 0.30954087289714743,
+    "escape_fraction_mean": 0.07943935541386456,
+    "max_link_utilization_mean": 0.4860466666666667,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "bit_complement",
+    "series": "stride_aspl",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.21348739583333334,
+    "accepted_throughput_sd": 0.015666837898519862,
+    "average_packet_latency_cycles_mean": 32649.44620012467,
+    "average_packet_latency_cycles_sd": 2344.339171105809,
+    "express_traversals_per_packet_mean": 0.44497559024132977,
+    "escape_fraction_mean": 0.09836737588033391,
+    "max_link_utilization_mean": 0.39077999999999996,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "aspl",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.23012406249999998,
+    "accepted_throughput_sd": 0.0021016751402589064,
+    "average_packet_latency_cycles_mean": 4127.8648029626665,
+    "average_packet_latency_cycles_sd": 311.737741714612,
+    "express_traversals_per_packet_mean": 0.4442747519114623,
+    "escape_fraction_mean": 0.07398321417980495,
+    "max_link_utilization_mean": 0.4236766666666667,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "aspl",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.23341479166666668,
+    "accepted_throughput_sd": 0.0007581115854531259,
+    "average_packet_latency_cycles_mean": 26207.426803476003,
+    "average_packet_latency_cycles_sd": 287.2806366110938,
+    "express_traversals_per_packet_mean": 0.45512941086125097,
+    "escape_fraction_mean": 0.08542573237664479,
+    "max_link_utilization_mean": 0.44101999999999997,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "mesh",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.19503661458333332,
+    "accepted_throughput_sd": 0.0007737916311890828,
+    "average_packet_latency_cycles_mean": 12089.323890759333,
+    "average_packet_latency_cycles_sd": 124.43948726247993,
+    "express_traversals_per_packet_mean": 0.0,
+    "escape_fraction_mean": 0.08290067014496598,
+    "max_link_utilization_mean": 0.4452566666666667,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "mesh",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.19900838541666666,
+    "accepted_throughput_sd": 0.0009548007837634713,
+    "average_packet_latency_cycles_mean": 32624.077264805997,
+    "average_packet_latency_cycles_sd": 397.2395101446888,
+    "express_traversals_per_packet_mean": 0.0,
+    "escape_fraction_mean": 0.08649662899916281,
+    "max_link_utilization_mean": 0.46841333333333335,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "random",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.22566890625,
+    "accepted_throughput_sd": 0.0014130726680657178,
+    "average_packet_latency_cycles_mean": 5075.746666611333,
+    "average_packet_latency_cycles_sd": 207.48864040338006,
+    "express_traversals_per_packet_mean": 0.321141685320054,
+    "escape_fraction_mean": 0.06675750896498327,
+    "max_link_utilization_mean": 0.4809666666666666,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "random",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.22665140625000002,
+    "accepted_throughput_sd": 0.0007688719838855915,
+    "average_packet_latency_cycles_mean": 28329.92855718067,
+    "average_packet_latency_cycles_sd": 239.08509854312302,
+    "express_traversals_per_packet_mean": 0.3150909738995689,
+    "escape_fraction_mean": 0.0768652259028535,
+    "max_link_utilization_mean": 0.4879733333333333,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "stride_aspl",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.23709677083333336,
+    "accepted_throughput_sd": 0.0014889302381653963,
+    "average_packet_latency_cycles_mean": 2556.5409399220002,
+    "average_packet_latency_cycles_sd": 340.0190980022907,
+    "express_traversals_per_packet_mean": 0.4596349447558999,
+    "escape_fraction_mean": 0.06039729098349453,
+    "max_link_utilization_mean": 0.41075333333333336,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "stride_aspl",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.23085390625,
+    "accepted_throughput_sd": 0.004259617967743096,
+    "average_packet_latency_cycles_mean": 26800.1405638,
+    "average_packet_latency_cycles_sd": 1447.7112106920813,
+    "express_traversals_per_packet_mean": 0.46166069256949815,
+    "escape_fraction_mean": 0.08326204885153912,
+    "max_link_utilization_mean": 0.39524,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "tornado_aspl",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.21230140625000002,
+    "accepted_throughput_sd": 0.002294015655739089,
+    "average_packet_latency_cycles_mean": 7061.230721701333,
+    "average_packet_latency_cycles_sd": 319.36899530898995,
+    "express_traversals_per_packet_mean": 0.3665423317700216,
+    "escape_fraction_mean": 0.09148277403675283,
+    "max_link_utilization_mean": 0.4926433333333333,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "tornado_aspl",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.19327994791666667,
+    "accepted_throughput_sd": 0.009079663501242216,
+    "average_packet_latency_cycles_mean": 30003.657874907996,
+    "average_packet_latency_cycles_sd": 2130.961295474147,
+    "express_traversals_per_packet_mean": 0.3618346089801204,
+    "escape_fraction_mean": 0.11903625406922978,
+    "max_link_utilization_mean": 0.4994766666666666,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "tornado_hybrid",
+    "configured_injection_rate": 0.5,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.21452932291666668,
+    "accepted_throughput_sd": 0.0015013890288136573,
+    "average_packet_latency_cycles_mean": 7295.138372716,
+    "average_packet_latency_cycles_sd": 255.90085361130113,
+    "express_traversals_per_packet_mean": 0.35802822501358306,
+    "escape_fraction_mean": 0.08663447359143239,
+    "max_link_utilization_mean": 0.49721,
+    "no_progress_runs": 0
+  },
+  {
+    "traffic": "tornado",
+    "series": "tornado_hybrid",
+    "configured_injection_rate": 0.8,
+    "sample_count": 3,
+    "seeds": [
+      1,
+      2,
+      3
+    ],
+    "accepted_throughput_mean": 0.20048088541666664,
+    "accepted_throughput_sd": 0.009003877257575644,
+    "average_packet_latency_cycles_mean": 29590.585571913998,
+    "average_packet_latency_cycles_sd": 1634.5474055225607,
+    "express_traversals_per_packet_mean": 0.35218160399445847,
+    "escape_fraction_mean": 0.1116800346122197,
+    "max_link_utilization_mean": 0.52649,
+    "no_progress_runs": 0
+  }
+]

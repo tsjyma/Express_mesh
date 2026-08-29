@@ -199,6 +199,21 @@ Router::expressOutputQueue(int destination) const
     fatal("Router %d has no express output to %d", m_id, destination);
 }
 
+double
+Router::expressOutputVcOccupancy(int destination, int vnet)
+{
+    const PortDirection expected =
+        "ExpressTo" + std::to_string(destination);
+    for (const auto &unit : m_output_unit) {
+        if (unit->get_direction() == expected) {
+            const int ordinary_vcs = unit->getVcsPerVnet() -
+                (m_network_ptr->isExpressEscapeEnabled() ? 1 : 0);
+            return ordinary_vcs * unit->congestion(vnet, false);
+        }
+    }
+    fatal("Router %d has no express output to %d", m_id, destination);
+}
+
 void
 Router::regStats()
 {

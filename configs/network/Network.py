@@ -74,9 +74,12 @@ def define_options(parser):
         help="commit the precomputed static ExpressMesh route at injection",
     )
     parser.add_argument(
-        "--express-source-route-policy", type=int, choices=[0, 1, 2, 3], default=0,
-        help="source-route policy: 0 static, 1 global-q, 2 global-q+r, 3 random",
+        "--express-source-route-policy", type=int, choices=[0, 1, 2, 3, 4], default=0,
+        help=("source-route policy: 0 static, 1 staging-q, 2 staging-q+r, "
+              "3 random, 4 reservation+express-VC pressure"),
     )
+    parser.add_argument("--express-reservation-weight", type=float, default=0.5)
+    parser.add_argument("--express-vc-pressure-weight", type=float, default=1.0)
     parser.add_argument(
         "--express-adaptive-threshold", type=float, default=0.25,
     )
@@ -214,6 +217,8 @@ def init_network(options, network, InterfaceClass):
         network.express_escape_enabled = not options.express_no_escape
         network.source_route_enabled = options.express_source_route
         network.source_route_policy = options.express_source_route_policy
+        network.source_route_reservation_weight = options.express_reservation_weight
+        network.source_route_vc_weight = options.express_vc_pressure_weight
         network.garnet_deadlock_threshold = options.garnet_deadlock_threshold
 
         # Create Bridges and connect them to the corresponding links

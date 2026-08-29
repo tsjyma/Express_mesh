@@ -1,0 +1,188 @@
+{
+  "config": {
+    "alpha": 0.5,
+    "budget": 64,
+    "d_min": 3,
+    "latency_model": "ideal",
+    "max_degree": 1,
+    "n": 8,
+    "output_dir": "express_mesh_project/results/design_space/random_b64_d1/p5",
+    "placements": [
+      "random"
+    ],
+    "random_only": false,
+    "random_seed": 5,
+    "rho": 1.5,
+    "robust_uniform_weight": 0.5,
+    "skip_metrics": true
+  },
+  "placements": {
+    "random": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 64
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 6,
+          "u_coord": [
+            6,
+            0
+          ],
+          "v": 20,
+          "v_coord": [
+            4,
+            2
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 8,
+          "u_coord": [
+            0,
+            1
+          ],
+          "v": 47,
+          "v_coord": [
+            7,
+            5
+          ],
+          "wire_length": 11
+        },
+        {
+          "latency": 1,
+          "u": 9,
+          "u_coord": [
+            1,
+            1
+          ],
+          "v": 30,
+          "v_coord": [
+            6,
+            3
+          ],
+          "wire_length": 7
+        },
+        {
+          "latency": 1,
+          "u": 11,
+          "u_coord": [
+            3,
+            1
+          ],
+          "v": 54,
+          "v_coord": [
+            6,
+            6
+          ],
+          "wire_length": 8
+        },
+        {
+          "latency": 1,
+          "u": 18,
+          "u_coord": [
+            2,
+            2
+          ],
+          "v": 33,
+          "v_coord": [
+            1,
+            4
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 22,
+          "u_coord": [
+            6,
+            2
+          ],
+          "v": 46,
+          "v_coord": [
+            6,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 25,
+          "u_coord": [
+            1,
+            3
+          ],
+          "v": 63,
+          "v_coord": [
+            7,
+            7
+          ],
+          "wire_length": 10
+        },
+        {
+          "latency": 1,
+          "u": 26,
+          "u_coord": [
+            2,
+            3
+          ],
+          "v": 57,
+          "v_coord": [
+            1,
+            7
+          ],
+          "wire_length": 5
+        },
+        {
+          "latency": 1,
+          "u": 32,
+          "u_coord": [
+            0,
+            4
+          ],
+          "v": 38,
+          "v_coord": [
+            6,
+            4
+          ],
+          "wire_length": 6
+        },
+        {
+          "latency": 1,
+          "u": 40,
+          "u_coord": [
+            0,
+            5
+          ],
+          "v": 44,
+          "v_coord": [
+            4,
+            5
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 52,
+          "u_coord": [
+            4,
+            6
+          ],
+          "v": 62,
+          "v_coord": [
+            6,
+            7
+          ],
+          "wire_length": 3
+        }
+      ],
+      "latency_model": "ideal",
+      "metrics": {},
+      "name": "random",
+      "node_count": 64
+    }
+  }
+}

@@ -331,9 +331,29 @@ RoutingUnit::outportComputeExpressMesh(RouteInfo route)
     const int num_cols = network->getNumCols();
     const int current = m_router->get_id();
 
-    if (route.escape_vc) {
-        return outportComputeXY(route, 0, "Local");
-    }
+    // Coordinate-only X-then-Y routing to a mesh waypoint.  Keeping this
+    // separate from Garnet's input-direction assertions is intentional:
+    // source-route segments may start immediately after an express link.
+    auto meshXYTo = [&](int waypoint) {
+        const int cx=current%num_cols,cy=current/num_cols;
+        const int wx=waypoint%num_cols,wy=waypoint/num_cols;
+        PortDirection direction;
+        if(cx<wx)direction="East";
+        else if(cx>wx)direction="West";
+        else if(cy<wy)direction="North";
+        else if(cy>wy)direction="South";
+        else fatal("mesh XY waypoint equals current router %d", current);
+        const auto outport=m_outports_dirn2idx.find(direction);
+        fatal_if(outport==m_outports_dirn2idx.end(),
+                 "Router %d has no mesh XY output %s toward %d",
+                 current, direction, waypoint);
+        return outport->second;
+    };
+
+    // Escape never uses an express link and never transitions back.  Its
+    // channel-dependency graph is therefore the ordinary acyclic mesh-XY CDG.
+    if (route.escape_vc)
+        return meshXYTo(route.dest_router);
 
     auto directionFor = [current, num_cols](int neighbor) {
         if (neighbor == current + 1 &&
@@ -357,16 +377,15 @@ RoutingUnit::outportComputeExpressMesh(RouteInfo route)
             const int directed_id = route.express_ids.at(route.express_stage);
             const int entry = network->getExpressRouteSource(directed_id);
             const int exit = network->getExpressRouteDestination(directed_id);
-            if (current != entry) {
-                return outportComputeLocalAdaptive(route, entry, 0, "Local");
-            }
+            if (current != entry)
+                return meshXYTo(entry);
             const auto outport = m_outports_dirn2idx.find(directionFor(exit));
             fatal_if(outport == m_outports_dirn2idx.end(),
                      "Router %d has no source-route express output to %d",
                      current, exit);
             return outport->second;
         }
-        return outportComputeLocalAdaptive(route, route.dest_router, 0, "Local");
+        return meshXYTo(route.dest_router);
     }
 
     const int minimal_next =

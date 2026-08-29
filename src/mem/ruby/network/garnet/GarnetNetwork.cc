@@ -88,6 +88,8 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     m_source_route_candidate_express_counts = p.source_route_candidate_express_counts;
     m_source_route_candidate_express_ids = p.source_route_candidate_express_ids;
     m_source_route_policy = p.source_route_policy;
+    m_source_route_reservation_weight = p.source_route_reservation_weight;
+    m_source_route_vc_weight = p.source_route_vc_weight;
     m_reservation_current.assign(2 * m_express_link_latencies.size(), 0);
     m_express_adaptive = p.express_adaptive;
     m_express_adaptive_threshold = p.express_adaptive_threshold;
@@ -96,6 +98,14 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     m_express_escape_timeout = p.express_escape_timeout;
     m_express_escape_enabled = p.express_escape_enabled;
     m_next_packet_id = 0;
+
+    fatal_if(m_source_route_policy > 4,
+             "source-route policy %u is invalid", m_source_route_policy);
+    fatal_if(m_source_route_reservation_weight < 0.0 ||
+             m_source_route_vc_weight < 0.0,
+             "source-route pressure weights must be non-negative");
+    fatal_if(m_express_escape_enabled && p.vcs_per_vnet < 2,
+             "escape routing needs at least two VCs per vnet");
 
     fatal_if(m_source_route_enabled && m_routing_algorithm != CUSTOM_,
              "source-route injection requires custom routing");
@@ -327,6 +337,14 @@ GarnetNetwork::expressQueue(int directed_id) const
     return m_routers.at(src)->expressOutputQueue(dst);
 }
 
+double
+GarnetNetwork::expressVcOccupancy(int directed_id, int vnet)
+{
+    const int src = getExpressRouteSource(directed_id);
+    const int dst = getExpressRouteDestination(directed_id);
+    return m_routers.at(src)->expressOutputVcOccupancy(dst, vnet);
+}
+
 void
 GarnetNetwork::initializeSourceRoute(RouteInfo &route)
 {
@@ -367,9 +385,16 @@ GarnetNetwork::initializeSourceRoute(RouteInfo &route)
             double cost = m_source_route_candidate_latencies[base];
             for (uint32_t i = 0; i < ec; ++i) {
                 const uint32_t id = m_source_route_candidate_express_ids[base * 2 + i];
-                cost += expressQueue(id);
+                if (m_source_route_policy == 1 || m_source_route_policy == 2)
+                    cost += expressQueue(id);
                 if (m_source_route_policy == 2)
                     cost += m_reservation_current[id];
+                if (m_source_route_policy == 4) {
+                    cost += m_source_route_reservation_weight *
+                        m_reservation_current[id];
+                    cost += m_source_route_vc_weight *
+                        expressVcOccupancy(id, route.vnet);
+                }
             }
             if (cost < best_cost) { best_cost = cost; best = c; }
         }

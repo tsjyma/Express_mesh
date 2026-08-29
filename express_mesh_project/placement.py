@@ -29,6 +29,22 @@ def candidate_edges(n: int, d_min: int, latency_model: str) -> list[ExpressEdge]
     return result
 
 
+def _filter_candidates(
+    candidates: list[ExpressEdge], n: int, candidate_mode: str
+) -> list[ExpressEdge]:
+    if candidate_mode not in {"all", "axis", "stride4"}:
+        raise ValueError(f"unknown candidate mode: {candidate_mode}")
+    if candidate_mode == "all":
+        return candidates
+    mesh = GridGraph(n)
+    return [
+        edge for edge in candidates
+        if (mesh.coordinate(edge.u)[0] == mesh.coordinate(edge.v)[0]
+            or mesh.coordinate(edge.u)[1] == mesh.coordinate(edge.v)[1])
+        and (candidate_mode != "stride4" or edge.wire_length == 4)
+    ]
+
+
 def validate_placement(
     n: int,
     edges: list[ExpressEdge],
@@ -75,9 +91,12 @@ def random_placement(
     latency_model: str,
     seed: int,
     attempts: int = 256,
+    candidate_mode: str = "all",
 ) -> list[ExpressEdge]:
     rng = random.Random(seed)
-    candidates = candidate_edges(n, d_min, latency_model)
+    candidates = _filter_candidates(
+        candidate_edges(n, d_min, latency_model), n, candidate_mode
+    )
     best: list[ExpressEdge] = []
     best_cost = -1
     for _ in range(attempts):
@@ -159,13 +178,15 @@ def greedy_placement(
     latency_model: str,
     objective: str,
     alpha: float = 0.5,
+    candidate_mode: str = "all",
 ) -> list[ExpressEdge]:
     if objective not in {"aspl", "bottleneck", "hybrid"}:
         raise ValueError(f"unknown objective: {objective}")
     if not 0.0 <= alpha <= 1.0:
         raise ValueError("alpha must be in [0, 1]")
-
-    candidates = candidate_edges(n, d_min, latency_model)
+    candidates = _filter_candidates(
+        candidate_edges(n, d_min, latency_model), n, candidate_mode
+    )
     selected: list[ExpressEdge] = []
     selected_keys = set()
     degree = [0] * (n * n)

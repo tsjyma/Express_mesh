@@ -1,0 +1,12 @@
+{
+  "constraints": {
+    "max_degree": 0,
+    "wire_cost": 0
+  },
+  "dimension": 8,
+  "express_links": [],
+  "latency_model": "ideal",
+  "metrics": {},
+  "name": "stride_hybrid",
+  "node_count": 64
+}

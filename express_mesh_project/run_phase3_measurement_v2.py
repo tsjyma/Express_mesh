@@ -6,6 +6,7 @@ import json
 import re
 import subprocess
 import os
+import sysconfig
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -17,11 +18,20 @@ RESULTS = Path(__file__).resolve().parent / "results" / "phase3_measurement_v2"
 TOPOLOGIES = {
     "mesh": "mesh.json",
     "random": "random.json",
+    "aspl": "aspl.json",
+    "bottleneck": "bottleneck.json",
     "handcrafted": "handcrafted.json",
     "hybrid": "hybrid.json",
     "hybrid_cutstress": "hybrid_cutstress.json",
+    "stride_random": "stride_random.json",
+    "stride_aspl": "stride_aspl.json",
+    "bitcomp_aspl": "bitcomp_aspl.json",
+    "bitcomp_hybrid": "bitcomp_hybrid.json",
+    "tornado_aspl": "tornado_aspl.json",
+    "tornado_hybrid": "tornado_hybrid.json",
 }
-TRAFFICS = ("uniform_random", "cutstress", "hotspot")
+TRAFFICS = ("uniform_random", "cutstress", "hotspot", "bit_complement",
+            "tornado")
 ROUTINGS = ("deterministic", "adaptive")
 
 # Garnet runs at the default 2 GHz Ruby clock while gem5 ticks are 1 ps.
@@ -29,17 +39,75 @@ ROUTINGS = ("deterministic", "adaptive")
 # cycle is 500 ticks. Keep this explicit so latency and throughput use the
 # same network-cycle unit.
 RUBY_CLOCK_PERIOD_TICKS = 500.0
-RESULT_SCHEMA_VERSION = 5
+RESULT_SCHEMA_VERSION = 6
+
+
+def traffic_mapping_stats(text, traffic):
+    """Summarize the source/destination router matrix seen by Garnet.
+
+    Deterministic synthetic traffic must remain deterministic after Ruby's
+    physical-address-to-directory mapping.  The generic gem5 memory-channel
+    XOR hash must be disabled for this tester, otherwise changing address tag
+    bits silently change the requested destination over time.
+    """
+    pattern = re.compile(
+        r"^system\.ruby\.network\.ctrl_traffic_distribution\.n(\d+)\.n(\d+)"
+        r"\s+(\S+)", re.M)
+    matrix = [[0.0 for _ in range(64)] for _ in range(64)]
+    for source, destination, value in pattern.findall(text):
+        matrix[int(source)][int(destination)] = float(value)
+
+    active_sources = [source for source in range(64)
+                      if sum(matrix[source]) > 0]
+    active_destinations = [
+        sum(value > 0 for value in matrix[source])
+        for source in active_sources
+    ]
+    expected = {}
+    if traffic == "bit_complement":
+        expected = {source: 63 - source for source in range(64)}
+    elif traffic == "tornado":
+        expected = {
+            source: (source // 8) * 8 + (source % 8 + 3) % 8
+            for source in range(64)
+        }
+    elif traffic == "cutstress":
+        expected = {
+            source: (source // 8) * 8 + (7 - source % 8)
+            for source in range(64) if source % 8 < 4
+        }
+
+    expected_total = sum(sum(matrix[source]) for source in expected)
+    expected_hits = sum(matrix[source][destination]
+                        for source, destination in expected.items())
+    unexpected_source_packets = sum(
+        sum(matrix[source]) for source in range(64) if source not in expected
+    ) if expected else 0.0
+    return {
+        "traffic_matrix_packet_total": sum(map(sum, matrix)),
+        "traffic_matrix_active_source_count": len(active_sources),
+        "traffic_matrix_mean_active_destinations": (
+            sum(active_destinations) / len(active_destinations)
+            if active_destinations else 0.0
+        ),
+        "traffic_expected_destination_fraction": (
+            expected_hits / expected_total if expected_total else None
+        ),
+        "traffic_unexpected_source_packets": unexpected_source_packets,
+    }
+
 
 def run_tag(spec, source_route=False, source_route_policy=0, no_escape=False,
             random_placement_seed=1):
     topology, routing, traffic, rate, seed = spec
     mode = "_source_route" if source_route else ""
     if source_route and source_route_policy:
-        mode += {1: "_q", 2: "_qr", 3: "_random_candidate"}[source_route_policy]
+        mode += {1: "_q", 2: "_qr", 3: "_random_candidate",
+                 4: "_pressure"}[source_route_policy]
     if no_escape:
         mode += "_no_escape"
-    placement = f"_p{random_placement_seed}" if topology == "random" else ""
+    placement = (f"_p{random_placement_seed}"
+                 if topology in {"random", "stride_random"} else "")
     return f"{topology}_{routing}_{traffic}_r{rate:.3f}_s{seed}{placement}{mode}"
 
 
@@ -78,22 +146,31 @@ def sum_scalar_suffix(text, suffix, allow_missing=False):
 
 def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
             source_route=False, source_route_policy=0, no_escape=False,
-            random_placement_seed=1):
+            random_placement_seed=1, topology_dir=None,
+            reservation_weight=0.5, vc_pressure_weight=1.0,
+            express_budget=16, express_max_degree=1,
+            express_min_wire_length=3):
     topology, routing, traffic, rate, seed = spec
     tag = run_tag(spec, source_route, source_route_policy, no_escape,
                   random_placement_seed)
     outdir = RESULTS / "runs" / tag
     outdir.mkdir(parents=True, exist_ok=True)
-    placement_dir = (Path(__file__).resolve().parent / "results" /
-                     (f"phase1_random_seed{random_placement_seed}"
-                      if topology == "random" and random_placement_seed != 1
-                      else "phase1"))
+    placement_dir = topology_dir
+    if placement_dir is None:
+        placement_dir = (Path(__file__).resolve().parent / "results" /
+                         (f"phase1_random_seed{random_placement_seed}"
+                          if topology == "random" and random_placement_seed != 1
+                          else "phase1"))
     topology_file = placement_dir / TOPOLOGIES[topology]
     command = [
         str(GEM5_BINARY),
         f"--outdir={outdir}",
         "configs/example/garnet_synth_traffic.py",
         "--network=garnet", "--num-cpus=64", "--num-dirs=64",
+        # The synthetic tester embeds the requested directory in address bits
+        # 6--11.  gem5's general memory-controller default XORs those bits
+        # with changing tag bits and destroys deterministic traffic patterns.
+        "--xor-low-bit=0",
         "--topology=ExpressMesh", "--mesh-rows=8", "--routing-algorithm=2",
         "--vcs-per-vnet=4", "--inj-vnet=0",
         f"--garnet-deadlock-threshold={deadlock_threshold}",
@@ -101,8 +178,13 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         f"--measurement-cycles={measurement_cycles}",
         f"--synthetic={traffic}", f"--injectionrate={rate}",
         f"--traffic-seed={seed}", f"--express-links-file={topology_file}",
+        f"--express-budget={express_budget}",
+        f"--express-max-degree={express_max_degree}",
+        f"--express-min-wire-length={express_min_wire_length}",
         "--express-adaptive-threshold=0.25", "--express-adaptive-lambda=1.0",
         "--express-detour-ratio=1.5", "--express-escape-timeout=32",
+        f"--express-reservation-weight={reservation_weight}",
+        f"--express-vc-pressure-weight={vc_pressure_weight}",
     ]
     if routing == "adaptive":
         command.append("--express-adaptive")
@@ -113,8 +195,11 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         command.append("--express-no-escape")
     with (outdir / "run.log").open("w", encoding="utf-8") as log:
         env = os.environ.copy()
-        conda_lib = "/home/jing/miniconda3/lib"
-        env["LD_LIBRARY_PATH"] = conda_lib + ":" + env.get("LD_LIBRARY_PATH", "")
+        python_lib = sysconfig.get_config_var("LIBDIR")
+        if python_lib:
+            env["LD_LIBRARY_PATH"] = (
+                python_lib + ":" + env.get("LD_LIBRARY_PATH", "")
+            )
         result = subprocess.run(command, cwd=GEM5, stdout=log,
                                 stderr=subprocess.STDOUT, check=False, env=env)
     stats = (outdir / "stats.txt").read_text(encoding="utf-8")
@@ -172,6 +257,7 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
     # including cases where a few packets were injected before the stall.
     no_progress = (termination_reason == "deadlock_panic" or
                    (no_escape and received_packets == 0 and end_tick is not None))
+    mapping_stats = traffic_mapping_stats(stats, traffic)
     row = {
         "result_schema_version": RESULT_SCHEMA_VERSION,
         "source_route": source_route,
@@ -183,6 +269,12 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         "simulation_end_tick": end_tick,
         "termination_reason": termination_reason,
         "topology": topology, "random_placement_seed": random_placement_seed,
+        "topology_file": str(topology_file),
+        "express_budget": express_budget,
+        "express_max_degree": express_max_degree,
+        "express_min_wire_length": express_min_wire_length,
+        "reservation_weight": reservation_weight,
+        "express_vc_weight": vc_pressure_weight,
         "routing": routing, "traffic": traffic,
         "configured_injection_rate": rate, "seed": seed,
         "warmup_cycles": warmup_cycles, "measurement_cycles": measurement_cycles,
@@ -239,6 +331,15 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         "link_utilization_cv": variance ** 0.5 / mean if mean else 0.0,
         "run_dir": str(outdir),
     }
+    row.update(mapping_stats)
+    if (traffic in {"bit_complement", "tornado", "cutstress"} and
+            termination_reason != "deadlock_panic" and
+            (mapping_stats["traffic_expected_destination_fraction"] != 1.0 or
+             mapping_stats["traffic_unexpected_source_packets"] != 0.0)):
+        raise RuntimeError(
+            f"{tag} did not preserve the requested deterministic traffic; "
+            f"mapping stats: {mapping_stats}"
+        )
     (outdir / "result.json").write_text(
         json.dumps(row, indent=2) + "\n", encoding="utf-8")
     return row
@@ -246,10 +347,20 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
 
 def cached_result(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
                   source_route=False, source_route_policy=0, no_escape=False,
-                  random_placement_seed=1):
+                  random_placement_seed=1, topology_dir=None,
+                  reservation_weight=0.5, vc_pressure_weight=1.0,
+                  express_budget=16, express_max_degree=1,
+                  express_min_wire_length=3):
     topology, routing, traffic, rate, seed = spec
     tag = run_tag(spec, source_route, source_route_policy, no_escape,
                   random_placement_seed)
+    placement_dir = topology_dir
+    if placement_dir is None:
+        placement_dir = (Path(__file__).resolve().parent / "results" /
+                         (f"phase1_random_seed{random_placement_seed}"
+                          if topology == "random" and
+                          random_placement_seed != 1 else "phase1"))
+    topology_file = placement_dir / TOPOLOGIES[topology]
     path = RESULTS / "runs" / tag / "result.json"
     if not path.exists():
         return None
@@ -258,6 +369,12 @@ def cached_result(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
             row.get("source_route", False) != source_route or
             row.get("source_route_policy", 0) != source_route_policy or
             row.get("random_placement_seed", 1) != random_placement_seed or
+            row.get("topology_file") != str(topology_file) or
+            row.get("reservation_weight", 0.5) != reservation_weight or
+            row.get("express_vc_weight", 1.0) != vc_pressure_weight or
+            row.get("express_budget", 16) != express_budget or
+            row.get("express_max_degree", 1) != express_max_degree or
+            row.get("express_min_wire_length", 3) != express_min_wire_length or
             row.get("escape_enabled", True) != (not no_escape) or
             row.get("warmup_cycles") != warmup_cycles or
             row.get("measurement_cycles") != measurement_cycles or
@@ -267,6 +384,7 @@ def cached_result(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
 
 
 def main():
+    global RESULTS
     parser = argparse.ArgumentParser()
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--warmup-cycles", type=int, default=20_000)
@@ -286,14 +404,25 @@ def main():
                         help="Reuse per-run results with matching windows")
     parser.add_argument("--source-route", action="store_true",
                         help="Commit the static source route at injection")
-    parser.add_argument("--source-route-policy", type=int, choices=[0, 1, 2, 3], default=0,
-                        help="0 static, 1 global q, 2 global q+r, 3 random candidate")
+    parser.add_argument("--source-route-policy", type=int, choices=[0, 1, 2, 3, 4], default=0,
+                        help=("0 static, 1 staging q, 2 staging q+r, "
+                              "3 random candidate, 4 reservation+VC pressure"))
     parser.add_argument("--no-escape", action="store_true",
                         help="use all four VCs as adaptive VCs")
     parser.add_argument("--random-placement-seed", type=int, default=1,
                         help="placement seed for the random topology")
+    parser.add_argument("--topology-dir", type=Path,
+                        help="directory containing the selected topology JSON files")
+    parser.add_argument("--results", type=Path, default=RESULTS,
+                        help="output directory (defaults to phase3_measurement_v2)")
+    parser.add_argument("--reservation-weight", type=float, default=0.5)
+    parser.add_argument("--express-vc-weight", type=float, default=1.0)
+    parser.add_argument("--express-budget", type=int, default=16)
+    parser.add_argument("--express-max-degree", type=int, default=1)
+    parser.add_argument("--express-min-wire-length", type=int, default=3)
     args = parser.parse_args()
 
+    RESULTS = args.results.resolve()
     RESULTS.mkdir(parents=True, exist_ok=True)
     specs = [(t, r, f, rate, seed) for t in args.topologies
              for r in args.routings for f in args.traffics
@@ -306,7 +435,10 @@ def main():
             spec, args.warmup_cycles, args.measurement_cycles,
             args.garnet_deadlock_threshold, args.source_route,
             args.source_route_policy, args.no_escape,
-            args.random_placement_seed) if args.resume else None
+            args.random_placement_seed, args.topology_dir,
+            args.reservation_weight, args.express_vc_weight,
+            args.express_budget, args.express_max_degree,
+            args.express_min_wire_length) if args.resume else None
         if cached is None:
             pending.append(spec)
         else:
@@ -318,7 +450,10 @@ def main():
             run_one, spec, args.warmup_cycles, args.measurement_cycles,
             args.garnet_deadlock_threshold, args.source_route,
             args.source_route_policy, args.no_escape,
-            args.random_placement_seed): spec for spec in pending}
+            args.random_placement_seed, args.topology_dir,
+            args.reservation_weight, args.express_vc_weight,
+            args.express_budget, args.express_max_degree,
+            args.express_min_wire_length): spec for spec in pending}
         for index, future in enumerate(as_completed(futures), 1):
             spec = futures[future]
             try:

@@ -32,3 +32,10 @@ configs/example/memcheck.cfg
 configs/dram/lowp_sweep.cfg
 .pyenv
 .vscode
+
+# Express-Mesh experiment outputs.  Keep reproducible topology inputs under
+# express_mesh_project/results/design_space, but do not version multi-GB raw
+# Garnet runs or simulation-guided search scratch data.
+/express_mesh_project/results/garnet_*/
+/express_mesh_project/results/placement_search/
+/express_mesh_project/results/phase3_measurement_v2/routing_v2_aggregate.json

@@ -99,9 +99,10 @@ OutputUnit::has_free_vc(int vnet, bool escape)
 {
     int vc_base = vnet*m_vc_per_vnet;
     const bool use_escape = escape && m_router->get_net_ptr()->isExpressEscapeEnabled();
+    const bool reserve_escape = m_router->get_net_ptr()->isExpressEscapeEnabled();
     int begin = use_escape ? vc_base + m_vc_per_vnet - 1 : vc_base;
     int end = use_escape ? vc_base + m_vc_per_vnet :
-                       vc_base + m_vc_per_vnet - 1;
+                       vc_base + m_vc_per_vnet - (reserve_escape ? 1 : 0);
     for (int vc = begin; vc < end; vc++) {
         if (is_vc_idle(vc, curTick()))
             return true;
@@ -116,9 +117,10 @@ OutputUnit::select_free_vc(int vnet, bool escape)
 {
     int vc_base = vnet*m_vc_per_vnet;
     const bool use_escape = escape && m_router->get_net_ptr()->isExpressEscapeEnabled();
+    const bool reserve_escape = m_router->get_net_ptr()->isExpressEscapeEnabled();
     int begin = use_escape ? vc_base + m_vc_per_vnet - 1 : vc_base;
     int end = use_escape ? vc_base + m_vc_per_vnet :
-                       vc_base + m_vc_per_vnet - 1;
+                       vc_base + m_vc_per_vnet - (reserve_escape ? 1 : 0);
     for (int vc = begin; vc < end; vc++) {
         if (is_vc_idle(vc, curTick())) {
             outVcState[vc].setState(ACTIVE_, curTick());
@@ -134,9 +136,10 @@ OutputUnit::congestion(int vnet, bool escape)
 {
     const int vc_base = vnet * m_vc_per_vnet;
     const bool use_escape = escape && m_router->get_net_ptr()->isExpressEscapeEnabled();
+    const bool reserve_escape = m_router->get_net_ptr()->isExpressEscapeEnabled();
     const int begin = use_escape ? vc_base + m_vc_per_vnet - 1 : vc_base;
     const int end = use_escape ? vc_base + m_vc_per_vnet :
-                            vc_base + m_vc_per_vnet - 1;
+                            vc_base + m_vc_per_vnet - (reserve_escape ? 1 : 0);
     int occupied = 0;
     for (int vc = begin; vc < end; ++vc) {
         if (!outVcState[vc].isInState(IDLE_, curTick()))

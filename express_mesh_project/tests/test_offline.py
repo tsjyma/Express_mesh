@@ -3,10 +3,12 @@ from __future__ import annotations
 import unittest
 
 from express_mesh_project.model import (
+    bit_complement_demand,
     GridGraph,
     cutstress_demand,
     core_metrics,
     hotspot_demand,
+    tornado_demand,
     uniform_demand,
 )
 from express_mesh_project.placement import (
@@ -23,9 +25,27 @@ from express_mesh_project.candidates import (
     sequential_reservation_assignment,
     candidate_bundle,
 )
+from express_mesh_project.run_phase3_measurement_v2 import traffic_mapping_stats
 
 
 class OfflineModelTest(unittest.TestCase):
+    def test_garnet_deterministic_traffic_mapping_guard(self):
+        correct = "\n".join(
+            f"system.ruby.network.ctrl_traffic_distribution.n{s}.n{63-s} 10"
+            for s in range(64)
+        )
+        stats = traffic_mapping_stats(correct, "bit_complement")
+        self.assertEqual(stats["traffic_matrix_mean_active_destinations"], 1)
+        self.assertEqual(stats["traffic_expected_destination_fraction"], 1)
+
+        hashed = correct + "\n" + "\n".join(
+            f"system.ruby.network.ctrl_traffic_distribution.n{s}.n{s} 10"
+            for s in range(64)
+        )
+        stats = traffic_mapping_stats(hashed, "bit_complement")
+        self.assertEqual(stats["traffic_matrix_mean_active_destinations"], 2)
+        self.assertEqual(stats["traffic_expected_destination_fraction"], 0.5)
+
     def test_two_by_two_uniform_metrics(self):
         graph = GridGraph(2)
         metrics = core_metrics(graph, uniform_demand(4))
@@ -47,6 +67,18 @@ class OfflineModelTest(unittest.TestCase):
         demand = hotspot_demand(8)
         self.assertAlmostEqual(sum(demand.values()), 1.0)
         self.assertTrue(all(source != dest for source, dest in demand))
+
+    def test_balanced_permutation_traffics(self):
+        bit_complement = bit_complement_demand(8)
+        tornado = tornado_demand(8)
+        for demand in (bit_complement, tornado):
+            self.assertAlmostEqual(sum(demand.values()), 1.0)
+            self.assertEqual(len(demand), 64)
+            self.assertEqual(len({source for source, _ in demand}), 64)
+            self.assertEqual(len({dest for _, dest in demand}), 64)
+            self.assertTrue(all(source != dest for source, dest in demand))
+        self.assertEqual(dict(bit_complement)[(0, 63)], 1 / 64)
+        self.assertEqual(dict(tornado)[(0, 3)], 1 / 64)
 
     def test_greedy_respects_constraints(self):
         edges = greedy_placement(
@@ -80,6 +112,22 @@ class OfflineModelTest(unittest.TestCase):
             ],
             16,
         )
+
+    def test_stride4_placements_share_the_same_candidate_space(self):
+        random_edges = random_placement(
+            8, 16, 1, 3, "ideal", seed=7, candidate_mode="stride4"
+        )
+        greedy_edges = greedy_placement(
+            8, uniform_demand(64), 16, 1, 3, "ideal", "aspl",
+            candidate_mode="stride4",
+        )
+        for edges in (random_edges, greedy_edges):
+            validate_placement(8, edges, budget=16, max_degree=1, d_min=3)
+            for edge in edges:
+                ux, uy = edge.u % 8, edge.u // 8
+                vx, vy = edge.v % 8, edge.v // 8
+                self.assertTrue(ux == vx or uy == vy)
+                self.assertEqual(edge.wire_length, 4)
 
     def test_bounded_candidates_are_loop_free_and_keep_mesh(self):
         edges = random_placement(4, 6, 1, 3, "ideal", seed=7)

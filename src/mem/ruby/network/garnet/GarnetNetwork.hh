@@ -91,6 +91,7 @@ class GarnetNetwork : public Network
     void reserveSourceRoute(const RouteInfo &route);
     void releaseSourceRouteExpress(int directed_id);
     double expressQueue(int directed_id) const;
+    double expressVcOccupancy(int directed_id, int vnet);
     bool isExpressAdaptive() const { return m_express_adaptive; }
     double getExpressAdaptiveThreshold() const
     { return m_express_adaptive_threshold; }
@@ -204,6 +205,8 @@ class GarnetNetwork : public Network
     std::vector<uint32_t> m_source_route_candidate_express_counts;
     std::vector<uint32_t> m_source_route_candidate_express_ids;
     uint32_t m_source_route_policy;
+    double m_source_route_reservation_weight;
+    double m_source_route_vc_weight;
     std::vector<std::vector<int>> m_express_next_hop;
     std::vector<std::vector<int>> m_express_neighbors;
     std::vector<std::vector<uint32_t>> m_express_edge_latency;

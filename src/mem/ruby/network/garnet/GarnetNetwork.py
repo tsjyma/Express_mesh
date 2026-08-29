@@ -68,7 +68,15 @@ class GarnetNetwork(RubyNetwork):
     source_route_candidate_latencies = VectorParam.UInt32([], "candidate static latencies")
     source_route_candidate_express_counts = VectorParam.UInt32([], "candidate express counts")
     source_route_candidate_express_ids = VectorParam.UInt32([], "candidate express IDs")
-    source_route_policy = Param.UInt32(0, "0 static, 1 global q, 2 global q+r, 3 random candidate")
+    source_route_policy = Param.UInt32(
+        0, "0 static, 1 staging-q, 2 staging-q+r, 3 random, 4 pressure-aware"
+    )
+    source_route_reservation_weight = Param.Float(
+        0.5, "in-flight express reservation weight for policy 4"
+    )
+    source_route_vc_weight = Param.Float(
+        1.0, "occupied express output VC weight for policy 4"
+    )
     express_escape_enabled = Param.Bool(True, "reserve one escape VC")
     express_adaptive = Param.Bool(False, "enable congestion-aware routing")
     express_adaptive_threshold = Param.Float(

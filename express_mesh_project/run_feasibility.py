@@ -8,10 +8,12 @@ import json
 from pathlib import Path
 
 from express_mesh_project.model import (
+    bit_complement_demand,
     GridGraph,
     cutstress_demand,
     hotspot_demand,
     public_metrics,
+    tornado_demand,
     uniform_demand,
 )
 from express_mesh_project.placement import (
@@ -45,8 +47,22 @@ def main() -> int:
     parser.add_argument("--random-seed", type=int, default=1)
     parser.add_argument("--random-only", action="store_true",
                         help="generate only the random placement")
+    parser.add_argument(
+        "--placements", nargs="+",
+        choices=["mesh", "random", "handcrafted", "aspl", "bottleneck",
+                 "hybrid", "hybrid_cutstress", "robust", "axis_aspl",
+                 "axis_hybrid", "axis_robust", "stride_aspl",
+                 "stride_hybrid", "stride_robust", "axis_random",
+                 "stride_random", "bitcomp_aspl", "bitcomp_hybrid",
+                 "tornado_aspl", "tornado_hybrid"],
+        help="generate only the selected placement algorithms",
+    )
     parser.add_argument("--skip-metrics", action="store_true",
                         help="skip expensive offline demand metrics")
+    parser.add_argument(
+        "--robust-uniform-weight", type=float, default=0.5,
+        help="Uniform share in the mixed demand optimized by Robust Greedy",
+    )
     parser.add_argument("--output-dir", type=Path,
                         default=Path("express_mesh_project/results/phase1"))
     args = parser.parse_args()
@@ -56,35 +72,94 @@ def main() -> int:
         "uniform": uniform_demand(mesh.node_count),
         "cutstress": cutstress_demand(args.n),
         "hotspot": hotspot_demand(args.n),
+        "bit_complement": bit_complement_demand(args.n),
+        "tornado": tornado_demand(args.n),
     }
     uniform = demands["uniform"]
     cutstress = demands["cutstress"]
-    placements = {
-        "mesh": [],
-        "random": random_placement(
+    if not 0.0 <= args.robust_uniform_weight <= 1.0:
+        parser.error("--robust-uniform-weight must be in [0, 1]")
+    robust_demand = dict(uniform)
+    for pair in set(robust_demand) | set(cutstress):
+        robust_demand[pair] = (
+            args.robust_uniform_weight * uniform.get(pair, 0.0)
+            + (1.0 - args.robust_uniform_weight) * cutstress.get(pair, 0.0)
+        )
+    wanted = set(args.placements or [
+        "mesh", "random", "handcrafted", "aspl", "bottleneck", "hybrid",
+        "hybrid_cutstress",
+    ])
+    placements = {}
+    if "mesh" in wanted:
+        placements["mesh"] = []
+    if "random" in wanted:
+        placements["random"] = random_placement(
             args.n, args.budget, args.max_degree, args.d_min,
             args.latency_model, args.random_seed,
-        ),
-        "handcrafted": handcrafted_placement(
+        )
+    for name, candidate_mode in (("axis_random", "axis"),
+                                 ("stride_random", "stride4")):
+        if name in wanted:
+            placements[name] = random_placement(
+                args.n, args.budget, args.max_degree, args.d_min,
+                args.latency_model, args.random_seed,
+                candidate_mode=candidate_mode,
+            )
+    if "handcrafted" in wanted:
+        placements["handcrafted"] = handcrafted_placement(
             args.n, args.budget, args.max_degree, args.d_min, args.latency_model,
-        ),
-        "aspl": greedy_placement(
+        )
+    if "aspl" in wanted:
+        placements["aspl"] = greedy_placement(
             args.n, uniform, args.budget, args.max_degree, args.d_min,
             args.latency_model, "aspl", args.alpha,
-        ),
-        "bottleneck": greedy_placement(
+        )
+    if "bottleneck" in wanted:
+        placements["bottleneck"] = greedy_placement(
             args.n, uniform, args.budget, args.max_degree, args.d_min,
             args.latency_model, "bottleneck", args.alpha,
-        ),
-        "hybrid": greedy_placement(
+        )
+    if "hybrid" in wanted:
+        placements["hybrid"] = greedy_placement(
             args.n, uniform, args.budget, args.max_degree, args.d_min,
             args.latency_model, "hybrid", args.alpha,
-        ),
-        "hybrid_cutstress": greedy_placement(
+        )
+    if "hybrid_cutstress" in wanted:
+        placements["hybrid_cutstress"] = greedy_placement(
             args.n, cutstress, args.budget, args.max_degree, args.d_min,
             args.latency_model, "hybrid", args.alpha,
-        ),
+        )
+    traffic_aware = {
+        "bitcomp_aspl": (demands["bit_complement"], "aspl"),
+        "bitcomp_hybrid": (demands["bit_complement"], "hybrid"),
+        "tornado_aspl": (demands["tornado"], "aspl"),
+        "tornado_hybrid": (demands["tornado"], "hybrid"),
     }
+    for name, (demand, objective) in traffic_aware.items():
+        if name in wanted:
+            placements[name] = greedy_placement(
+                args.n, demand, args.budget, args.max_degree, args.d_min,
+                args.latency_model, objective, args.alpha,
+            )
+    if "robust" in wanted:
+        placements["robust"] = greedy_placement(
+            args.n, robust_demand, args.budget, args.max_degree, args.d_min,
+            args.latency_model, "hybrid", args.alpha,
+        )
+    structured = {
+        "axis_aspl": (uniform, "aspl", "axis"),
+        "axis_hybrid": (uniform, "hybrid", "axis"),
+        "axis_robust": (robust_demand, "hybrid", "axis"),
+        "stride_aspl": (uniform, "aspl", "stride4"),
+        "stride_hybrid": (uniform, "hybrid", "stride4"),
+        "stride_robust": (robust_demand, "hybrid", "stride4"),
+    }
+    for name, (demand, objective, candidate_mode) in structured.items():
+        if name in wanted:
+            placements[name] = greedy_placement(
+                args.n, demand, args.budget, args.max_degree, args.d_min,
+                args.latency_model, objective, args.alpha, candidate_mode,
+            )
     if args.random_only:
         placements = {"random": placements["random"]}
 
