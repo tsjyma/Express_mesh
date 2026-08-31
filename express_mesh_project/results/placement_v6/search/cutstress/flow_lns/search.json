@@ -1,0 +1,213 @@
+{
+  "config": {
+    "binary": "/home/lryp/Express_mesh/express_mesh_project/standalone_noc/express_noc",
+    "final_temperature": 0.0005,
+    "flow_max_commodities": 512,
+    "flow_rounds": 16,
+    "initial": [
+      "express_mesh_project/results/placement_v6/baselines/cutstress_aspl.json",
+      "express_mesh_project/results/placement_v6/baselines/cutstress_bottleneck.json",
+      "express_mesh_project/results/placement_v6/baselines/cutstress_hybrid.json",
+      "express_mesh_project/results/placement_v6/search/cutstress/flow_swap/best.json"
+    ],
+    "initial_temperature": 0.02,
+    "iterations": 15,
+    "measurement_cycles": 2000,
+    "mode": "flow-lns",
+    "neighbors": 6,
+    "output_dir": "express_mesh_project/results/placement_v6/search/cutstress/flow_lns",
+    "proposal_pool": 192,
+    "rates": [
+      0.8
+    ],
+    "reheat_period": 15,
+    "replicas": 4,
+    "restarts": 2,
+    "seed": 202,
+    "stagnation_limit": 3,
+    "swap_period": 5,
+    "traffic_seeds": [
+      1
+    ],
+    "traffics": [
+      "cutstress"
+    ],
+    "warmup_cycles": 500,
+    "workers": 4
+  },
+  "history": [
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.4767970023777175,
+      "evaluated_placements": 10,
+      "improved_current": false,
+      "iteration": 1,
+      "winner_utility": 3.3317757161458332
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.4767970023777175,
+      "evaluated_placements": 16,
+      "improved_current": false,
+      "iteration": 2,
+      "winner_utility": 3.331839192708333
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 2.961177806712963,
+      "evaluated_placements": 23,
+      "improved_current": false,
+      "iteration": 3,
+      "winner_utility": 3.331783528645833
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.075232647235577,
+      "evaluated_placements": 29,
+      "improved_current": true,
+      "iteration": 4,
+      "winner_utility": 3.075232647235577
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.1983984375000003,
+      "evaluated_placements": 35,
+      "improved_current": true,
+      "iteration": 5,
+      "winner_utility": 3.1983984375000003
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.1983984375000003,
+      "evaluated_placements": 40,
+      "improved_current": false,
+      "iteration": 6,
+      "winner_utility": 3.075232647235577
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.1983984375000003,
+      "evaluated_placements": 46,
+      "improved_current": false,
+      "iteration": 7,
+      "winner_utility": 3.1982695312500002
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.1985068359375,
+      "evaluated_placements": 51,
+      "improved_current": true,
+      "iteration": 8,
+      "winner_utility": 3.1985068359375
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.1985068359375,
+      "evaluated_placements": 57,
+      "improved_current": false,
+      "iteration": 9,
+      "winner_utility": 3.198431640625
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.1985068359375,
+      "evaluated_placements": 61,
+      "improved_current": false,
+      "iteration": 10,
+      "winner_utility": 3.1983759765625
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.1982529296875,
+      "evaluated_placements": 67,
+      "improved_current": false,
+      "iteration": 11,
+      "winner_utility": 3.075297100360577
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.331707356770833,
+      "evaluated_placements": 73,
+      "improved_current": true,
+      "iteration": 12,
+      "winner_utility": 3.331707356770833
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.331707356770833,
+      "evaluated_placements": 79,
+      "improved_current": false,
+      "iteration": 13,
+      "winner_utility": 3.1981630859375003
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.331707356770833,
+      "evaluated_placements": 85,
+      "improved_current": false,
+      "iteration": 14,
+      "winner_utility": 3.331609700520833
+    },
+    {
+      "best_utility": 3.4767970023777175,
+      "current_utility": 3.331779622395833,
+      "evaluated_placements": 91,
+      "improved_current": true,
+      "iteration": 15,
+      "winner_utility": 3.331779622395833
+    }
+  ],
+  "metadata": {
+    "best_search_result": {
+      "metrics": [
+        {
+          "commodity_count": 32,
+          "concurrent_flow_proxy": 22.26086956521739,
+          "endpoint_max_load": 0.03125,
+          "mean_latency": 2.927734375,
+          "network_max_load": 0.044921875,
+          "overall_max_load": 0.044921875,
+          "p95_link_load": 0.04296875,
+          "route_count": 256
+        }
+      ],
+      "utility": 3.4767970023777175
+    },
+    "evaluated_placements": 91,
+    "full_flow_score": {
+      "mesh_metrics": [
+        {
+          "commodity_count": 32,
+          "concurrent_flow_proxy": 8.0,
+          "endpoint_max_load": 0.03125,
+          "mean_latency": 4.0,
+          "network_max_load": 0.125,
+          "overall_max_load": 0.125,
+          "p95_link_load": 0.09375,
+          "route_count": 32
+        }
+      ],
+      "metrics": [
+        {
+          "commodity_count": 32,
+          "concurrent_flow_proxy": 22.26086956521739,
+          "endpoint_max_load": 0.03125,
+          "mean_latency": 2.8798828125,
+          "network_max_load": 0.044921875,
+          "overall_max_load": 0.044921875,
+          "p95_link_load": 0.04296875,
+          "route_count": 256
+        }
+      ],
+      "utility": 3.4768209281589675
+    },
+    "mode": "flow-lns",
+    "rates": [
+      0.8
+    ],
+    "search_seed": 202,
+    "traffics": [
+      "cutstress"
+    ]
+  }
+}

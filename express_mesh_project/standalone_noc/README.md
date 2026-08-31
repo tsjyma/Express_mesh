@@ -68,6 +68,41 @@ segment uses XY.  This combination avoids the old per-hop route oscillation
 and excessive migration to escape.  The three weights are CLI parameters for
 fast sweeps.
 
+The original policy-4 view remains the default.  Incomplete express-pressure
+information can be tested without replacing it, for example:
+
+```bash
+./express_noc ... \
+  --express-info-mode distance-gossip \
+  --express-info-period 1 --express-info-delay 1 \
+  --express-info-bits 4 --express-admission-fraction 0.75
+```
+
+`distance-gossip` delays each express-entry advertisement by the base delay
+plus its Manhattan distance to the source router; unchanged q/r values are
+suppressed as event-driven updates.  The matched standalone and Garnet study,
+including failed coarse/local variants and the Random-expectation caveat, is
+documented in `PARTIAL_EXPRESS_INFO_V7_RESULTS_ZH.md`.
+
+V7 delays reads but still updates the remote reservation counter instantly.
+The physically closed incremental mode replaces that write with a propagating
+route-setup record, endpoint registration, a returned ACK, source-local
+unacknowledged state, and delayed escape cancellation:
+
+```bash
+./express_noc ... \
+  --reservation-weight 0.6 --express-vc-weight 1.0 \
+  --express-info-mode distance-gossip \
+  --express-info-period 1 --express-info-delay 1 \
+  --express-info-bits 4 --express-reservation-mode registered
+```
+
+The legacy `instant` reservation mode remains the default. Registered mode
+requires policy 4 and delayed distance gossip so an invalid hybrid cannot be
+selected accidentally. Its protocol, failed alternatives, overhead limits,
+and matched long experiments are documented in
+`PHYSICAL_EXPRESS_INFO_V8_RESULTS_ZH.md`.
+
 Policies 5 and 6 are intentionally kept as standalone upper-bound experiments:
 
 - policy 5 runs per-packet Dijkstra with unit-weight mesh links and dynamic
@@ -111,3 +146,6 @@ are documented in `ADAPTIVE_ROUTING_V4_EXPERIMENTS_ZH.md`; its aggregate CSV,
 JSON, and SVG curves are under `results/v4_summary/`.  The old V4 Garnet
 permutation table used an invalid destination mapping and is superseded by
 `ADAPTIVE_ROUTING_V5_GARNET_AUDIT_ZH.md`.
+The fixed-routing comparison of traffic-aware Greedy, three simulation-guided
+SA variants, a path-based multicommodity-flow proxy, and one-topology-for-many-
+traffic placement is documented in `TRAFFIC_AWARE_PLACEMENT_V6_RESULTS_ZH.md`.

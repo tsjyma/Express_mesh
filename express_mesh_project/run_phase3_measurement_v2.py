@@ -39,7 +39,7 @@ ROUTINGS = ("deterministic", "adaptive")
 # cycle is 500 ticks. Keep this explicit so latency and throughput use the
 # same network-cycle unit.
 RUBY_CLOCK_PERIOD_TICKS = 500.0
-RESULT_SCHEMA_VERSION = 6
+RESULT_SCHEMA_VERSION = 7
 
 
 def traffic_mapping_stats(text, traffic):
@@ -149,10 +149,21 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
             random_placement_seed=1, topology_dir=None,
             reservation_weight=0.5, vc_pressure_weight=1.0,
             express_budget=16, express_max_degree=1,
-            express_min_wire_length=3):
+            express_min_wire_length=3, express_info_mode="instant",
+            express_info_period=1, express_info_delay=0,
+            express_info_bits=0, express_admission_fraction=1.0,
+            express_reservation_mode="instant"):
     topology, routing, traffic, rate, seed = spec
     tag = run_tag(spec, source_route, source_route_policy, no_escape,
                   random_placement_seed)
+    if express_info_mode != "instant" or express_admission_fraction != 1.0:
+        tag += (
+            f"_info_{express_info_mode}_p{express_info_period}"
+            f"_d{express_info_delay}_b{express_info_bits}"
+            f"_a{express_admission_fraction:.2f}"
+        )
+    if express_reservation_mode != "instant":
+        tag += f"_reservation_{express_reservation_mode}"
     outdir = RESULTS / "runs" / tag
     outdir.mkdir(parents=True, exist_ok=True)
     placement_dir = topology_dir
@@ -185,6 +196,12 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         "--express-detour-ratio=1.5", "--express-escape-timeout=32",
         f"--express-reservation-weight={reservation_weight}",
         f"--express-vc-pressure-weight={vc_pressure_weight}",
+        f"--express-info-mode={express_info_mode}",
+        f"--express-info-period={express_info_period}",
+        f"--express-info-delay={express_info_delay}",
+        f"--express-info-bits={express_info_bits}",
+        f"--express-admission-fraction={express_admission_fraction}",
+        f"--express-reservation-mode={express_reservation_mode}",
     ]
     if routing == "adaptive":
         command.append("--express-adaptive")
@@ -275,6 +292,12 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         "express_min_wire_length": express_min_wire_length,
         "reservation_weight": reservation_weight,
         "express_vc_weight": vc_pressure_weight,
+        "express_info_mode": express_info_mode,
+        "express_info_period": express_info_period,
+        "express_info_delay": express_info_delay,
+        "express_info_bits": express_info_bits,
+        "express_admission_fraction": express_admission_fraction,
+        "express_reservation_mode": express_reservation_mode,
         "routing": routing, "traffic": traffic,
         "configured_injection_rate": rate, "seed": seed,
         "warmup_cycles": warmup_cycles, "measurement_cycles": measurement_cycles,
@@ -326,6 +349,14 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         if state_samples else [0.0 for value in q_sum],
         "express_r_sample_average": [value / state_samples for value in r_sum]
         if state_samples else [0.0 for value in r_sum],
+        "reservation_registration_messages": stat_scalar_or_zero(
+            stats, prefix + "reservation_registration_messages"),
+        "reservation_registration_acks": stat_scalar_or_zero(
+            stats, prefix + "reservation_registration_acks"),
+        "reservation_registration_cancels": stat_scalar_or_zero(
+            stats, prefix + "reservation_registration_cancels"),
+        "reservation_late_registrations": stat_scalar_or_zero(
+            stats, prefix + "reservation_late_registrations"),
         "max_link_utilization": max(link_util),
         "p95_link_utilization": ordered[int(0.95 * (len(ordered) - 1))],
         "link_utilization_cv": variance ** 0.5 / mean if mean else 0.0,
@@ -350,10 +381,21 @@ def cached_result(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
                   random_placement_seed=1, topology_dir=None,
                   reservation_weight=0.5, vc_pressure_weight=1.0,
                   express_budget=16, express_max_degree=1,
-                  express_min_wire_length=3):
+                  express_min_wire_length=3, express_info_mode="instant",
+                  express_info_period=1, express_info_delay=0,
+                  express_info_bits=0, express_admission_fraction=1.0,
+                  express_reservation_mode="instant"):
     topology, routing, traffic, rate, seed = spec
     tag = run_tag(spec, source_route, source_route_policy, no_escape,
                   random_placement_seed)
+    if express_info_mode != "instant" or express_admission_fraction != 1.0:
+        tag += (
+            f"_info_{express_info_mode}_p{express_info_period}"
+            f"_d{express_info_delay}_b{express_info_bits}"
+            f"_a{express_admission_fraction:.2f}"
+        )
+    if express_reservation_mode != "instant":
+        tag += f"_reservation_{express_reservation_mode}"
     placement_dir = topology_dir
     if placement_dir is None:
         placement_dir = (Path(__file__).resolve().parent / "results" /
@@ -375,6 +417,14 @@ def cached_result(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
             row.get("express_budget", 16) != express_budget or
             row.get("express_max_degree", 1) != express_max_degree or
             row.get("express_min_wire_length", 3) != express_min_wire_length or
+            row.get("express_info_mode", "instant") != express_info_mode or
+            row.get("express_info_period", 1) != express_info_period or
+            row.get("express_info_delay", 0) != express_info_delay or
+            row.get("express_info_bits", 0) != express_info_bits or
+            row.get("express_admission_fraction", 1.0) !=
+                express_admission_fraction or
+            row.get("express_reservation_mode", "instant") !=
+                express_reservation_mode or
             row.get("escape_enabled", True) != (not no_escape) or
             row.get("warmup_cycles") != warmup_cycles or
             row.get("measurement_cycles") != measurement_cycles or
@@ -420,6 +470,20 @@ def main():
     parser.add_argument("--express-budget", type=int, default=16)
     parser.add_argument("--express-max-degree", type=int, default=1)
     parser.add_argument("--express-min-wire-length", type=int, default=3)
+    parser.add_argument(
+        "--express-info-mode",
+        choices=["instant", "delayed-global", "distance-gossip"],
+        default="instant",
+    )
+    parser.add_argument("--express-info-period", type=int, default=1)
+    parser.add_argument("--express-info-delay", type=int, default=0)
+    parser.add_argument("--express-info-bits", type=int, default=0)
+    parser.add_argument("--express-admission-fraction", type=float, default=1.0)
+    parser.add_argument(
+        "--express-reservation-mode",
+        choices=["instant", "registered"],
+        default="instant",
+    )
     args = parser.parse_args()
 
     RESULTS = args.results.resolve()
@@ -438,7 +502,11 @@ def main():
             args.random_placement_seed, args.topology_dir,
             args.reservation_weight, args.express_vc_weight,
             args.express_budget, args.express_max_degree,
-            args.express_min_wire_length) if args.resume else None
+            args.express_min_wire_length, args.express_info_mode,
+            args.express_info_period, args.express_info_delay,
+            args.express_info_bits,
+            args.express_admission_fraction,
+            args.express_reservation_mode) if args.resume else None
         if cached is None:
             pending.append(spec)
         else:
@@ -453,7 +521,11 @@ def main():
             args.random_placement_seed, args.topology_dir,
             args.reservation_weight, args.express_vc_weight,
             args.express_budget, args.express_max_degree,
-            args.express_min_wire_length): spec for spec in pending}
+            args.express_min_wire_length, args.express_info_mode,
+            args.express_info_period, args.express_info_delay,
+            args.express_info_bits,
+            args.express_admission_fraction,
+            args.express_reservation_mode): spec for spec in pending}
         for index, future in enumerate(as_completed(futures), 1):
             spec = futures[future]
             try:

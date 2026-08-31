@@ -61,7 +61,8 @@ struct RouteInfo
     RouteInfo()
         : vnet(0), src_ni(0), src_router(0), dest_ni(0), dest_router(0),
           hops_traversed(0), escape_vc(false), source_routed(false),
-          express_count(0), express_stage(0), express_traversed(0), express_ids()
+          source_route_packet_id(0), express_count(0), express_stage(0),
+          express_traversed(0), express_ids()
     {}
 
     // destination format for table-based routing
@@ -80,6 +81,7 @@ struct RouteInfo
 
     // Reserved source-route metadata. Legacy routes leave these at defaults.
     bool source_routed;
+    uint64_t source_route_packet_id;
     uint8_t express_count;
     uint8_t express_stage;
     uint8_t express_traversed;

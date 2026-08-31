@@ -1,0 +1,213 @@
+{
+  "config": {
+    "binary": "/home/lryp/Express_mesh/express_mesh_project/standalone_noc/express_noc",
+    "final_temperature": 0.0005,
+    "flow_max_commodities": 512,
+    "flow_rounds": 16,
+    "initial": [
+      "express_mesh_project/results/placement_v6/baselines/tornado_aspl.json",
+      "express_mesh_project/results/placement_v6/baselines/tornado_bottleneck.json",
+      "express_mesh_project/results/placement_v6/baselines/tornado_hybrid.json",
+      "express_mesh_project/results/placement_v6/search/tornado/flow_swap/best.json"
+    ],
+    "initial_temperature": 0.02,
+    "iterations": 15,
+    "measurement_cycles": 2000,
+    "mode": "flow-lns",
+    "neighbors": 6,
+    "output_dir": "express_mesh_project/results/placement_v6/search/tornado/flow_lns",
+    "proposal_pool": 192,
+    "rates": [
+      0.8
+    ],
+    "reheat_period": 15,
+    "replicas": 4,
+    "restarts": 2,
+    "seed": 205,
+    "stagnation_limit": 3,
+    "swap_period": 5,
+    "traffic_seeds": [
+      1
+    ],
+    "traffics": [
+      "tornado"
+    ],
+    "warmup_cycles": 500,
+    "workers": 4
+  },
+  "history": [
+    {
+      "best_utility": 2.725565956439394,
+      "current_utility": 2.725565956439394,
+      "evaluated_placements": 10,
+      "improved_current": false,
+      "iteration": 1,
+      "winner_utility": 2.7255383522727272
+    },
+    {
+      "best_utility": 2.725565956439394,
+      "current_utility": 2.725565956439394,
+      "evaluated_placements": 16,
+      "improved_current": false,
+      "iteration": 2,
+      "winner_utility": 2.60697481884058
+    },
+    {
+      "best_utility": 2.725565956439394,
+      "current_utility": 2.6069133605072463,
+      "evaluated_placements": 23,
+      "improved_current": false,
+      "iteration": 3,
+      "winner_utility": 2.725557102272727
+    },
+    {
+      "best_utility": 2.7255716856060603,
+      "current_utility": 2.7255716856060603,
+      "evaluated_placements": 29,
+      "improved_current": true,
+      "iteration": 4,
+      "winner_utility": 2.7255716856060603
+    },
+    {
+      "best_utility": 2.7255716856060603,
+      "current_utility": 2.7255716856060603,
+      "evaluated_placements": 35,
+      "improved_current": false,
+      "iteration": 5,
+      "winner_utility": 2.6070076313405797
+    },
+    {
+      "best_utility": 2.7255716856060603,
+      "current_utility": 2.7255716856060603,
+      "evaluated_placements": 41,
+      "improved_current": false,
+      "iteration": 6,
+      "winner_utility": 2.7255425189393936
+    },
+    {
+      "best_utility": 2.7255716856060603,
+      "current_utility": 2.60698731884058,
+      "evaluated_placements": 48,
+      "improved_current": false,
+      "iteration": 7,
+      "winner_utility": 2.60701544384058
+    },
+    {
+      "best_utility": 2.7255737689393937,
+      "current_utility": 2.7255737689393937,
+      "evaluated_placements": 54,
+      "improved_current": true,
+      "iteration": 8,
+      "winner_utility": 2.7255737689393937
+    },
+    {
+      "best_utility": 2.7255737689393937,
+      "current_utility": 2.7255737689393937,
+      "evaluated_placements": 60,
+      "improved_current": false,
+      "iteration": 9,
+      "winner_utility": 2.6070086730072464
+    },
+    {
+      "best_utility": 2.7255737689393937,
+      "current_utility": 2.7255737689393937,
+      "evaluated_placements": 64,
+      "improved_current": false,
+      "iteration": 10,
+      "winner_utility": 2.6070086730072464
+    },
+    {
+      "best_utility": 2.7255737689393937,
+      "current_utility": 2.606984714673913,
+      "evaluated_placements": 71,
+      "improved_current": false,
+      "iteration": 11,
+      "winner_utility": 2.725561789772727
+    },
+    {
+      "best_utility": 2.7255737689393937,
+      "current_utility": 2.6070274230072465,
+      "evaluated_placements": 77,
+      "improved_current": true,
+      "iteration": 12,
+      "winner_utility": 2.6070274230072465
+    },
+    {
+      "best_utility": 2.7255737689393937,
+      "current_utility": 2.6070274230072465,
+      "evaluated_placements": 83,
+      "improved_current": false,
+      "iteration": 13,
+      "winner_utility": 2.60702481884058
+    },
+    {
+      "best_utility": 2.7256310606060605,
+      "current_utility": 2.7256310606060605,
+      "evaluated_placements": 89,
+      "improved_current": true,
+      "iteration": 14,
+      "winner_utility": 2.7256310606060605
+    },
+    {
+      "best_utility": 2.7256310606060605,
+      "current_utility": 2.7256310606060605,
+      "evaluated_placements": 94,
+      "improved_current": false,
+      "iteration": 15,
+      "winner_utility": 2.725603977272727
+    }
+  ],
+  "metadata": {
+    "best_search_result": {
+      "metrics": [
+        {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 46.54545454545455,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 3.078125,
+          "network_max_load": 0.021484375,
+          "overall_max_load": 0.021484375,
+          "p95_link_load": 0.0205078125,
+          "route_count": 512
+        }
+      ],
+      "utility": 2.7256310606060605
+    },
+    "evaluated_placements": 94,
+    "full_flow_score": {
+      "mesh_metrics": [
+        {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 21.333333333333332,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 3.75,
+          "network_max_load": 0.046875,
+          "overall_max_load": 0.046875,
+          "p95_link_load": 0.046875,
+          "route_count": 64
+        }
+      ],
+      "metrics": [
+        {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 46.54545454545455,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 2.99560546875,
+          "network_max_load": 0.021484375,
+          "overall_max_load": 0.021484375,
+          "p95_link_load": 0.0205078125,
+          "route_count": 512
+        }
+      ],
+      "utility": 2.725675071022727
+    },
+    "mode": "flow-lns",
+    "rates": [
+      0.8
+    ],
+    "search_seed": 205,
+    "traffics": [
+      "tornado"
+    ]
+  }
+}

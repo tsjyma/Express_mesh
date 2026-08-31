@@ -32,7 +32,12 @@
 #ifndef __MEM_RUBY_NETWORK_GARNET_0_GARNETNETWORK_HH__
 #define __MEM_RUBY_NETWORK_GARNET_0_GARNETNETWORK_HH__
 
+#include <deque>
 #include <iostream>
+#include <map>
+#include <string>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "mem/ruby/network/Network.hh"
@@ -66,6 +71,7 @@ class GarnetNetwork : public Network
     ~GarnetNetwork() = default;
 
     void init();
+    void startup() override;
 
     const char *garnetVersion = "3.0";
 
@@ -89,7 +95,9 @@ class GarnetNetwork : public Network
     bool isSourceRouteEnabled() const { return m_source_route_enabled; }
     void initializeSourceRoute(RouteInfo &route);
     void reserveSourceRoute(const RouteInfo &route);
-    void releaseSourceRouteExpress(int directed_id);
+    void releaseSourceRouteExpress(
+        const RouteInfo &route, uint8_t stage, int current_router,
+        bool cancellation);
     double expressQueue(int directed_id) const;
     double expressVcOccupancy(int directed_id, int vnet);
     bool isExpressAdaptive() const { return m_express_adaptive; }
@@ -207,6 +215,12 @@ class GarnetNetwork : public Network
     uint32_t m_source_route_policy;
     double m_source_route_reservation_weight;
     double m_source_route_vc_weight;
+    std::string m_source_route_info_mode;
+    std::string m_source_route_reservation_mode;
+    uint32_t m_source_route_info_period;
+    uint32_t m_source_route_info_delay;
+    uint32_t m_source_route_info_bits;
+    double m_source_route_admission_fraction;
     std::vector<std::vector<int>> m_express_next_hop;
     std::vector<std::vector<int>> m_express_neighbors;
     std::vector<std::vector<uint32_t>> m_express_edge_latency;
@@ -266,6 +280,10 @@ class GarnetNetwork : public Network
     statistics::Vector m_express_r_sample_sum;
     statistics::Vector m_express_r_sample_max;
     statistics::Scalar m_express_state_sample_count;
+    statistics::Scalar m_reservation_registration_messages;
+    statistics::Scalar m_reservation_registration_acks;
+    statistics::Scalar m_reservation_registration_cancels;
+    statistics::Scalar m_reservation_late_registrations;
     statistics::Vector m_int_link_utilization;
     statistics::Formula m_avg_hops;
 
@@ -273,6 +291,54 @@ class GarnetNetwork : public Network
     std::vector<std::vector<statistics::Scalar *>> m_ctrl_traffic_distribution;
 
   private:
+    enum class ReservationControlKind : uint8_t
+    {
+        Register,
+        Acknowledge,
+        Cancel
+    };
+
+    enum class ReservationState : uint8_t
+    {
+        Pending,
+        Registered,
+        CancelArrived,
+        Done
+    };
+
+    struct ReservationControlEvent
+    {
+        ReservationControlKind kind;
+        uint64_t token;
+    };
+
+    struct ReservationToken
+    {
+        int source = -1;
+        int directed_id = -1;
+        ReservationState state = ReservationState::Pending;
+        bool acknowledged = false;
+    };
+
+    struct ExpressInfoSnapshot
+    {
+        uint64_t cycle;
+        std::vector<uint32_t> q;
+        std::vector<uint32_t> r;
+    };
+
+    uint32_t quantizeExpressPressure(uint64_t value) const;
+    void captureExpressInformation();
+    void processExpressInfoEvent();
+    void processReservationControl();
+    void registerSourceRoute(const RouteInfo &route);
+    uint64_t reservationToken(const RouteInfo &route, uint8_t stage) const;
+    void maybeEraseReservationToken(uint64_t token);
+    int meshDistance(int first, int second) const;
+    std::pair<double, double> observedExpressPressure(
+        int source, int directed_id, int vnet);
+    bool admitExpressRoute(int source, int destination) const;
+
     GarnetNetwork(const GarnetNetwork& obj);
     GarnetNetwork& operator=(const GarnetNetwork& obj);
 
@@ -284,6 +350,12 @@ class GarnetNetwork : public Network
     std::vector<NetworkInterface *> m_nis;   // All NI's in Network
     int m_next_packet_id; // static vairable for packet id allocation
     std::vector<int64_t> m_reservation_current;
+    std::deque<ExpressInfoSnapshot> m_express_info_history;
+    uint64_t m_express_info_last_cycle;
+    EventFunctionWrapper m_express_info_event;
+    std::multimap<uint64_t, ReservationControlEvent> m_reservation_control;
+    std::unordered_map<uint64_t, ReservationToken> m_reservation_tokens;
+    std::vector<std::vector<uint32_t>> m_local_unacknowledged;
     std::vector<uint64_t> m_q_sample_sum;
     std::vector<uint64_t> m_q_sample_max;
     std::vector<uint64_t> m_r_sample_sum;

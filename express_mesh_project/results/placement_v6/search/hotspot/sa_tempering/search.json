@@ -1,0 +1,1351 @@
+{
+  "config": {
+    "binary": "/home/lryp/Express_mesh/express_mesh_project/standalone_noc/express_noc",
+    "final_temperature": 0.0005,
+    "flow_max_commodities": 512,
+    "flow_rounds": 16,
+    "initial": [
+      "express_mesh_project/results/placement_v6/baselines/hotspot_aspl.json",
+      "express_mesh_project/results/placement_v6/search/hotspot/sa_reheat/best.json",
+      "express_mesh_project/results/placement_v6/search/hotspot/sa_geometric/best.json",
+      "express_mesh_project/results/placement_v6/search/hotspot/flow_lns/best.json"
+    ],
+    "initial_temperature": 0.02,
+    "iterations": 25,
+    "measurement_cycles": 2000,
+    "mode": "sa-tempering",
+    "neighbors": 8,
+    "output_dir": "express_mesh_project/results/placement_v6/search/hotspot/sa_tempering",
+    "proposal_pool": 192,
+    "rates": [
+      0.8
+    ],
+    "reheat_period": 15,
+    "replicas": 4,
+    "restarts": 2,
+    "seed": 503,
+    "stagnation_limit": 4,
+    "swap_period": 5,
+    "traffic_seeds": [
+      1,
+      2
+    ],
+    "traffics": [
+      "hotspot"
+    ],
+    "warmup_cycles": 500,
+    "workers": 4
+  },
+  "history": [
+    {
+      "accepted": [
+        true,
+        false,
+        false,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 1,
+      "replica_utilities": [
+        0.18032091179579046,
+        0.18405174949791558,
+        0.18334579826865158,
+        0.18195905523821493
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 2,
+      "replica_utilities": [
+        0.18111222727451662,
+        0.18405174949791558,
+        0.18202717659824294,
+        0.18349742430221452
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 3,
+      "replica_utilities": [
+        0.18145498017856562,
+        0.18405174949791558,
+        0.18134530001637678,
+        0.18292306121780452
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 4,
+      "replica_utilities": [
+        0.18212318133163868,
+        0.18267941767346824,
+        0.18217391592224114,
+        0.1809763833449839
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 5,
+      "replica_utilities": [
+        0.18121556327342034,
+        0.18328246243921015,
+        0.1821817940559883,
+        0.18212607982873524
+      ],
+      "swaps": [
+        [
+          1,
+          2,
+          true
+        ]
+      ],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 6,
+      "replica_utilities": [
+        0.18123266525458798,
+        0.18328246243921015,
+        0.18332677983318899,
+        0.1823188025062794
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 7,
+      "replica_utilities": [
+        0.18123266525458798,
+        0.18328246243921015,
+        0.1816702761357881,
+        0.17985827106453156
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 8,
+      "replica_utilities": [
+        0.18155389774115915,
+        0.18332645453322136,
+        0.18169491639294813,
+        0.18088461529594524
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 9,
+      "replica_utilities": [
+        0.18155389774115915,
+        0.18332645453322136,
+        0.18202748767821406,
+        0.179955790558127
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 10,
+      "replica_utilities": [
+        0.18379100676581758,
+        0.18291294675362527,
+        0.18080516996077445,
+        0.1824191630143559
+      ],
+      "swaps": [
+        [
+          0,
+          1,
+          true
+        ],
+        [
+          2,
+          3,
+          true
+        ]
+      ],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 11,
+      "replica_utilities": [
+        0.18379100676581758,
+        0.1830919391447988,
+        0.1807017802369623,
+        0.18273467237061644
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 12,
+      "replica_utilities": [
+        0.18379100676581758,
+        0.1830919391447988,
+        0.18195406001692777,
+        0.18274069126029668
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 13,
+      "replica_utilities": [
+        0.18379100676581758,
+        0.1830919391447988,
+        0.18023905917404479,
+        0.18211140027242834
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 14,
+      "replica_utilities": [
+        0.18379100676581758,
+        0.18285381312993174,
+        0.1802242108732228,
+        0.18211140027242834
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 15,
+      "replica_utilities": [
+        0.18285851146750484,
+        0.1830191233783744,
+        0.18204400140239155,
+        0.1811391381230861
+      ],
+      "swaps": [
+        [
+          1,
+          2,
+          false
+        ]
+      ],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 0.18405174949791558,
+      "iteration": 16,
+      "replica_utilities": [
+        0.18202699961825924,
+        0.18280489555036322,
+        0.18074145762465926,
+        0.18337420594971673
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 0.1841664690206965,
+      "iteration": 17,
+      "replica_utilities": [
+        0.18357823303439416,
+        0.18313985880102085,
+        0.18240698263909877,
+        0.1841664690206965
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 0.1841664690206965,
+      "iteration": 18,
+      "replica_utilities": [
+        0.18398583786869505,
+        0.18313985880102085,
+        0.1811911825369529,
+        0.18163205496332335
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 0.1841664690206965,
+      "iteration": 19,
+      "replica_utilities": [
+        0.18398583786869505,
+        0.18313985880102085,
+        0.17974867522728052,
+        0.18317847710011756
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "best_utility": 0.1841664690206965,
+      "iteration": 20,
+      "replica_utilities": [
+        0.18398583786869505,
+        0.18313985880102085,
+        0.18317847710011756,
+        0.1809787147394453
+      ],
+      "swaps": [
+        [
+          0,
+          1,
+          false
+        ],
+        [
+          2,
+          3,
+          true
+        ]
+      ],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 0.1841664690206965,
+      "iteration": 21,
+      "replica_utilities": [
+        0.18398583786869505,
+        0.18313985880102085,
+        0.18347272713302779,
+        0.18201341416787506
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 0.1841664690206965,
+      "iteration": 22,
+      "replica_utilities": [
+        0.18398583786869505,
+        0.1821520755096193,
+        0.18306071860883397,
+        0.18182299566922164
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 0.1841664690206965,
+      "iteration": 23,
+      "replica_utilities": [
+        0.18398583786869505,
+        0.18345312653439955,
+        0.1829544655583744,
+        0.17967931447430882
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 0.1841664690206965,
+      "iteration": 24,
+      "replica_utilities": [
+        0.18398583786869505,
+        0.18345312653439955,
+        0.18192016295066066,
+        0.18219540494636172
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 0.18420858136579799,
+      "iteration": 25,
+      "replica_utilities": [
+        0.18398583786869505,
+        0.18417465603914548,
+        0.18263043968450657,
+        0.18420858136579799
+      ],
+      "swaps": [
+        [
+          1,
+          2,
+          true
+        ]
+      ],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    }
+  ],
+  "metadata": {
+    "best_search_result": {
+      "by_traffic": [
+        {
+          "accepted_throughput": 0.060406249999999995,
+          "latency": 1025.5131219149998,
+          "normalized_throughput": 0.151015625,
+          "rate": 0.8,
+          "samples": [
+            {
+              "accepted_throughput": 0.0601484375,
+              "actual_offered_throughput": 0.3996328125,
+              "attempted_throughput": 0.3996328125,
+              "average_cycles_before_escape": 44.6730290456,
+              "average_hops": 3.01467723081,
+              "average_packet_latency_cycles": 1020.72399013,
+              "configured_injection_rate": 0.8,
+              "continue_after_ni_watchdog": false,
+              "delivered_0_express": 4796,
+              "delivered_1_express": 2787,
+              "delivered_2_express": 116,
+              "delivered_escape_fraction": 0.16080010391,
+              "delivered_escape_packets": 1238,
+              "delivered_express_bin_total": 7699,
+              "delivery_fraction": 1.00195210828,
+              "drain_completed": false,
+              "drain_completion_cycle": null,
+              "drain_cycles": 0,
+              "engine": "standalone_express_noc",
+              "escape_cdg_acyclic": true,
+              "escape_enabled": true,
+              "escape_transition_delay_cycles": 53831,
+              "escape_transitions": 1205,
+              "escape_traversals": 4033,
+              "express_adaptive_lambda": 1,
+              "express_adaptive_threshold": 0.25,
+              "express_detour_ratio": 1.5,
+              "express_edge_packets_selected": [
+                45,
+                123,
+                36,
+                141,
+                83,
+                79,
+                174,
+                65,
+                1,
+                63,
+                52,
+                6,
+                63,
+                117,
+                62,
+                83,
+                216,
+                99,
+                117,
+                51,
+                123,
+                76,
+                86,
+                272,
+                287,
+                61,
+                136,
+                131,
+                43,
+                114,
+                131,
+                35
+              ],
+              "express_escape_timeout": 32,
+              "express_max_degree": 1,
+              "express_min_wire_length": 3,
+              "express_q_sample_average": [
+                0.0437272,
+                0.096304,
+                0.0364394,
+                0.139771,
+                0.0789953,
+                0.0700156,
+                0.162415,
+                0.0619469,
+                0,
+                0.0622072,
+                0.0512754,
+                0.00572618,
+                0.0606455,
+                0.101379,
+                0.0661114,
+                0.0852421,
+                0.226575,
+                0.0815981,
+                0.111791,
+                0.0516658,
+                0.124414,
+                0.0770432,
+                0.0737897,
+                0.265226,
+                0.290994,
+                0.0551796,
+                0.130401,
+                0.139641,
+                0.0478917,
+                0.114003,
+                0.128579,
+                0.0352681
+              ],
+              "express_q_sample_max": [
+                2,
+                2,
+                1,
+                2,
+                2,
+                2,
+                1,
+                1,
+                0,
+                2,
+                1,
+                1,
+                1,
+                2,
+                1,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "express_q_sample_sum": [
+                336,
+                740,
+                280,
+                1074,
+                607,
+                538,
+                1248,
+                476,
+                0,
+                478,
+                394,
+                44,
+                466,
+                779,
+                508,
+                655,
+                1741,
+                627,
+                859,
+                397,
+                956,
+                592,
+                567,
+                2038,
+                2236,
+                424,
+                1002,
+                1073,
+                368,
+                876,
+                988,
+                271
+              ],
+              "express_r_sample_average": [
+                0.0674128,
+                1.13678,
+                0.0753514,
+                0.505856,
+                0.143415,
+                0.603592,
+                0.174388,
+                0.33342,
+                0.0201718,
+                0.316762,
+                0.179594,
+                0.0264185,
+                0.217595,
+                0.413847,
+                0.146148,
+                0.193649,
+                0.422046,
+                0.850859,
+                0.387038,
+                0.203019,
+                0.478006,
+                0.24063,
+                0.715383,
+                1.038,
+                1.00729,
+                0.508589,
+                0.738808,
+                0.31468,
+                0.127928,
+                0.459266,
+                0.508069,
+                0.094482
+              ],
+              "express_r_sample_max": [
+                3,
+                4,
+                2,
+                3,
+                2,
+                3,
+                1,
+                2,
+                1,
+                3,
+                2,
+                1,
+                3,
+                3,
+                2,
+                2,
+                3,
+                4,
+                3,
+                2,
+                3,
+                3,
+                3,
+                4,
+                4,
+                3,
+                3,
+                3,
+                2,
+                3,
+                3,
+                2
+              ],
+              "express_r_sample_sum": [
+                518,
+                8735,
+                579,
+                3887,
+                1102,
+                4638,
+                1340,
+                2562,
+                155,
+                2434,
+                1380,
+                203,
+                1672,
+                3180,
+                1123,
+                1488,
+                3243,
+                6538,
+                2974,
+                1560,
+                3673,
+                1849,
+                5497,
+                7976,
+                7740,
+                3908,
+                5677,
+                2418,
+                983,
+                3529,
+                3904,
+                726
+              ],
+              "express_state_sample_count": 7684,
+              "express_traversals": 3022,
+              "express_vc_weight": 0.625,
+              "express_waiter_weight": 0,
+              "express_wire_budget": 64,
+              "flits_injected": 7684,
+              "flits_received": 7699,
+              "garnet_deadlock_threshold": 50000,
+              "generated_request_throughput": 0.3996328125,
+              "generated_requests": 51153,
+              "global_no_progress_cycle": null,
+              "global_no_progress_detected": false,
+              "initial_send_retries": 0,
+              "injected_throughput": 0.06003125,
+              "injection_attempts": 51153,
+              "legacy_no_escape_vc_bug": true,
+              "lifetime_deliveries": 9758,
+              "lifetime_flit_moves": 39940,
+              "link_utilization_cv": 1.23291178521,
+              "live_network_packets": 465,
+              "max_link_utilization": 0.481,
+              "max_ni_busy_streak": 2446,
+              "max_ni_busy_streak_before_drain": 2446,
+              "max_ni_busy_streak_cycle": 2499,
+              "max_ni_busy_streak_source": 14,
+              "measurement_cycles": 2000,
+              "network_data_empty": false,
+              "ni_watchdog_cycle": null,
+              "ni_watchdog_source": null,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "no_progress_cycle": null,
+              "nonminimal_decisions": 0,
+              "offered_requests": 51153,
+              "p95_link_utilization": 0.139,
+              "packets_injected": 7684,
+              "packets_received": 7699,
+              "pending_source_messages": 53679,
+              "random_placement_seed": 1,
+              "reservation_accounting_delta": 13,
+              "reservation_current_max": 3,
+              "reservation_current_total": 23,
+              "reservation_decrements_total": 3158,
+              "reservation_increments_total": 3171,
+              "reservation_weight": 0.375,
+              "result_schema_version": 5,
+              "routing": "adaptive",
+              "seed": 1,
+              "simulation_end_tick": 1250000,
+              "source_blocked_offers": 0,
+              "source_mesh_routing": "xy",
+              "source_route": true,
+              "source_route_candidates": 8,
+              "source_route_planned_0_express": 4635,
+              "source_route_planned_1_express": 2927,
+              "source_route_planned_2_express": 122,
+              "source_route_policy": 4,
+              "termination_reason": "simulate_limit",
+              "topology": "advanced_sa",
+              "traffic": "hotspot",
+              "warmup_cycles": 500,
+              "watchdog_cycles_since_delivery": null,
+              "watchdog_cycles_since_flit_move": null,
+              "watchdog_lifetime_deliveries": 0,
+              "watchdog_lifetime_flit_moves": 0
+            },
+            {
+              "accepted_throughput": 0.0606640625,
+              "actual_offered_throughput": 0.399828125,
+              "attempted_throughput": 0.399828125,
+              "average_cycles_before_escape": 45.8432385874,
+              "average_hops": 2.96123631681,
+              "average_packet_latency_cycles": 1030.3022537,
+              "configured_injection_rate": 0.8,
+              "continue_after_ni_watchdog": false,
+              "delivered_0_express": 4781,
+              "delivered_1_express": 2896,
+              "delivered_2_express": 88,
+              "delivered_escape_fraction": 0.156342562782,
+              "delivered_escape_packets": 1214,
+              "delivered_express_bin_total": 7765,
+              "delivery_fraction": 1.00452781371,
+              "drain_completed": false,
+              "drain_completion_cycle": null,
+              "drain_cycles": 0,
+              "engine": "standalone_express_noc",
+              "escape_cdg_acyclic": true,
+              "escape_enabled": true,
+              "escape_transition_delay_cycles": 53224,
+              "escape_transitions": 1161,
+              "escape_traversals": 3757,
+              "express_adaptive_lambda": 1,
+              "express_adaptive_threshold": 0.25,
+              "express_detour_ratio": 1.5,
+              "express_edge_packets_selected": [
+                119,
+                82,
+                48,
+                76,
+                155,
+                118,
+                47,
+                98,
+                26,
+                51,
+                99,
+                35,
+                115,
+                111,
+                36,
+                34,
+                198,
+                114,
+                116,
+                64,
+                83,
+                116,
+                107,
+                278,
+                341,
+                59,
+                89,
+                88,
+                65,
+                81,
+                128,
+                15
+              ],
+              "express_escape_timeout": 32,
+              "express_max_degree": 1,
+              "express_min_wire_length": 3,
+              "express_q_sample_average": [
+                0.12445,
+                0.0804657,
+                0.0460543,
+                0.0804657,
+                0.154592,
+                0.11423,
+                0.0482536,
+                0.0950841,
+                0.0274256,
+                0.048771,
+                0.102717,
+                0.0368693,
+                0.121216,
+                0.121604,
+                0.0353169,
+                0.0363519,
+                0.206468,
+                0.0927555,
+                0.119017,
+                0.0605433,
+                0.0811125,
+                0.108797,
+                0.0968952,
+                0.270375,
+                0.343984,
+                0.0567917,
+                0.0826649,
+                0.0906856,
+                0.0679172,
+                0.0904269,
+                0.117723,
+                0.0116429
+              ],
+              "express_q_sample_max": [
+                2,
+                2,
+                1,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                1,
+                2,
+                1,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                1,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                1
+              ],
+              "express_q_sample_sum": [
+                962,
+                622,
+                356,
+                622,
+                1195,
+                883,
+                373,
+                735,
+                212,
+                377,
+                794,
+                285,
+                937,
+                940,
+                273,
+                281,
+                1596,
+                717,
+                920,
+                468,
+                627,
+                841,
+                749,
+                2090,
+                2659,
+                439,
+                639,
+                701,
+                525,
+                699,
+                910,
+                90
+              ],
+              "express_r_sample_average": [
+                0.211514,
+                0.57542,
+                0.0610608,
+                0.456274,
+                0.223933,
+                0.637775,
+                0.0864166,
+                0.464812,
+                0.077749,
+                0.23053,
+                0.518887,
+                0.108797,
+                0.512031,
+                0.224191,
+                0.06326,
+                0.128978,
+                0.408021,
+                1.05395,
+                0.274644,
+                0.372186,
+                0.246184,
+                0.498318,
+                0.962743,
+                0.767658,
+                1.16429,
+                0.28564,
+                0.479043,
+                0.335188,
+                0.181501,
+                0.33273,
+                0.574644,
+                0.102846
+              ],
+              "express_r_sample_max": [
+                2,
+                3,
+                1,
+                3,
+                3,
+                4,
+                2,
+                3,
+                2,
+                2,
+                2,
+                2,
+                3,
+                2,
+                2,
+                3,
+                3,
+                3,
+                2,
+                3,
+                2,
+                3,
+                3,
+                4,
+                4,
+                2,
+                3,
+                3,
+                3,
+                3,
+                3,
+                1
+              ],
+              "express_r_sample_sum": [
+                1635,
+                4448,
+                472,
+                3527,
+                1731,
+                4930,
+                668,
+                3593,
+                601,
+                1782,
+                4011,
+                841,
+                3958,
+                1733,
+                489,
+                997,
+                3154,
+                8147,
+                2123,
+                2877,
+                1903,
+                3852,
+                7442,
+                5934,
+                9000,
+                2208,
+                3703,
+                2591,
+                1403,
+                2572,
+                4442,
+                795
+              ],
+              "express_state_sample_count": 7730,
+              "express_traversals": 3078,
+              "express_vc_weight": 0.625,
+              "express_waiter_weight": 0,
+              "express_wire_budget": 64,
+              "flits_injected": 7730,
+              "flits_received": 7765,
+              "garnet_deadlock_threshold": 50000,
+              "generated_request_throughput": 0.399828125,
+              "generated_requests": 51178,
+              "global_no_progress_cycle": null,
+              "global_no_progress_detected": false,
+              "initial_send_retries": 0,
+              "injected_throughput": 0.060390625,
+              "injection_attempts": 51178,
+              "legacy_no_escape_vc_bug": true,
+              "lifetime_deliveries": 9686,
+              "lifetime_flit_moves": 38977,
+              "link_utilization_cv": 1.21577259205,
+              "live_network_packets": 432,
+              "max_link_utilization": 0.428,
+              "max_ni_busy_streak": 2444,
+              "max_ni_busy_streak_before_drain": 2444,
+              "max_ni_busy_streak_cycle": 2499,
+              "max_ni_busy_streak_source": 46,
+              "measurement_cycles": 2000,
+              "network_data_empty": false,
+              "ni_watchdog_cycle": null,
+              "ni_watchdog_source": null,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "no_progress_cycle": null,
+              "nonminimal_decisions": 0,
+              "offered_requests": 51178,
+              "p95_link_utilization": 0.14,
+              "packets_injected": 7730,
+              "packets_received": 7765,
+              "pending_source_messages": 53875,
+              "random_placement_seed": 1,
+              "reservation_accounting_delta": 2,
+              "reservation_current_max": 3,
+              "reservation_current_total": 12,
+              "reservation_decrements_total": 3190,
+              "reservation_increments_total": 3192,
+              "reservation_weight": 0.375,
+              "result_schema_version": 5,
+              "routing": "adaptive",
+              "seed": 2,
+              "simulation_end_tick": 1250000,
+              "source_blocked_offers": 0,
+              "source_mesh_routing": "xy",
+              "source_route": true,
+              "source_route_candidates": 8,
+              "source_route_planned_0_express": 4633,
+              "source_route_planned_1_express": 3002,
+              "source_route_planned_2_express": 95,
+              "source_route_policy": 4,
+              "termination_reason": "simulate_limit",
+              "topology": "advanced_sa",
+              "traffic": "hotspot",
+              "warmup_cycles": 500,
+              "watchdog_cycles_since_delivery": null,
+              "watchdog_cycles_since_flit_move": null,
+              "watchdog_lifetime_deliveries": 0,
+              "watchdog_lifetime_flit_moves": 0
+            }
+          ],
+          "traffic": "hotspot"
+        }
+      ],
+      "utility": 0.18420858136579799
+    },
+    "evaluated_placements": 104,
+    "mode": "sa-tempering",
+    "rates": [
+      0.8
+    ],
+    "search_seed": 503,
+    "traffics": [
+      "hotspot"
+    ]
+  }
+}

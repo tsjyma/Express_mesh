@@ -158,7 +158,7 @@ InputUnit::rerouteToEscape(int vc)
         for (uint8_t stage = route.express_stage;
              stage < route.express_count; ++stage)
             m_router->get_net_ptr()->releaseSourceRouteExpress(
-                route.express_ids[stage]);
+                route, stage, m_router->get_id(), true);
         // Preserve packet-level source-route history for delivery stats.  The
         // escape_vc flag takes precedence in route computation, and setting
         // the stage to count marks every remaining reservation consumed.
@@ -177,8 +177,8 @@ InputUnit::advanceSourceRouteStage(int vc)
     RouteInfo route = head->get_route();
     if (!route.source_routed || route.express_stage >= route.express_count)
         return;
-    const int directed_id = route.express_ids[route.express_stage];
-    m_router->get_net_ptr()->releaseSourceRouteExpress(directed_id);
+    m_router->get_net_ptr()->releaseSourceRouteExpress(
+        route, route.express_stage, m_router->get_id(), false);
     route.express_stage++;
     route.express_traversed++;
     virtualChannels[vc].updateRoute(route);

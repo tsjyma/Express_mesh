@@ -1,0 +1,1351 @@
+{
+  "config": {
+    "binary": "/home/lryp/Express_mesh/express_mesh_project/standalone_noc/express_noc",
+    "final_temperature": 0.0005,
+    "flow_max_commodities": 512,
+    "flow_rounds": 16,
+    "initial": [
+      "express_mesh_project/results/placement_v6/baselines/uniform_random_aspl.json",
+      "express_mesh_project/results/placement_v6/search/uniform_random/sa_reheat/best.json",
+      "express_mesh_project/results/placement_v6/search/uniform_random/sa_geometric/best.json",
+      "express_mesh_project/results/placement_v6/search/uniform_random/flow_lns/best.json"
+    ],
+    "initial_temperature": 0.02,
+    "iterations": 25,
+    "measurement_cycles": 2000,
+    "mode": "sa-tempering",
+    "neighbors": 8,
+    "output_dir": "express_mesh_project/results/placement_v6/search/uniform_random/sa_tempering",
+    "proposal_pool": 192,
+    "rates": [
+      0.8
+    ],
+    "reheat_period": 15,
+    "replicas": 4,
+    "restarts": 2,
+    "seed": 501,
+    "stagnation_limit": 4,
+    "swap_period": 5,
+    "traffic_seeds": [
+      1,
+      2
+    ],
+    "traffics": [
+      "uniform_random"
+    ],
+    "warmup_cycles": 500,
+    "workers": 4
+  },
+  "history": [
+    {
+      "accepted": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 1,
+      "replica_utilities": [
+        1.0826341099101773,
+        1.1169522429477483,
+        1.0750963506821531,
+        1.0699618983951547
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 2,
+      "replica_utilities": [
+        1.0826341099101773,
+        1.1169522429477483,
+        1.0750963506821531,
+        1.0699618983951547
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 3,
+      "replica_utilities": [
+        1.0826341099101773,
+        1.1169522429477483,
+        1.0750963506821531,
+        1.0603083045605013
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        false,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 4,
+      "replica_utilities": [
+        1.0866714531450288,
+        1.1169522429477483,
+        1.0750963506821531,
+        1.0738583019885946
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        true,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 5,
+      "replica_utilities": [
+        1.0939700036798672,
+        1.1169522429477483,
+        1.0759322578285138,
+        1.0548831491976516
+      ],
+      "swaps": [
+        [
+          1,
+          2,
+          false
+        ]
+      ],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 6,
+      "replica_utilities": [
+        1.0939700036798672,
+        1.1169522429477483,
+        1.0759322578285138,
+        1.0443248721152065
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 7,
+      "replica_utilities": [
+        1.0939700036798672,
+        1.1169522429477483,
+        1.0759322578285138,
+        1.05191625453445
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 8,
+      "replica_utilities": [
+        1.0939700036798672,
+        1.1169522429477483,
+        1.079619135367449,
+        1.0845253526455814
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 9,
+      "replica_utilities": [
+        1.0939700036798672,
+        1.1169522429477483,
+        1.0746325639090084,
+        1.0801510195139057
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 10,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.0939700036798672,
+        1.0964972873714132,
+        1.075762218590435
+      ],
+      "swaps": [
+        [
+          0,
+          1,
+          true
+        ],
+        [
+          2,
+          3,
+          false
+        ]
+      ],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        true,
+        true,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 11,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.0932610133541552,
+        1.093910744869371,
+        1.064602874030432
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 12,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.0932610133541552,
+        1.093910744869371,
+        1.0852371802083232
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 13,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.1020043914532327,
+        1.093910744869371,
+        1.077285376564986
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 14,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.1020043914532327,
+        1.093910744869371,
+        1.067781606573038
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 15,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.1020043914532327,
+        1.093910744869371,
+        1.067781606573038
+      ],
+      "swaps": [
+        [
+          1,
+          2,
+          false
+        ]
+      ],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 16,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.102172625275923,
+        1.093910744869371,
+        1.073071176290443
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 17,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.102172625275923,
+        1.1101851530594198,
+        1.0624120994407955
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 18,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.102172625275923,
+        1.1101851530594198,
+        1.0624120994407955
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 19,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.102172625275923,
+        1.1101851530594198,
+        1.0833941458659697
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 20,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.102172625275923,
+        1.0672895033944048,
+        1.1101851530594198
+      ],
+      "swaps": [
+        [
+          0,
+          1,
+          false
+        ],
+        [
+          2,
+          3,
+          true
+        ]
+      ],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 21,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.102172625275923,
+        1.0885562209294186,
+        1.0976361951954146
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 22,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.102172625275923,
+        1.0885562209294186,
+        1.0976361951954146
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 23,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.102172625275923,
+        1.0958622744113549,
+        1.0795510093520708
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 24,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.102172625275923,
+        1.0958622744113549,
+        1.0537502280509687
+      ],
+      "swaps": [],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    },
+    {
+      "accepted": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "best_utility": 1.1169522429477483,
+      "iteration": 25,
+      "replica_utilities": [
+        1.1169522429477483,
+        1.102172625275923,
+        1.0958622744113549,
+        1.0908857821535618
+      ],
+      "swaps": [
+        [
+          1,
+          2,
+          false
+        ]
+      ],
+      "temperatures": [
+        0.0005,
+        0.001709975946676697,
+        0.005848035476425731,
+        0.02
+      ]
+    }
+  ],
+  "metadata": {
+    "best_search_result": {
+      "by_traffic": [
+        {
+          "accepted_throughput": 0.35847265625,
+          "latency": 144.27469263,
+          "normalized_throughput": 0.8961816406249999,
+          "rate": 0.8,
+          "samples": [
+            {
+              "accepted_throughput": 0.359265625,
+              "actual_offered_throughput": 0.3993046875,
+              "attempted_throughput": 0.3993046875,
+              "average_cycles_before_escape": 45.0853889943,
+              "average_hops": 3.98140738486,
+              "average_packet_latency_cycles": 140.687165659,
+              "configured_injection_rate": 0.8,
+              "continue_after_ni_watchdog": false,
+              "delivered_0_express": 27908,
+              "delivered_1_express": 17534,
+              "delivered_2_express": 544,
+              "delivered_escape_fraction": 0.0229852563824,
+              "delivered_escape_packets": 1057,
+              "delivered_express_bin_total": 45986,
+              "delivery_fraction": 0.999891283077,
+              "drain_completed": false,
+              "drain_completion_cycle": null,
+              "drain_cycles": 0,
+              "engine": "standalone_express_noc",
+              "escape_cdg_acyclic": true,
+              "escape_enabled": true,
+              "escape_transition_delay_cycles": 47520,
+              "escape_transitions": 1054,
+              "escape_traversals": 5959,
+              "express_adaptive_lambda": 1,
+              "express_adaptive_threshold": 0.25,
+              "express_detour_ratio": 1.5,
+              "express_edge_packets_selected": [
+                556,
+                528,
+                521,
+                527,
+                694,
+                658,
+                599,
+                630,
+                616,
+                561,
+                586,
+                628,
+                563,
+                595,
+                517,
+                512,
+                542,
+                615,
+                593,
+                618,
+                655,
+                631,
+                561,
+                602,
+                569,
+                624,
+                627,
+                614,
+                675,
+                723,
+                537,
+                515
+              ],
+              "express_escape_timeout": 32,
+              "express_max_degree": 1,
+              "express_min_wire_length": 3,
+              "express_q_sample_average": [
+                0.550677,
+                0.513865,
+                0.507502,
+                0.515589,
+                0.690435,
+                0.658572,
+                0.582915,
+                0.614292,
+                0.608414,
+                0.553947,
+                0.56789,
+                0.625627,
+                0.554964,
+                0.574121,
+                0.516826,
+                0.507988,
+                0.532514,
+                0.604658,
+                0.581214,
+                0.613408,
+                0.652186,
+                0.624191,
+                0.562167,
+                0.590472,
+                0.55408,
+                0.622953,
+                0.620655,
+                0.605188,
+                0.649535,
+                0.703847,
+                0.533288,
+                0.500807
+              ],
+              "express_q_sample_max": [
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "express_q_sample_sum": [
+                24922,
+                23256,
+                22968,
+                23334,
+                31247,
+                29805,
+                26381,
+                27801,
+                27535,
+                25070,
+                25701,
+                28314,
+                25116,
+                25983,
+                23390,
+                22990,
+                24100,
+                27365,
+                26304,
+                27761,
+                29516,
+                28249,
+                25442,
+                26723,
+                25076,
+                28193,
+                28089,
+                27389,
+                29396,
+                31854,
+                24135,
+                22665
+              ],
+              "express_r_sample_average": [
+                3.32839,
+                3.65767,
+                3.24476,
+                3.87401,
+                3.98533,
+                3.6751,
+                5.06907,
+                4.96736,
+                3.91623,
+                3.74623,
+                3.77643,
+                4.1448,
+                3.87251,
+                3.55395,
+                2.71478,
+                2.44018,
+                3.92143,
+                3.70654,
+                3.38805,
+                3.47453,
+                3.40577,
+                3.09179,
+                3.41244,
+                3.10783,
+                3.48804,
+                3.25998,
+                3.25318,
+                3.09791,
+                5.02614,
+                4.95269,
+                2.8963,
+                3.18357
+              ],
+              "express_r_sample_max": [
+                8,
+                9,
+                8,
+                9,
+                9,
+                9,
+                11,
+                11,
+                9,
+                9,
+                9,
+                9,
+                8,
+                9,
+                7,
+                7,
+                10,
+                9,
+                8,
+                8,
+                8,
+                8,
+                9,
+                9,
+                8,
+                9,
+                8,
+                8,
+                10,
+                10,
+                7,
+                7
+              ],
+              "express_r_sample_sum": [
+                150633,
+                165535,
+                146848,
+                175326,
+                180364,
+                166324,
+                229411,
+                224808,
+                177237,
+                169543,
+                170910,
+                187581,
+                175258,
+                160841,
+                122863,
+                110435,
+                177472,
+                167747,
+                153333,
+                157247,
+                154135,
+                139925,
+                154437,
+                140651,
+                157858,
+                147537,
+                147229,
+                140202,
+                227468,
+                224144,
+                131078,
+                144079
+              ],
+              "express_state_sample_count": 45257,
+              "express_traversals": 18635,
+              "express_vc_weight": 0.625,
+              "express_waiter_weight": 0,
+              "express_wire_budget": 64,
+              "flits_injected": 45991,
+              "flits_received": 45986,
+              "garnet_deadlock_threshold": 50000,
+              "generated_request_throughput": 0.3993046875,
+              "generated_requests": 51111,
+              "global_no_progress_cycle": null,
+              "global_no_progress_detected": false,
+              "initial_send_retries": 0,
+              "injected_throughput": 0.3593046875,
+              "injection_attempts": 51111,
+              "legacy_no_escape_vc_bug": true,
+              "lifetime_deliveries": 57103,
+              "lifetime_flit_moves": 285066,
+              "link_utilization_cv": 0.243669668428,
+              "live_network_packets": 529,
+              "max_link_utilization": 0.544,
+              "max_ni_busy_streak": 43,
+              "max_ni_busy_streak_before_drain": 43,
+              "max_ni_busy_streak_cycle": 328,
+              "max_ni_busy_streak_source": 54,
+              "measurement_cycles": 2000,
+              "network_data_empty": false,
+              "ni_watchdog_cycle": null,
+              "ni_watchdog_source": null,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "no_progress_cycle": null,
+              "nonminimal_decisions": 0,
+              "offered_requests": 51111,
+              "p95_link_utilization": 0.4855,
+              "packets_injected": 45991,
+              "packets_received": 45986,
+              "pending_source_messages": 6268,
+              "random_placement_seed": 1,
+              "reservation_accounting_delta": 4,
+              "reservation_current_max": 6,
+              "reservation_current_total": 132,
+              "reservation_decrements_total": 18988,
+              "reservation_increments_total": 18992,
+              "reservation_weight": 0.375,
+              "result_schema_version": 5,
+              "routing": "adaptive",
+              "seed": 1,
+              "simulation_end_tick": 1250000,
+              "source_blocked_offers": 0,
+              "source_mesh_routing": "xy",
+              "source_route": true,
+              "source_route_candidates": 8,
+              "source_route_planned_0_express": 26829,
+              "source_route_planned_1_express": 17864,
+              "source_route_planned_2_express": 564,
+              "source_route_policy": 4,
+              "termination_reason": "simulate_limit",
+              "topology": "advanced_sa",
+              "traffic": "uniform_random",
+              "warmup_cycles": 500,
+              "watchdog_cycles_since_delivery": null,
+              "watchdog_cycles_since_flit_move": null,
+              "watchdog_lifetime_deliveries": 0,
+              "watchdog_lifetime_flit_moves": 0
+            },
+            {
+              "accepted_throughput": 0.3576796875,
+              "actual_offered_throughput": 0.399703125,
+              "attempted_throughput": 0.399703125,
+              "average_cycles_before_escape": 46.0171990172,
+              "average_hops": 3.98368390014,
+              "average_packet_latency_cycles": 147.862219601,
+              "configured_injection_rate": 0.8,
+              "continue_after_ni_watchdog": false,
+              "delivered_0_express": 28053,
+              "delivered_1_express": 17206,
+              "delivered_2_express": 524,
+              "delivered_escape_fraction": 0.026450866042,
+              "delivered_escape_packets": 1211,
+              "delivered_express_bin_total": 45783,
+              "delivery_fraction": 0.99969430312,
+              "drain_completed": false,
+              "drain_completion_cycle": null,
+              "drain_cycles": 0,
+              "engine": "standalone_express_noc",
+              "escape_cdg_acyclic": true,
+              "escape_enabled": true,
+              "escape_transition_delay_cycles": 56187,
+              "escape_transitions": 1221,
+              "escape_traversals": 6982,
+              "express_adaptive_lambda": 1,
+              "express_adaptive_threshold": 0.25,
+              "express_detour_ratio": 1.5,
+              "express_edge_packets_selected": [
+                525,
+                524,
+                517,
+                503,
+                669,
+                593,
+                577,
+                624,
+                600,
+                565,
+                569,
+                617,
+                562,
+                583,
+                504,
+                480,
+                512,
+                620,
+                558,
+                592,
+                678,
+                599,
+                560,
+                571,
+                593,
+                602,
+                639,
+                596,
+                741,
+                748,
+                563,
+                474
+              ],
+              "express_escape_timeout": 32,
+              "express_max_degree": 1,
+              "express_min_wire_length": 3,
+              "express_q_sample_average": [
+                0.507275,
+                0.518231,
+                0.505523,
+                0.500665,
+                0.654609,
+                0.589226,
+                0.555536,
+                0.609364,
+                0.577205,
+                0.562278,
+                0.54611,
+                0.611959,
+                0.543094,
+                0.566293,
+                0.493879,
+                0.483854,
+                0.487314,
+                0.617038,
+                0.534067,
+                0.592375,
+                0.678251,
+                0.598629,
+                0.555092,
+                0.565694,
+                0.576362,
+                0.596855,
+                0.633827,
+                0.592575,
+                0.699942,
+                0.733033,
+                0.557576,
+                0.460233
+              ],
+              "express_q_sample_max": [
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "express_q_sample_sum": [
+                22872,
+                23366,
+                22793,
+                22574,
+                29515,
+                26567,
+                25048,
+                27475,
+                26025,
+                25352,
+                24623,
+                27592,
+                24487,
+                25533,
+                22268,
+                21816,
+                21972,
+                27821,
+                24080,
+                26709,
+                30581,
+                26991,
+                25028,
+                25506,
+                25987,
+                26911,
+                28578,
+                26718,
+                31559,
+                33051,
+                25140,
+                20751
+              ],
+              "express_r_sample_average": [
+                3.22747,
+                3.70407,
+                3.10743,
+                3.69502,
+                3.91379,
+                3.65139,
+                5.05177,
+                5.07995,
+                3.88531,
+                3.74146,
+                4.12915,
+                4.32774,
+                3.83262,
+                3.54831,
+                2.84102,
+                2.51479,
+                4.20118,
+                3.28447,
+                3.67226,
+                3.39265,
+                3.18337,
+                3.06975,
+                3.6928,
+                3.09599,
+                3.38542,
+                3.23257,
+                3.22194,
+                3.04063,
+                5.42739,
+                4.6895,
+                2.98527,
+                3.25437
+              ],
+              "express_r_sample_max": [
+                8,
+                8,
+                8,
+                8,
+                9,
+                8,
+                10,
+                11,
+                8,
+                9,
+                9,
+                9,
+                9,
+                9,
+                7,
+                7,
+                9,
+                9,
+                8,
+                7,
+                8,
+                8,
+                9,
+                8,
+                9,
+                8,
+                8,
+                8,
+                11,
+                10,
+                7,
+                7
+              ],
+              "express_r_sample_sum": [
+                145520,
+                167009,
+                140108,
+                166601,
+                176465,
+                164634,
+                227774,
+                229045,
+                175181,
+                168695,
+                186175,
+                195129,
+                172805,
+                159986,
+                128096,
+                113387,
+                189423,
+                148090,
+                165575,
+                152968,
+                143532,
+                138409,
+                166501,
+                139592,
+                152642,
+                145750,
+                145271,
+                137096,
+                244710,
+                211440,
+                134600,
+                146733
+              ],
+              "express_state_sample_count": 45088,
+              "express_traversals": 18247,
+              "express_vc_weight": 0.625,
+              "express_waiter_weight": 0,
+              "express_wire_budget": 64,
+              "flits_injected": 45797,
+              "flits_received": 45783,
+              "garnet_deadlock_threshold": 50000,
+              "generated_request_throughput": 0.399703125,
+              "generated_requests": 51162,
+              "global_no_progress_cycle": null,
+              "global_no_progress_detected": false,
+              "initial_send_retries": 0,
+              "injected_throughput": 0.3577890625,
+              "injection_attempts": 51162,
+              "legacy_no_escape_vc_bug": true,
+              "lifetime_deliveries": 56931,
+              "lifetime_flit_moves": 284401,
+              "link_utilization_cv": 0.24790544019,
+              "live_network_packets": 542,
+              "max_link_utilization": 0.5475,
+              "max_ni_busy_streak": 33,
+              "max_ni_busy_streak_before_drain": 33,
+              "max_ni_busy_streak_cycle": 591,
+              "max_ni_busy_streak_source": 19,
+              "measurement_cycles": 2000,
+              "network_data_empty": false,
+              "ni_watchdog_cycle": null,
+              "ni_watchdog_source": null,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "no_progress_cycle": null,
+              "nonminimal_decisions": 0,
+              "offered_requests": 51162,
+              "p95_link_utilization": 0.4895,
+              "packets_injected": 45797,
+              "packets_received": 45783,
+              "pending_source_messages": 6513,
+              "random_placement_seed": 1,
+              "reservation_accounting_delta": 1,
+              "reservation_current_max": 8,
+              "reservation_current_total": 120,
+              "reservation_decrements_total": 18657,
+              "reservation_increments_total": 18658,
+              "reservation_weight": 0.375,
+              "result_schema_version": 5,
+              "routing": "adaptive",
+              "seed": 2,
+              "simulation_end_tick": 1250000,
+              "source_blocked_offers": 0,
+              "source_mesh_routing": "xy",
+              "source_route": true,
+              "source_route_candidates": 8,
+              "source_route_planned_0_express": 26988,
+              "source_route_planned_1_express": 17542,
+              "source_route_planned_2_express": 558,
+              "source_route_policy": 4,
+              "termination_reason": "simulate_limit",
+              "topology": "advanced_sa",
+              "traffic": "uniform_random",
+              "warmup_cycles": 500,
+              "watchdog_cycles_since_delivery": null,
+              "watchdog_cycles_since_flit_move": null,
+              "watchdog_lifetime_deliveries": 0,
+              "watchdog_lifetime_flit_moves": 0
+            }
+          ],
+          "traffic": "uniform_random"
+        }
+      ],
+      "utility": 1.1169522429477483
+    },
+    "evaluated_placements": 97,
+    "mode": "sa-tempering",
+    "rates": [
+      0.8
+    ],
+    "search_seed": 501,
+    "traffics": [
+      "uniform_random"
+    ]
+  }
+}

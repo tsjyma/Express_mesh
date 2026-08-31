@@ -32,6 +32,7 @@
 #include "mem/ruby/network/garnet/GarnetNetwork.hh"
 
 #include <algorithm>
+#include <cstdlib>
 #include <functional>
 #include <limits>
 #include <queue>
@@ -69,7 +70,11 @@ namespace garnet
  */
 
 GarnetNetwork::GarnetNetwork(const Params &p)
-    : Network(p)
+    : Network(p),
+      m_express_info_last_cycle(std::numeric_limits<uint64_t>::max()),
+      m_express_info_event(
+          [this]{ processExpressInfoEvent(); },
+          "Garnet express pressure advertisement")
 {
     m_num_rows = p.num_rows;
     m_ni_flit_size = p.ni_flit_size;
@@ -90,6 +95,12 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     m_source_route_policy = p.source_route_policy;
     m_source_route_reservation_weight = p.source_route_reservation_weight;
     m_source_route_vc_weight = p.source_route_vc_weight;
+    m_source_route_info_mode = p.source_route_info_mode;
+    m_source_route_reservation_mode = p.source_route_reservation_mode;
+    m_source_route_info_period = p.source_route_info_period;
+    m_source_route_info_delay = p.source_route_info_delay;
+    m_source_route_info_bits = p.source_route_info_bits;
+    m_source_route_admission_fraction = p.source_route_admission_fraction;
     m_reservation_current.assign(2 * m_express_link_latencies.size(), 0);
     m_express_adaptive = p.express_adaptive;
     m_express_adaptive_threshold = p.express_adaptive_threshold;
@@ -104,6 +115,28 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     fatal_if(m_source_route_reservation_weight < 0.0 ||
              m_source_route_vc_weight < 0.0,
              "source-route pressure weights must be non-negative");
+    fatal_if(m_source_route_info_mode != "instant" &&
+             m_source_route_info_mode != "delayed-global" &&
+             m_source_route_info_mode != "distance-gossip",
+             "invalid express information mode %s",
+             m_source_route_info_mode.c_str());
+    fatal_if(m_source_route_reservation_mode != "instant" &&
+             m_source_route_reservation_mode != "registered",
+             "invalid express reservation mode %s",
+             m_source_route_reservation_mode.c_str());
+    fatal_if(m_source_route_reservation_mode == "registered" &&
+             (m_source_route_info_mode != "distance-gossip" ||
+              m_source_route_info_delay == 0 ||
+              m_source_route_policy != 4),
+             "registered reservations require policy 4 and distance-gossip "
+             "with at least one cycle of base delay");
+    fatal_if(m_source_route_info_period == 0,
+             "express information period must be positive");
+    fatal_if(m_source_route_info_bits > 4,
+             "express information bits must be in 0..4");
+    fatal_if(m_source_route_admission_fraction < 0.0 ||
+             m_source_route_admission_fraction > 1.0,
+             "express admission fraction must be in [0,1]");
     fatal_if(m_express_escape_enabled && p.vcs_per_vnet < 2,
              "escape routing needs at least two VCs per vnet");
 
@@ -132,6 +165,9 @@ GarnetNetwork::GarnetNetwork(const Params &p)
         // initialize the router's network pointers
         router->init_net_ptr(this);
     }
+    m_local_unacknowledged.assign(
+        m_routers.size(),
+        std::vector<uint32_t>(m_reservation_current.size(), 0));
 
     // record the network interfaces
     for (std::vector<ClockedObject*>::const_iterator i = p.netifs.begin();
@@ -143,6 +179,22 @@ GarnetNetwork::GarnetNetwork(const Params &p)
 
     // Print Garnet version
     inform("Garnet version %s\n", garnetVersion);
+}
+
+void
+GarnetNetwork::startup()
+{
+    if (m_source_route_info_mode != "instant" ||
+        m_source_route_reservation_mode == "registered")
+        schedule(m_express_info_event, clockEdge(Cycles(1)));
+}
+
+void
+GarnetNetwork::processExpressInfoEvent()
+{
+    processReservationControl();
+    captureExpressInformation();
+    schedule(m_express_info_event, clockEdge(Cycles(1)));
 }
 
 void
@@ -345,11 +397,128 @@ GarnetNetwork::expressVcOccupancy(int directed_id, int vnet)
     return m_routers.at(src)->expressOutputVcOccupancy(dst, vnet);
 }
 
+uint32_t
+GarnetNetwork::quantizeExpressPressure(uint64_t value) const
+{
+    if (m_source_route_info_bits == 0) {
+        return static_cast<uint32_t>(std::min<uint64_t>(
+            value, std::numeric_limits<uint32_t>::max()));
+    }
+    if (m_source_route_info_bits == 1)
+        return value ? 1 : 0;
+    if (m_source_route_info_bits == 2) {
+        if (value == 0)
+            return 0;
+        if (value == 1)
+            return 1;
+        return value <= 3 ? 2 : 4;
+    }
+    const uint32_t maximum =
+        (uint32_t(1) << m_source_route_info_bits) - 1;
+    return static_cast<uint32_t>(std::min<uint64_t>(value, maximum));
+}
+
+void
+GarnetNetwork::captureExpressInformation()
+{
+    if (m_source_route_info_mode == "instant")
+        return;
+    const uint64_t now = curCycle();
+    if (now == m_express_info_last_cycle)
+        return;
+    m_express_info_last_cycle = now;
+    if (now % m_source_route_info_period != 0)
+        return;
+
+    const size_t directed_count = m_reservation_current.size();
+    ExpressInfoSnapshot snapshot;
+    snapshot.cycle = now;
+    snapshot.q.resize(directed_count * m_virtual_networks);
+    snapshot.r.resize(directed_count);
+    for (size_t id = 0; id < directed_count; ++id) {
+        snapshot.r[id] = quantizeExpressPressure(
+            std::max<int64_t>(0, m_reservation_current[id]));
+        for (int vnet = 0; vnet < m_virtual_networks; ++vnet) {
+            snapshot.q[vnet * directed_count + id] =
+                quantizeExpressPressure(static_cast<uint64_t>(
+                    expressVcOccupancy(id, vnet)));
+        }
+    }
+    m_express_info_history.push_back(std::move(snapshot));
+    const uint64_t maximum_age = m_source_route_info_delay +
+        2 * m_routers.size() + m_source_route_info_period + 4;
+    while (!m_express_info_history.empty() &&
+           m_express_info_history.front().cycle + maximum_age < now) {
+        m_express_info_history.pop_front();
+    }
+}
+
+std::pair<double, double>
+GarnetNetwork::observedExpressPressure(
+    int source, int directed_id, int vnet)
+{
+    if (m_source_route_info_mode == "instant") {
+        return {expressVcOccupancy(directed_id, vnet),
+                static_cast<double>(m_reservation_current[directed_id])};
+    }
+    captureExpressInformation();
+    uint64_t delay = m_source_route_info_delay;
+    if (m_source_route_info_mode == "distance-gossip") {
+        const int entry = getExpressRouteSource(directed_id);
+        delay += std::abs(source % m_num_cols - entry % m_num_cols) +
+                 std::abs(source / m_num_cols - entry / m_num_cols);
+    }
+    const uint64_t now = curCycle();
+    const double local_pending =
+        m_source_route_reservation_mode == "registered" ?
+        m_local_unacknowledged.at(source).at(directed_id) : 0.0;
+    if (delay > now)
+        return {0.0, local_pending};
+    const uint64_t target = now - delay;
+    const size_t directed_count = m_reservation_current.size();
+    for (auto item = m_express_info_history.rbegin();
+         item != m_express_info_history.rend(); ++item) {
+        if (item->cycle <= target) {
+            double observed_r = static_cast<double>(item->r[directed_id]);
+            observed_r += local_pending;
+            return {
+                static_cast<double>(
+                    item->q[vnet * directed_count + directed_id]),
+                observed_r
+            };
+        }
+    }
+    return {0.0, local_pending};
+}
+
+bool
+GarnetNetwork::admitExpressRoute(int source, int destination) const
+{
+    if (m_source_route_admission_fraction >= 1.0)
+        return true;
+    if (m_source_route_admission_fraction <= 0.0)
+        return false;
+    uint64_t value = static_cast<uint64_t>(m_next_packet_id) ^
+        (static_cast<uint64_t>(source) << 32) ^
+        static_cast<uint64_t>(destination);
+    value += 0x9e3779b97f4a7c15ULL;
+    value = (value ^ (value >> 30)) * 0xbf58476d1ce4e5b9ULL;
+    value = (value ^ (value >> 27)) * 0x94d049bb133111ebULL;
+    value ^= value >> 31;
+    const long double sample = static_cast<long double>(value) /
+        static_cast<long double>(std::numeric_limits<uint64_t>::max());
+    return sample < m_source_route_admission_fraction;
+}
+
 void
 GarnetNetwork::initializeSourceRoute(RouteInfo &route)
 {
     if (!m_source_route_enabled)
         return;
+    // NetworkInterface allocates this exact packet ID immediately after
+    // source-route initialization.  Keeping it in RouteInfo makes each
+    // reservation stage uniquely identifiable at later routers.
+    route.source_route_packet_id = static_cast<uint64_t>(m_next_packet_id);
 
     const int router_count = m_routers.size();
     fatal_if(route.src_router < 0 || route.src_router >= router_count ||
@@ -390,19 +559,35 @@ GarnetNetwork::initializeSourceRoute(RouteInfo &route)
                 if (m_source_route_policy == 2)
                     cost += m_reservation_current[id];
                 if (m_source_route_policy == 4) {
+                    const auto [observed_q, observed_r] =
+                        observedExpressPressure(
+                            route.src_router, id, route.vnet);
                     cost += m_source_route_reservation_weight *
-                        m_reservation_current[id];
+                        observed_r;
                     cost += m_source_route_vc_weight *
-                        expressVcOccupancy(id, route.vnet);
+                        observed_q;
                 }
             }
             if (cost < best_cost) { best_cost = cost; best = c; }
         }
-        const size_t base = pair_index * 8 + best;
-        count = m_source_route_candidate_express_counts[base];
-        route.express_ids.clear();
-        for (uint32_t i = 0; i < count; ++i)
-            route.express_ids.push_back(m_source_route_candidate_express_ids[base * 2 + i]);
+        const bool force_mesh = m_source_route_policy == 4 &&
+            m_source_route_candidate_express_counts[pair_index * 8 + best] > 0 &&
+            !admitExpressRoute(route.src_router, route.dest_router);
+        if (force_mesh) {
+            // An empty express sequence is the canonical XY-only source
+            // route.  Construct it directly: the latency-ranked top-K table
+            // is not required to retain an explicit mesh candidate.
+            count = 0;
+            route.express_ids.clear();
+        } else {
+            const size_t base = pair_index * 8 + best;
+            count = m_source_route_candidate_express_counts[base];
+            route.express_ids.clear();
+            for (uint32_t i = 0; i < count; ++i) {
+                route.express_ids.push_back(
+                    m_source_route_candidate_express_ids[base * 2 + i]);
+            }
+        }
     }
     fatal_if(count > 2, "source-route express count %u exceeds limit", count);
     route.source_routed = true;
@@ -428,11 +613,135 @@ GarnetNetwork::reserveSourceRoute(const RouteInfo &route)
 {
     if (!route.source_routed)
         return;
+    if (m_source_route_reservation_mode == "registered") {
+        registerSourceRoute(route);
+        return;
+    }
     for (uint16_t id : route.express_ids) {
         fatal_if(id >= m_reservation_current.size(),
                  "reservation express id %u is invalid", id);
         ++m_reservation_current[id];
         m_express_reservation_increments[id]++;
+    }
+}
+
+int
+GarnetNetwork::meshDistance(int first, int second) const
+{
+    return std::abs(first % m_num_cols - second % m_num_cols) +
+           std::abs(first / m_num_cols - second / m_num_cols);
+}
+
+uint64_t
+GarnetNetwork::reservationToken(const RouteInfo &route, uint8_t stage) const
+{
+    fatal_if(stage >= 0xff,
+             "source-route reservation stage exceeds token encoding");
+    fatal_if(route.source_route_packet_id >
+                 (std::numeric_limits<uint64_t>::max() >> 8),
+             "source-route packet ID exceeds reservation token encoding");
+    return (route.source_route_packet_id << 8) | stage;
+}
+
+void
+GarnetNetwork::maybeEraseReservationToken(uint64_t token_id)
+{
+    const auto item = m_reservation_tokens.find(token_id);
+    if (item != m_reservation_tokens.end() && item->second.acknowledged &&
+        item->second.state == ReservationState::Done)
+        m_reservation_tokens.erase(item);
+}
+
+void
+GarnetNetwork::registerSourceRoute(const RouteInfo &route)
+{
+    int current = route.src_router;
+    uint64_t setup_delay = 1;
+    for (uint8_t stage = 0; stage < route.express_count; ++stage) {
+        const int directed_id = route.express_ids.at(stage);
+        const int entry = getExpressRouteSource(directed_id);
+        setup_delay += meshDistance(current, entry);
+        const uint64_t token_id = reservationToken(route, stage);
+        ReservationToken token;
+        token.source = route.src_router;
+        token.directed_id = directed_id;
+        fatal_if(!m_reservation_tokens.emplace(token_id, token).second,
+                 "duplicate source-route reservation token");
+        ++m_local_unacknowledged.at(route.src_router).at(directed_id);
+        m_reservation_control.emplace(
+            curCycle() + setup_delay,
+            ReservationControlEvent{
+                ReservationControlKind::Register, token_id});
+        ++m_reservation_registration_messages;
+        setup_delay += m_express_link_latencies.at(directed_id / 2);
+        current = getExpressRouteDestination(directed_id);
+    }
+}
+
+void
+GarnetNetwork::processReservationControl()
+{
+    if (m_source_route_reservation_mode != "registered")
+        return;
+    const uint64_t now = curCycle();
+    auto item = m_reservation_control.begin();
+    while (item != m_reservation_control.end() && item->first <= now) {
+        const ReservationControlEvent event = item->second;
+        item = m_reservation_control.erase(item);
+        const auto found = m_reservation_tokens.find(event.token);
+        fatal_if(found == m_reservation_tokens.end(),
+                 "reservation control event has no matching token");
+        ReservationToken &token = found->second;
+        const int directed_id = token.directed_id;
+
+        if (event.kind == ReservationControlKind::Register) {
+            if (token.state == ReservationState::Pending) {
+                ++m_reservation_current.at(directed_id);
+                ++m_express_reservation_increments[directed_id];
+                token.state = ReservationState::Registered;
+            } else if (token.state == ReservationState::CancelArrived) {
+                token.state = ReservationState::Done;
+            } else {
+                fatal("duplicate or invalid reservation registration");
+            }
+
+            // Clear the source-local shadow only when the first periodic
+            // advertisement carrying the registration can reach the source.
+            // This makes the transition continuous despite delayed gossip.
+            const uint64_t period = m_source_route_info_period;
+            const uint64_t next_advertisement = now +
+                ((period - now % period) % period);
+            const int entry = getExpressRouteSource(directed_id);
+            m_reservation_control.emplace(
+                next_advertisement + m_source_route_info_delay +
+                    meshDistance(entry, token.source),
+                ReservationControlEvent{
+                    ReservationControlKind::Acknowledge, event.token});
+        } else if (event.kind == ReservationControlKind::Acknowledge) {
+            fatal_if(token.acknowledged,
+                     "duplicate reservation acknowledgement");
+            uint32_t &pending =
+                m_local_unacknowledged.at(token.source).at(directed_id);
+            fatal_if(pending == 0,
+                     "source-local reservation acknowledgement underflow");
+            --pending;
+            token.acknowledged = true;
+            ++m_reservation_registration_acks;
+        } else {
+            if (token.state == ReservationState::Pending) {
+                token.state = ReservationState::CancelArrived;
+            } else if (token.state == ReservationState::Registered) {
+                fatal_if(m_reservation_current.at(directed_id) <= 0,
+                         "registered reservation underflow on cancellation");
+                --m_reservation_current.at(directed_id);
+                ++m_express_reservation_decrements[directed_id];
+                token.state = ReservationState::Done;
+            } else {
+                fatal("invalid reservation cancellation state");
+            }
+            ++m_reservation_registration_cancels;
+        }
+        maybeEraseReservationToken(event.token);
     }
 }
 
@@ -491,10 +800,42 @@ GarnetNetwork::recordDeliveredEscape(const RouteInfo &route)
 }
 
 void
-GarnetNetwork::releaseSourceRouteExpress(int directed_id)
+GarnetNetwork::releaseSourceRouteExpress(
+    const RouteInfo &route, uint8_t stage, int current_router,
+    bool cancellation)
 {
+    fatal_if(stage >= route.express_count,
+             "release reservation stage %u is invalid", stage);
+    const int directed_id = route.express_ids.at(stage);
     fatal_if(directed_id < 0 || directed_id >= m_reservation_current.size(),
              "release reservation express id %d is invalid", directed_id);
+    if (m_source_route_reservation_mode == "registered") {
+        const uint64_t token_id = reservationToken(route, stage);
+        const auto found = m_reservation_tokens.find(token_id);
+        fatal_if(found == m_reservation_tokens.end(),
+                 "express reservation release has no matching token");
+        ReservationToken &token = found->second;
+        if (cancellation) {
+            const int entry = getExpressRouteSource(directed_id);
+            m_reservation_control.emplace(
+                curCycle() + 1 + meshDistance(current_router, entry),
+                ReservationControlEvent{
+                    ReservationControlKind::Cancel, token_id});
+            return;
+        }
+        if (token.state != ReservationState::Registered) {
+            ++m_reservation_late_registrations;
+            fatal("packet reached express link before route setup registered it");
+        }
+        fatal_if(m_reservation_current[directed_id] <= 0,
+                 "registered reservation underflow on express id %d",
+                 directed_id);
+        --m_reservation_current[directed_id];
+        ++m_express_reservation_decrements[directed_id];
+        token.state = ReservationState::Done;
+        maybeEraseReservationToken(token_id);
+        return;
+    }
     fatal_if(m_reservation_current[directed_id] <= 0,
              "reservation underflow on express id %d", directed_id);
     --m_reservation_current[directed_id];
@@ -900,6 +1241,14 @@ GarnetNetwork::regStats()
     m_express_r_sample_max.init(reservation_stat_size)
         .name(name() + ".express_r_sample_max").flags(statistics::oneline);
     m_express_state_sample_count.name(name() + ".express_state_sample_count");
+    m_reservation_registration_messages
+        .name(name() + ".reservation_registration_messages");
+    m_reservation_registration_acks
+        .name(name() + ".reservation_registration_acks");
+    m_reservation_registration_cancels
+        .name(name() + ".reservation_registration_cancels");
+    m_reservation_late_registrations
+        .name(name() + ".reservation_late_registrations");
 
     int int_links = 0;
     for (auto *link : m_networklinks) {

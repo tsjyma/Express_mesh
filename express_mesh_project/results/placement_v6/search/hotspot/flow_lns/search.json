@@ -1,0 +1,213 @@
+{
+  "config": {
+    "binary": "/home/lryp/Express_mesh/express_mesh_project/standalone_noc/express_noc",
+    "final_temperature": 0.0005,
+    "flow_max_commodities": 512,
+    "flow_rounds": 16,
+    "initial": [
+      "express_mesh_project/results/placement_v6/baselines/hotspot_aspl.json",
+      "express_mesh_project/results/placement_v6/baselines/hotspot_bottleneck.json",
+      "express_mesh_project/results/placement_v6/baselines/hotspot_hybrid.json",
+      "express_mesh_project/results/placement_v6/search/hotspot/flow_swap/best.json"
+    ],
+    "initial_temperature": 0.02,
+    "iterations": 15,
+    "measurement_cycles": 2000,
+    "mode": "flow-lns",
+    "neighbors": 6,
+    "output_dir": "express_mesh_project/results/placement_v6/search/hotspot/flow_lns",
+    "proposal_pool": 192,
+    "rates": [
+      0.8
+    ],
+    "reheat_period": 15,
+    "replicas": 4,
+    "restarts": 2,
+    "seed": 203,
+    "stagnation_limit": 3,
+    "swap_period": 5,
+    "traffic_seeds": [
+      1
+    ],
+    "traffics": [
+      "hotspot"
+    ],
+    "warmup_cycles": 500,
+    "workers": 4
+  },
+  "history": [
+    {
+      "best_utility": 1.2482554054054054,
+      "current_utility": 1.2482554054054054,
+      "evaluated_placements": 10,
+      "improved_current": false,
+      "iteration": 1,
+      "winner_utility": 1.2482504158004157
+    },
+    {
+      "best_utility": 1.2482554054054054,
+      "current_utility": 1.2482554054054054,
+      "evaluated_placements": 15,
+      "improved_current": false,
+      "iteration": 2,
+      "winner_utility": 1.2482517151767152
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.2482577962577963,
+      "evaluated_placements": 19,
+      "improved_current": true,
+      "iteration": 3,
+      "winner_utility": 1.2482577962577963
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.2482577962577963,
+      "evaluated_placements": 24,
+      "improved_current": false,
+      "iteration": 4,
+      "winner_utility": 1.2482516632016631
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.2482577962577963,
+      "evaluated_placements": 27,
+      "improved_current": false,
+      "iteration": 5,
+      "winner_utility": 1.2482554054054054
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.2482341995841997,
+      "evaluated_placements": 32,
+      "improved_current": false,
+      "iteration": 6,
+      "winner_utility": 1.2482554054054054
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.2482412681912682,
+      "evaluated_placements": 36,
+      "improved_current": true,
+      "iteration": 7,
+      "winner_utility": 1.2482412681912682
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.2482464137214138,
+      "evaluated_placements": 40,
+      "improved_current": true,
+      "iteration": 8,
+      "winner_utility": 1.2482464137214138
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.2482488565488565,
+      "evaluated_placements": 45,
+      "improved_current": true,
+      "iteration": 9,
+      "winner_utility": 1.2482488565488565
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.2482488565488565,
+      "evaluated_placements": 50,
+      "improved_current": false,
+      "iteration": 10,
+      "winner_utility": 1.2482422037422038
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.2482488565488565,
+      "evaluated_placements": 55,
+      "improved_current": false,
+      "iteration": 11,
+      "winner_utility": 1.2482448024948025
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.2482344074844074,
+      "evaluated_placements": 59,
+      "improved_current": false,
+      "iteration": 12,
+      "winner_utility": 1.2482464137214138
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.248243659043659,
+      "evaluated_placements": 63,
+      "improved_current": true,
+      "iteration": 13,
+      "winner_utility": 1.248243659043659
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.248243659043659,
+      "evaluated_placements": 68,
+      "improved_current": false,
+      "iteration": 14,
+      "winner_utility": 1.248239449064449
+    },
+    {
+      "best_utility": 1.2482577962577963,
+      "current_utility": 1.248243659043659,
+      "evaluated_placements": 73,
+      "improved_current": false,
+      "iteration": 15,
+      "winner_utility": 1.2482359147609148
+    }
+  ],
+  "metadata": {
+    "best_search_result": {
+      "metrics": [
+        {
+          "commodity_count": 376,
+          "concurrent_flow_proxy": 3.9083969465648862,
+          "endpoint_max_load": 0.25585937499999994,
+          "mean_latency": 4.091796875,
+          "network_max_load": 0.052490234375,
+          "overall_max_load": 0.25585937499999994,
+          "p95_link_load": 0.03271484374999999,
+          "route_count": 2976
+        }
+      ],
+      "utility": 1.2482577962577963
+    },
+    "evaluated_placements": 73,
+    "full_flow_score": {
+      "mesh_metrics": [
+        {
+          "commodity_count": 4032,
+          "concurrent_flow_proxy": 3.878787878787879,
+          "endpoint_max_load": 0.2578125,
+          "mean_latency": 4.682291666666864,
+          "network_max_load": 0.14477926587301285,
+          "overall_max_load": 0.2578125,
+          "p95_link_load": 0.03831845238095105,
+          "route_count": 4032
+        }
+      ],
+      "metrics": [
+        {
+          "commodity_count": 4032,
+          "concurrent_flow_proxy": 3.878787878787879,
+          "endpoint_max_load": 0.2578125,
+          "mean_latency": 3.9650510757727324,
+          "network_max_load": 0.05260067894345207,
+          "overall_max_load": 0.2578125,
+          "p95_link_load": 0.0323156932043649,
+          "route_count": 32200
+        }
+      ],
+      "utility": 1.2483063630555098
+    },
+    "mode": "flow-lns",
+    "rates": [
+      0.8
+    ],
+    "search_seed": 203,
+    "traffics": [
+      "hotspot"
+    ]
+  }
+}

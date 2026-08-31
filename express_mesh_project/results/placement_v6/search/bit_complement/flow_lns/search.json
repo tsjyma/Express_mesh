@@ -1,0 +1,213 @@
+{
+  "config": {
+    "binary": "/home/lryp/Express_mesh/express_mesh_project/standalone_noc/express_noc",
+    "final_temperature": 0.0005,
+    "flow_max_commodities": 512,
+    "flow_rounds": 16,
+    "initial": [
+      "express_mesh_project/results/placement_v6/baselines/bit_complement_aspl.json",
+      "express_mesh_project/results/placement_v6/baselines/bit_complement_bottleneck.json",
+      "express_mesh_project/results/placement_v6/baselines/bit_complement_hybrid.json",
+      "express_mesh_project/results/placement_v6/search/bit_complement/flow_swap/best.json"
+    ],
+    "initial_temperature": 0.02,
+    "iterations": 15,
+    "measurement_cycles": 2000,
+    "mode": "flow-lns",
+    "neighbors": 6,
+    "output_dir": "express_mesh_project/results/placement_v6/search/bit_complement/flow_lns",
+    "proposal_pool": 192,
+    "rates": [
+      0.8
+    ],
+    "reheat_period": 15,
+    "replicas": 4,
+    "restarts": 2,
+    "seed": 204,
+    "stagnation_limit": 3,
+    "swap_period": 5,
+    "traffic_seeds": [
+      1
+    ],
+    "traffics": [
+      "bit_complement"
+    ],
+    "warmup_cycles": 500,
+    "workers": 4
+  },
+  "history": [
+    {
+      "best_utility": 2.2209893120659725,
+      "current_utility": 2.2209893120659725,
+      "evaluated_placements": 10,
+      "improved_current": false,
+      "iteration": 1,
+      "winner_utility": 2.103990452816612
+    },
+    {
+      "best_utility": 2.2209893120659725,
+      "current_utility": 2.2209893120659725,
+      "evaluated_placements": 16,
+      "improved_current": false,
+      "iteration": 2,
+      "winner_utility": 2.160929496146537
+    },
+    {
+      "best_utility": 2.2209893120659725,
+      "current_utility": 2.050036689953926,
+      "evaluated_placements": 23,
+      "improved_current": false,
+      "iteration": 3,
+      "winner_utility": 2.2209492730034723
+    },
+    {
+      "best_utility": 2.2209893120659725,
+      "current_utility": 2.1608704141152875,
+      "evaluated_placements": 29,
+      "improved_current": true,
+      "iteration": 4,
+      "winner_utility": 2.1608704141152875
+    },
+    {
+      "best_utility": 2.2209893120659725,
+      "current_utility": 2.2209565972222225,
+      "evaluated_placements": 35,
+      "improved_current": true,
+      "iteration": 5,
+      "winner_utility": 2.2209565972222225
+    },
+    {
+      "best_utility": 2.2843981236049107,
+      "current_utility": 2.2843981236049107,
+      "evaluated_placements": 41,
+      "improved_current": true,
+      "iteration": 6,
+      "winner_utility": 2.2843981236049107
+    },
+    {
+      "best_utility": 2.2843995884486605,
+      "current_utility": 2.2843995884486605,
+      "evaluated_placements": 47,
+      "improved_current": true,
+      "iteration": 7,
+      "winner_utility": 2.2843995884486605
+    },
+    {
+      "best_utility": 2.3516208639705884,
+      "current_utility": 2.3516208639705884,
+      "evaluated_placements": 52,
+      "improved_current": true,
+      "iteration": 8,
+      "winner_utility": 2.3516208639705884
+    },
+    {
+      "best_utility": 2.3516208639705884,
+      "current_utility": 2.3516208639705884,
+      "evaluated_placements": 58,
+      "improved_current": false,
+      "iteration": 9,
+      "winner_utility": 2.1608335488809125
+    },
+    {
+      "best_utility": 2.3516208639705884,
+      "current_utility": 2.3516208639705884,
+      "evaluated_placements": 64,
+      "improved_current": false,
+      "iteration": 10,
+      "winner_utility": 2.3516123190487135
+    },
+    {
+      "best_utility": 2.3516208639705884,
+      "current_utility": 1.949884307116997,
+      "evaluated_placements": 71,
+      "improved_current": false,
+      "iteration": 11,
+      "winner_utility": 2.2843978794642856
+    },
+    {
+      "best_utility": 2.3516208639705884,
+      "current_utility": 2.103925511410362,
+      "evaluated_placements": 77,
+      "improved_current": true,
+      "iteration": 12,
+      "winner_utility": 2.103925511410362
+    },
+    {
+      "best_utility": 2.3516208639705884,
+      "current_utility": 2.103925511410362,
+      "evaluated_placements": 83,
+      "improved_current": false,
+      "iteration": 13,
+      "winner_utility": 2.103923314144737
+    },
+    {
+      "best_utility": 2.3516208639705884,
+      "current_utility": 2.1608355020059125,
+      "evaluated_placements": 89,
+      "improved_current": true,
+      "iteration": 14,
+      "winner_utility": 2.1608355020059125
+    },
+    {
+      "best_utility": 2.3516208639705884,
+      "current_utility": 2.1608355020059125,
+      "evaluated_placements": 95,
+      "improved_current": false,
+      "iteration": 15,
+      "winner_utility": 2.1608147500527872
+    }
+  ],
+  "metadata": {
+    "best_search_result": {
+      "metrics": [
+        {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 30.11764705882353,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 5.28125,
+          "network_max_load": 0.033203125,
+          "overall_max_load": 0.033203125,
+          "p95_link_load": 0.03125,
+          "route_count": 512
+        }
+      ],
+      "utility": 2.3516208639705884
+    },
+    "evaluated_placements": 95,
+    "full_flow_score": {
+      "mesh_metrics": [
+        {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 16.0,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 8.0,
+          "network_max_load": 0.0625,
+          "overall_max_load": 0.0625,
+          "p95_link_load": 0.0625,
+          "route_count": 64
+        }
+      ],
+      "metrics": [
+        {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 29.681159420289855,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 5.18505859375,
+          "network_max_load": 0.03369140625,
+          "overall_max_load": 0.03369140625,
+          "p95_link_load": 0.03125,
+          "route_count": 512
+        }
+      ],
+      "utility": 2.3175443150617077
+    },
+    "mode": "flow-lns",
+    "rates": [
+      0.8
+    ],
+    "search_seed": 204,
+    "traffics": [
+      "bit_complement"
+    ]
+  }
+}

@@ -4,6 +4,7 @@ import unittest
 
 from express_mesh_project.model import (
     bit_complement_demand,
+    ExpressEdge,
     GridGraph,
     cutstress_demand,
     core_metrics,
@@ -26,9 +27,38 @@ from express_mesh_project.candidates import (
     candidate_bundle,
 )
 from express_mesh_project.run_phase3_measurement_v2 import traffic_mapping_stats
+from express_mesh_project.flow_placement import compress_demand, flow_metrics
 
 
 class OfflineModelTest(unittest.TestCase):
+    def test_flow_proxy_splits_demand_and_rewards_useful_capacity(self):
+        demand = bit_complement_demand(4)
+        mesh = flow_metrics(4, [], demand, rounds=32)
+        augmented = flow_metrics(
+            4, [ExpressEdge(0, 15, 6, 1)], demand, rounds=32,
+        )
+        self.assertEqual(mesh.commodity_count, 16)
+        self.assertLess(augmented.network_max_load, mesh.network_max_load)
+        self.assertGreater(
+            augmented.concurrent_flow_proxy, mesh.concurrent_flow_proxy,
+        )
+
+    def test_compressed_demand_is_deterministic_and_normalized(self):
+        demand = hotspot_demand(8)
+        first = compress_demand(demand, 128)
+        second = compress_demand(demand, 128)
+        self.assertEqual(first, second)
+        self.assertLessEqual(len(first), 128)
+        self.assertAlmostEqual(sum(first.values()), 1.0)
+
+        uniform = compress_demand(uniform_demand(64), 512)
+        sources = {source for source, _ in uniform}
+        self.assertEqual(len(sources), 64)
+        self.assertTrue(all(
+            sum(source == item_source for item_source, _ in uniform) == 8
+            for source in sources
+        ))
+
     def test_garnet_deterministic_traffic_mapping_guard(self):
         correct = "\n".join(
             f"system.ruby.network.ctrl_traffic_distribution.n{s}.n{63-s} 10"

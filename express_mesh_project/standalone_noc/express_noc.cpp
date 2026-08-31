@@ -52,6 +52,12 @@ struct Options {
     double reservation_weight = 0.5;
     double express_vc_weight = 1.0;
     double express_waiter_weight = 0.0;
+    std::string express_info_mode = "instant";
+    uint64_t express_info_period = 1;
+    uint64_t express_info_delay = 0;
+    uint32_t express_info_bits = 0;
+    double express_admission_fraction = 1.0;
+    std::string express_reservation_mode = "instant";
     bool no_escape = false;
     bool correct_no_escape_vcs = false;
     bool continue_after_ni_watchdog = false;
@@ -59,6 +65,9 @@ struct Options {
     double adaptive_lambda = 1.0;
     double detour_ratio = 1.5;
     uint64_t escape_timeout = 32;
+    int debug_stall_source = -1;
+    uint64_t debug_stall_threshold = 1000;
+    uint64_t debug_stall_interval = 5000;
     bool self_test = false;
 };
 
@@ -124,10 +133,19 @@ Options parse_options(int argc, char **argv) {
         else if (a == "--reservation-weight") o.reservation_weight = parse_double(value(i, argv[i]), "reservation weight");
         else if (a == "--express-vc-weight") o.express_vc_weight = parse_double(value(i, argv[i]), "express VC weight");
         else if (a == "--express-waiter-weight") o.express_waiter_weight = parse_double(value(i, argv[i]), "express waiter weight");
+        else if (a == "--express-info-mode") o.express_info_mode = value(i, argv[i]);
+        else if (a == "--express-info-period") o.express_info_period = parse_u64(value(i, argv[i]), "express info period");
+        else if (a == "--express-info-delay") o.express_info_delay = parse_u64(value(i, argv[i]), "express info delay");
+        else if (a == "--express-info-bits") o.express_info_bits = parse_u32(value(i, argv[i]), "express info bits");
+        else if (a == "--express-admission-fraction") o.express_admission_fraction = parse_double(value(i, argv[i]), "express admission fraction");
+        else if (a == "--express-reservation-mode") o.express_reservation_mode = value(i, argv[i]);
         else if (a == "--adaptive-threshold") o.adaptive_threshold = parse_double(value(i, argv[i]), "adaptive threshold");
         else if (a == "--adaptive-lambda") o.adaptive_lambda = parse_double(value(i, argv[i]), "adaptive lambda");
         else if (a == "--detour-ratio") o.detour_ratio = parse_double(value(i, argv[i]), "detour ratio");
         else if (a == "--escape-timeout") o.escape_timeout = parse_u64(value(i, argv[i]), "escape timeout");
+        else if (a == "--debug-stall-source") o.debug_stall_source = std::stoi(value(i, argv[i]));
+        else if (a == "--debug-stall-threshold") o.debug_stall_threshold = parse_u64(value(i, argv[i]), "debug stall threshold");
+        else if (a == "--debug-stall-interval") o.debug_stall_interval = parse_u64(value(i, argv[i]), "debug stall interval");
         else if (a == "--source-route") o.source_route = true;
         else if (a == "--no-escape") o.no_escape = true;
         else if (a == "--correct-no-escape-vcs") o.correct_no_escape_vcs = true;
@@ -148,6 +166,11 @@ Options parse_options(int argc, char **argv) {
                 "  --express-min-wire-length L\n"
                 "  --reservation-weight W --express-vc-weight W\n"
                 "  --express-waiter-weight W\n"
+                "  --express-info-mode instant|delayed-global|distance-gossip\n"
+                "  --express-info-period N --express-info-delay N\n"
+                "  --express-info-bits 0|1|2|3|4\n"
+                "  --express-admission-fraction F\n"
+                "  --express-reservation-mode instant|registered\n"
                 "  --correct-no-escape-vcs --output FILE\n"
                 "  --continue-after-ni-watchdog --drain-cycles N\n";
             std::exit(0);
@@ -160,11 +183,35 @@ Options parse_options(int argc, char **argv) {
     if (o.source_route_policy > 6) fail("source route policy must be 0..6");
     if (o.source_route_candidates == 0 || o.source_route_candidates > 512)
         fail("source route candidates must be in 1..512");
+    if (o.debug_stall_source < -1 || o.debug_stall_source >= kNodes)
+        fail("debug stall source must be -1 or a valid router id");
+    if (o.debug_stall_threshold == 0 || o.debug_stall_interval == 0)
+        fail("debug stall threshold and interval must be positive");
     if (o.express_max_degree > kNodes-1)
         fail("express max degree is too large");
     if (o.reservation_weight < 0.0 || o.express_vc_weight < 0.0 ||
         o.express_waiter_weight < 0.0)
         fail("source-route pressure weights must be non-negative");
+    if (o.express_info_mode != "instant" &&
+        o.express_info_mode != "delayed-global" &&
+        o.express_info_mode != "distance-gossip")
+        fail("express info mode must be instant, delayed-global, or distance-gossip");
+    if (o.express_info_period == 0)
+        fail("express info period must be positive");
+    if (o.express_info_bits > 4)
+        fail("express info bits must be in 0..4");
+    if (o.express_admission_fraction < 0.0 ||
+        o.express_admission_fraction > 1.0)
+        fail("express admission fraction must be in [0,1]");
+    if (o.express_reservation_mode != "instant" &&
+        o.express_reservation_mode != "registered")
+        fail("express reservation mode must be instant or registered");
+    if (o.express_reservation_mode == "registered" &&
+        (!o.source_route || o.source_route_policy != 4 ||
+         o.express_info_mode != "distance-gossip" ||
+         o.express_info_delay == 0))
+        fail("registered reservations require source-route policy 4 and "
+             "distance-gossip with at least one cycle of base delay");
     if (o.routing != "deterministic" && o.routing != "adaptive")
         fail("routing must be deterministic or adaptive");
     if (o.source_mesh_routing != "adaptive" &&
@@ -314,6 +361,22 @@ struct Credit {
     int owner = -1, vc = -1;
 };
 
+struct ExpressInfoUpdate {
+    int router = -1, directed_id = -1;
+    uint32_t q = 0, r = 0;
+};
+
+struct ReservationControlEvent {
+    enum Kind { Register, Acknowledge, Cancel } kind = Register;
+    uint64_t token = 0;
+};
+
+struct ReservationToken {
+    enum State { Pending, Registered, CancelArrived, Done } state = Pending;
+    int source = -1, directed_id = -1;
+    bool acknowledged = false;
+};
+
 struct Stats {
     uint64_t attempts=0, offers=0, generated=0, blocked=0;
     uint64_t injected=0, received=0, initial_retries=0;
@@ -325,6 +388,10 @@ struct Stats {
     std::array<uint64_t,3> planned{}, delivered{};
     std::vector<uint64_t> edge_selected, q_sum, q_max, r_sum, r_max;
     uint64_t state_samples=0;
+    uint64_t info_queries=0, info_unknown_queries=0, info_updates=0;
+    long double info_q_abs_error=0, info_r_abs_error=0;
+    uint64_t registration_messages=0, registration_acks=0;
+    uint64_t registration_cancels=0, late_registrations=0;
 };
 
 class Simulator {
@@ -337,6 +404,14 @@ class Simulator {
         const size_t n = 2 * edges.size();
         reservations.assign(n, 0);
         link_reservations.assign(links.size(), 0);
+        advertised_q.assign(kNodes, std::vector<uint32_t>(n, 0));
+        advertised_r.assign(kNodes, std::vector<uint32_t>(n, 0));
+        advertised_valid.assign(kNodes, std::vector<uint8_t>(n, 0));
+        originated_q.assign(n, 0);
+        originated_r.assign(n, 0);
+        originated_valid.assign(n, 0);
+        local_unacknowledged.assign(
+            kNodes, std::vector<uint32_t>(n, 0));
         reset_stats();
         const uint64_t total = o.warmup + o.measurement + o.drain_cycles;
         size_t max_latency = 1;
@@ -344,6 +419,8 @@ class Simulator {
             max_latency = std::max(max_latency, size_t(link.latency));
         arrivals.resize(total + max_latency + 5);
         credits.resize(total + 5);
+        info_arrivals.resize(total + o.express_info_delay + 2*kRows + 5);
+        reservation_control.resize(total + 4*kRows + 16);
     }
 
     void run() {
@@ -352,6 +429,8 @@ class Simulator {
         end_cycle = limit;
         for (cycle = 0; cycle < limit; ++cycle) {
             if (cycle == o.warmup) reset_stats();
+            process_reservation_control();
+            update_express_information();
             if (cycle < injection_limit) generate_traffic();
             process_credits();
             process_arrivals();
@@ -422,6 +501,12 @@ class Simulator {
             << "  \"reservation_weight\": " << o.reservation_weight << ",\n"
             << "  \"express_vc_weight\": " << o.express_vc_weight << ",\n"
             << "  \"express_waiter_weight\": " << o.express_waiter_weight << ",\n"
+            << "  \"express_info_mode\": \"" << o.express_info_mode << "\",\n"
+            << "  \"express_info_period\": " << o.express_info_period << ",\n"
+            << "  \"express_info_delay\": " << o.express_info_delay << ",\n"
+            << "  \"express_info_bits\": " << o.express_info_bits << ",\n"
+            << "  \"express_admission_fraction\": " << o.express_admission_fraction << ",\n"
+            << "  \"express_reservation_mode\": \"" << o.express_reservation_mode << "\",\n"
             << "  \"escape_enabled\": " << (!o.no_escape?"true":"false") << ",\n"
             << "  \"escape_cdg_acyclic\": true,\n"
             << "  \"legacy_no_escape_vc_bug\": " << ((!o.correct_no_escape_vcs)?"true":"false") << ",\n"
@@ -513,6 +598,15 @@ class Simulator {
             << "  \"express_state_sample_count\": " << stats.state_samples << ",\n"
             << "  \"express_q_sample_average\": " << vector_json(q_average) << ",\n"
             << "  \"express_r_sample_average\": " << vector_json(r_average) << ",\n"
+            << "  \"express_info_queries\": " << stats.info_queries << ",\n"
+            << "  \"express_info_unknown_queries\": " << stats.info_unknown_queries << ",\n"
+            << "  \"express_info_updates\": " << stats.info_updates << ",\n"
+            << "  \"express_info_q_mae\": " << (stats.info_queries?double(stats.info_q_abs_error/stats.info_queries):0.0) << ",\n"
+            << "  \"express_info_r_mae\": " << (stats.info_queries?double(stats.info_r_abs_error/stats.info_queries):0.0) << ",\n"
+            << "  \"reservation_registration_messages\": " << stats.registration_messages << ",\n"
+            << "  \"reservation_registration_acks\": " << stats.registration_acks << ",\n"
+            << "  \"reservation_registration_cancels\": " << stats.registration_cancels << ",\n"
+            << "  \"reservation_late_registrations\": " << stats.late_registrations << ",\n"
             << "  \"max_link_utilization\": " << (ordered.empty()?0.0:ordered.back()) << ",\n"
             << "  \"p95_link_utilization\": " << p95 << ",\n"
             << "  \"link_utilization_cv\": " << (mean?std::sqrt(variance)/mean:0.0) << "\n"
@@ -535,10 +629,18 @@ class Simulator {
     std::unordered_map<uint64_t,Packet> packets;
     std::vector<std::vector<Arrival>> arrivals;
     std::vector<std::vector<Credit>> credits;
+    std::vector<std::vector<ExpressInfoUpdate>> info_arrivals;
+    std::vector<std::vector<ReservationControlEvent>> reservation_control;
     std::vector<int64_t> reservations;
     // Used only by ideal all-link Dijkstra policy 6. Kept separate so the
     // original policy-4 express reservation semantics remain unchanged.
     std::vector<int64_t> link_reservations;
+    std::vector<std::vector<uint32_t>> advertised_q, advertised_r;
+    std::vector<std::vector<uint8_t>> advertised_valid;
+    std::vector<uint32_t> originated_q, originated_r;
+    std::vector<uint8_t> originated_valid;
+    std::vector<std::vector<uint32_t>> local_unacknowledged;
+    std::unordered_map<uint64_t,ReservationToken> reservation_tokens;
     Stats stats;
     uint64_t next_packet = 0, cycle = 0, end_cycle = 0;
     uint64_t lifetime_moves = 0, lifetime_deliveries = 0;
@@ -557,6 +659,7 @@ class Simulator {
     uint64_t global_no_progress_cycle = 0;
     bool drain_completed = false;
     uint64_t drain_completion_cycle = 0;
+    std::array<uint64_t,kNodes> debug_consecutive_ni_busy{};
 
     bool measuring(uint64_t when) const {
         return when >= o.warmup && when < o.warmup + o.measurement;
@@ -1068,9 +1171,7 @@ class Simulator {
     void transition_escape(Packet &p,InputSlot &slot,int router) {
         if(p.escape)return;
         for(size_t i=p.express_stage;i<p.express_ids.size();++i) {
-            const int id=p.express_ids[i];
-            if(--reservations[id]<0)fail("reservation underflow on escape");
-            if(measuring(cycle))stats.reservation_dec[id]++;
+            cancel_registered_reservation(p,i,router);
         }
         p.express_stage=p.express_ids.size();p.escape=true;
         if(o.source_route_policy==6) {
@@ -1152,8 +1253,8 @@ class Simulator {
                         if(p.source_routed && p.express_stage<p.express_ids.size()) {
                             const int expected=p.express_ids[p.express_stage];
                             if(expected==link.express_id) {
-                                if(--reservations[expected]<0)fail("reservation underflow on traversal");
-                                if(measuring(cycle))stats.reservation_dec[expected]++;
+                                traverse_registered_reservation(
+                                    p,p.express_stage);
                                 p.express_stage++;p.express_traversed++;
                             }
                         }
@@ -1203,6 +1304,237 @@ class Simulator {
         // so it must not be advertised as adaptive express-link pressure.
         for(int vc=0;vc<3;++vc)occupied+=busy[vc];
         return occupied;
+    }
+
+    uint32_t quantize_express_pressure(uint64_t value) const {
+        if(o.express_info_bits==0)
+            return uint32_t(std::min<uint64_t>(
+                value,std::numeric_limits<uint32_t>::max()));
+        if(o.express_info_bits==1)return value?1:0;
+        if(o.express_info_bits==2) {
+            if(value==0)return 0;
+            if(value==1)return 1;
+            if(value<=3)return 2;
+            return 4;
+        }
+        const uint32_t maximum=(uint32_t(1)<<o.express_info_bits)-1;
+        return uint32_t(std::min<uint64_t>(value,maximum));
+    }
+
+    int mesh_distance(int first,int second) const {
+        return std::abs(first%kRows-second%kRows)+
+            std::abs(first/kRows-second/kRows);
+    }
+
+    static uint64_t reservation_token(uint64_t packet,size_t stage) {
+        if(stage>=256)fail("reservation stage exceeds token encoding");
+        if(packet>(std::numeric_limits<uint64_t>::max()>>8))
+            fail("packet id exceeds reservation token encoding");
+        return (packet<<8)|stage;
+    }
+
+    void maybe_erase_reservation_token(uint64_t token) {
+        const auto item=reservation_tokens.find(token);
+        if(item!=reservation_tokens.end() && item->second.acknowledged &&
+           item->second.state==ReservationToken::Done)
+            reservation_tokens.erase(item);
+    }
+
+    void process_reservation_control() {
+        if(o.express_reservation_mode!="registered")return;
+        for(const auto &event:reservation_control[cycle]) {
+            const auto found=reservation_tokens.find(event.token);
+            if(found==reservation_tokens.end())
+                fail("reservation control event has no token");
+            auto &token=found->second;
+            const int id=token.directed_id;
+            if(event.kind==ReservationControlEvent::Register) {
+                if(token.state==ReservationToken::Pending) {
+                    reservations[id]++;
+                    token.state=ReservationToken::Registered;
+                    if(measuring(cycle))stats.reservation_inc[id]++;
+                } else if(token.state==ReservationToken::CancelArrived) {
+                    token.state=ReservationToken::Done;
+                } else fail("duplicate reservation registration");
+                const int entry=express_link(id).src;
+                // The source stops using its local shadow only when the first
+                // periodic advertisement containing this registration can
+                // have reached it.  This avoids a blind interval between the
+                // ACK and the delayed/periodic r advertisement.
+                const uint64_t next_advertisement=cycle+
+                    ((o.express_info_period-cycle%o.express_info_period)%
+                     o.express_info_period);
+                const uint64_t ack_cycle=next_advertisement+
+                    o.express_info_delay+mesh_distance(entry,token.source);
+                if(ack_cycle<reservation_control.size())
+                    reservation_control[ack_cycle].push_back(
+                        ReservationControlEvent{
+                            ReservationControlEvent::Acknowledge,event.token});
+            } else if(event.kind==ReservationControlEvent::Acknowledge) {
+                if(token.acknowledged)
+                    fail("duplicate reservation acknowledgement");
+                auto &pending=local_unacknowledged[token.source][id];
+                if(pending==0)fail("local reservation acknowledgement underflow");
+                --pending;
+                token.acknowledged=true;
+                if(measuring(cycle))stats.registration_acks++;
+            } else {
+                if(token.state==ReservationToken::Pending) {
+                    token.state=ReservationToken::CancelArrived;
+                } else if(token.state==ReservationToken::Registered) {
+                    if(--reservations[id]<0)
+                        fail("registered reservation underflow on cancel");
+                    token.state=ReservationToken::Done;
+                    if(measuring(cycle))stats.reservation_dec[id]++;
+                } else fail("invalid reservation cancellation state");
+                if(measuring(cycle))stats.registration_cancels++;
+            }
+            maybe_erase_reservation_token(event.token);
+        }
+    }
+
+    void register_source_route(Packet &p) {
+        if(o.express_reservation_mode!="registered") {
+            for(int id:p.express_ids) {
+                reservations[id]++;
+                if(measuring(cycle))stats.reservation_inc[id]++;
+            }
+            return;
+        }
+        int current=p.src;
+        uint64_t setup_delay=1;
+        for(size_t stage=0;stage<p.express_ids.size();++stage) {
+            const int id=p.express_ids[stage];
+            const auto &link=express_link(id);
+            setup_delay+=mesh_distance(current,link.src);
+            const uint64_t token_id=reservation_token(p.id,stage);
+            ReservationToken token;
+            token.source=p.src;
+            token.directed_id=id;
+            if(!reservation_tokens.emplace(token_id,token).second)
+                fail("duplicate reservation token");
+            local_unacknowledged[p.src][id]++;
+            const uint64_t arrival_cycle=cycle+setup_delay;
+            if(arrival_cycle<reservation_control.size())
+                reservation_control[arrival_cycle].push_back(
+                    ReservationControlEvent{
+                        ReservationControlEvent::Register,token_id});
+            if(measuring(cycle))stats.registration_messages++;
+            setup_delay+=link.latency;
+            current=link.dst;
+        }
+    }
+
+    void traverse_registered_reservation(Packet &p,size_t stage) {
+        const int id=p.express_ids.at(stage);
+        if(o.express_reservation_mode!="registered") {
+            if(--reservations[id]<0)
+                fail("reservation underflow on traversal");
+            if(measuring(cycle))stats.reservation_dec[id]++;
+            return;
+        }
+        const uint64_t token_id=reservation_token(p.id,stage);
+        const auto found=reservation_tokens.find(token_id);
+        if(found==reservation_tokens.end())
+            fail("express traversal has no reservation token");
+        auto &token=found->second;
+        if(token.state!=ReservationToken::Registered) {
+            if(measuring(cycle))stats.late_registrations++;
+            fail("packet reached express link before route setup registered it");
+        }
+        if(--reservations[id]<0)
+            fail("registered reservation underflow on traversal");
+        token.state=ReservationToken::Done;
+        if(measuring(cycle))stats.reservation_dec[id]++;
+        maybe_erase_reservation_token(token_id);
+    }
+
+    void cancel_registered_reservation(
+        Packet &p,size_t stage,int current_router) {
+        const int id=p.express_ids.at(stage);
+        if(o.express_reservation_mode!="registered") {
+            if(--reservations[id]<0)
+                fail("reservation underflow on escape");
+            if(measuring(cycle))stats.reservation_dec[id]++;
+            return;
+        }
+        const uint64_t token_id=reservation_token(p.id,stage);
+        const auto found=reservation_tokens.find(token_id);
+        if(found==reservation_tokens.end())
+            fail("reservation cancellation has no token");
+        const int entry=express_link(id).src;
+        const uint64_t arrival_cycle=cycle+1+
+            mesh_distance(current_router,entry);
+        if(arrival_cycle<reservation_control.size())
+            reservation_control[arrival_cycle].push_back(
+                ReservationControlEvent{
+                    ReservationControlEvent::Cancel,token_id});
+    }
+
+    void install_express_information(const ExpressInfoUpdate &update) {
+        advertised_q[update.router][update.directed_id]=update.q;
+        advertised_r[update.router][update.directed_id]=update.r;
+        advertised_valid[update.router][update.directed_id]=1;
+        if(measuring(cycle))stats.info_updates++;
+    }
+
+    void update_express_information() {
+        if(o.express_info_mode=="instant")return;
+        for(const auto &update:info_arrivals[cycle])
+            install_express_information(update);
+        if(cycle%o.express_info_period!=0)return;
+        for(size_t id=0;id<reservations.size();++id) {
+            const auto &link=express_link(int(id));
+            const uint32_t q=quantize_express_pressure(
+                express_vcs_occupied(int(id)));
+            const uint32_t r=quantize_express_pressure(
+                uint64_t(std::max<int64_t>(0,reservations[id])));
+            // q/r are retained state, so unchanged advertisements are
+            // redundant.  Sending only changes is decision-equivalent to a
+            // per-cycle stream and models a much cheaper event-driven plane.
+            if(originated_valid[id] && originated_q[id]==q &&
+               originated_r[id]==r)
+                continue;
+            originated_q[id]=q;
+            originated_r[id]=r;
+            originated_valid[id]=1;
+            for(int router=0;router<kNodes;++router) {
+                uint64_t delay=o.express_info_delay;
+                if(o.express_info_mode=="distance-gossip")
+                    delay+=mesh_distance(link.src,router);
+                const ExpressInfoUpdate update{
+                    router,int(id),q,r
+                };
+                const uint64_t delivery=cycle+delay;
+                if(delivery==cycle)install_express_information(update);
+                else if(delivery<info_arrivals.size())
+                    info_arrivals[delivery].push_back(update);
+            }
+        }
+    }
+
+    std::pair<double,double> observed_express_pressure(int source,int id) {
+        const uint64_t true_q=express_vcs_occupied(id);
+        const uint64_t true_r=uint64_t(
+            std::max<int64_t>(0,reservations[id]));
+        uint64_t observed_q=true_q,observed_r=true_r;
+        bool known=true;
+        if(o.express_info_mode!="instant") {
+            known=advertised_valid[source][id];
+            observed_q=advertised_q[source][id];
+            observed_r=advertised_r[source][id];
+        }
+        if(o.express_reservation_mode=="registered")
+            observed_r+=local_unacknowledged[source][id];
+        if(measuring(cycle)) {
+            stats.info_queries++;
+            if(!known)stats.info_unknown_queries++;
+            stats.info_q_abs_error+=true_q>observed_q?
+                true_q-observed_q:observed_q-true_q;
+            stats.info_r_abs_error+=true_r>observed_r?
+                true_r-observed_r:observed_r-true_r;
+        }
+        return {double(observed_q),double(observed_r)};
     }
 
     int link_vcs_occupied(int link_id) const {
@@ -1267,6 +1599,154 @@ class Simulator {
         return waiting;
     }
 
+    bool admit_express_route(const Packet &p) const {
+        if(o.express_admission_fraction>=1.0)return true;
+        if(o.express_admission_fraction<=0.0)return false;
+        uint64_t value=p.id^(uint64_t(p.src)<<32)^uint64_t(p.dest);
+        value+=0x9e3779b97f4a7c15ULL;
+        value=(value^(value>>30))*0xbf58476d1ce4e5b9ULL;
+        value=(value^(value>>27))*0x94d049bb133111ebULL;
+        value^=value>>31;
+        const long double sample=static_cast<long double>(value)/
+            static_cast<long double>(std::numeric_limits<uint64_t>::max());
+        return sample<o.express_admission_fraction;
+    }
+
+    void dump_ni_stall_state(int src,const char *event,uint64_t length) const {
+        if(src!=o.debug_stall_source)return;
+        const auto &ni=nis[src];
+        const auto &input=routers[src].inputs[0];
+        std::cerr << "NI_STALL event=" << event << " cycle=" << cycle
+                  << " source=" << src << " consecutive=" << length
+                  << " pending=" << ni.messages.size()
+                  << " ni_busy=";
+        for(bool busy:ni.busy)std::cerr << (busy?'1':'0');
+        std::cerr << " ni_slots=";
+        for(uint64_t packet:ni.slots) {
+            if(packet==kEmpty)std::cerr << "- ";
+            else std::cerr << packet << ' ';
+        }
+        std::cerr << " input_rr_vc=" << input.rr_vc << '\n';
+        for(int vc=0;vc<kVcs;++vc) {
+            const auto &slot=input.slots[vc];
+            std::cerr << "  vc=" << vc;
+            if(slot.packet==kEmpty) {
+                std::cerr << " empty\n";
+                continue;
+            }
+            const auto found=packets.find(slot.packet);
+            if(found==packets.end()) {
+                std::cerr << " packet=" << slot.packet << " MISSING\n";
+                continue;
+            }
+            const Packet &p=found->second;
+            std::cerr << " packet=" << p.id << " dest=" << p.dest
+                      << " injected=" << p.injected
+                      << " enqueue=" << slot.enqueue
+                      << " age=" << (cycle-slot.enqueue)
+                      << " escape=" << p.escape
+                      << " express_stage=" << p.express_stage << '/'
+                      << p.express_ids.size() << " outport=" << slot.outport
+                      << " free_vc="
+                      << free_vc_for_packet(src,slot.outport,p);
+            const auto &busy=slot.outport==0?routers[src].local_busy:
+                links[routers[src].outgoing[slot.outport-1]].busy;
+            std::cerr << " out_busy=";
+            for(bool value:busy)std::cerr << (value?'1':'0');
+            if(slot.outport>0) {
+                const auto &link=links[routers[src].outgoing[slot.outport-1]];
+                std::cerr << " next=" << link.dst
+                          << " express_id=" << link.express_id;
+            }
+            std::cerr << '\n';
+        }
+        int outport=-1;
+        for(const auto &slot:input.slots) {
+            if(slot.packet==kEmpty || slot.outport<=0)continue;
+            const auto found=packets.find(slot.packet);
+            if(found!=packets.end() && found->second.escape) {
+                outport=slot.outport;
+                break;
+            }
+        }
+        if(outport<=0)return;
+        std::vector<uint8_t> seen(links.size(),0);
+        int router=src;
+        std::cerr << "  escape_dependency_chain:\n";
+        for(size_t depth=0;depth<=links.size();++depth) {
+            if(outport<=0 || size_t(outport)>routers[router].outgoing.size()) {
+                std::cerr << "    invalid outport=" << outport
+                          << " router=" << router << '\n';
+                break;
+            }
+            const int link_id=routers[router].outgoing[outport-1];
+            const auto &link=links[link_id];
+            std::cerr << "    link=" << link_id << ' ' << link.src << "->"
+                      << link.dst << " busy3=" << link.busy[3];
+            if(seen[link_id]) {
+                std::cerr << " CYCLE\n";
+                break;
+            }
+            seen[link_id]=1;
+            const auto &downstream=
+                routers[link.dst].inputs[link.inport].slots[3];
+            if(downstream.packet==kEmpty) {
+                std::cerr << " downstream_vc3=empty\n";
+                break;
+            }
+            const auto found=packets.find(downstream.packet);
+            if(found==packets.end()) {
+                std::cerr << " downstream_packet=" << downstream.packet
+                          << " MISSING\n";
+                break;
+            }
+            const Packet &p=found->second;
+            std::cerr << " packet=" << p.id << " dest=" << p.dest
+                      << " enqueue=" << downstream.enqueue
+                      << " age=" << (cycle-downstream.enqueue)
+                      << " escape=" << p.escape
+                      << " next_out=" << downstream.outport;
+            if(downstream.outport==0) {
+                std::cerr << " local_busy3="
+                          << routers[link.dst].local_busy[3] << '\n';
+                break;
+            }
+            std::cerr << '\n';
+            if(cycle-downstream.enqueue>=1000) {
+                const auto &port=routers[link.dst].inputs[link.inport];
+                std::cerr << "      blocked_input=" << link.inport
+                          << " rr_vc=" << port.rr_vc << " slots:";
+                for(int vc=0;vc<kVcs;++vc) {
+                    const auto &candidate=port.slots[vc];
+                    if(candidate.packet==kEmpty) {
+                        std::cerr << " vc" << vc << "=-";
+                        continue;
+                    }
+                    const auto candidate_packet=packets.find(candidate.packet);
+                    if(candidate_packet==packets.end()) {
+                        std::cerr << " vc" << vc << "=MISSING";
+                        continue;
+                    }
+                    std::cerr << " vc" << vc << "=p" << candidate.packet
+                              << "/out" << candidate.outport
+                              << "/free" << free_vc_for_packet(
+                                  link.dst,candidate.outport,
+                                  candidate_packet->second)
+                              << "/esc" << candidate_packet->second.escape;
+                }
+                std::cerr << '\n';
+                const int next_out=downstream.outport;
+                const int rr=next_out==0?routers[link.dst].rr_local_in:
+                    routers[link.dst].rr_link_in[next_out-1];
+                std::cerr << "      desired_output_rr_input=" << rr
+                          << " input_count="
+                          << routers[link.dst].inputs.size() << '\n';
+            }
+            router=link.dst;
+            outport=downstream.outport;
+        }
+    }
+
     void initialize_source_route(Packet &p) {
         if(!o.source_route)return;
         p.source_routed=true;
@@ -1284,6 +1764,8 @@ class Simulator {
         else if(o.source_route_policy==1 || o.source_route_policy==2 ||
                 o.source_route_policy==4) {
             double best=std::numeric_limits<double>::infinity();
+            double mesh_cost=std::numeric_limits<double>::infinity();
+            size_t mesh_selected=set.size();
             for(size_t i=0;i<set.size();++i){double cost=set[i].latency;
                 for(int id:set[i].express_ids){
                     const auto &link=links[link_index[id%2==0?edges[id/2].u:edges[id/2].v]
@@ -1292,13 +1774,22 @@ class Simulator {
                         cost+=link.output_ready_cycles.size();
                     if(o.source_route_policy==2)cost+=reservations[id];
                     if(o.source_route_policy==4) {
-                        cost+=o.reservation_weight*reservations[id];
-                        cost+=o.express_vc_weight*express_vcs_occupied(id);
+                        const auto [observed_q,observed_r]=
+                            observed_express_pressure(p.src,id);
+                        cost+=o.reservation_weight*observed_r;
+                        cost+=o.express_vc_weight*observed_q;
                         cost+=o.express_waiter_weight*express_waiters(id);
                     }
                 }
+                if(set[i].express_ids.empty() && cost<mesh_cost) {
+                    mesh_cost=cost;mesh_selected=i;
+                }
                 if(cost<best){best=cost;selected=i;}
             }
+            if(o.source_route_policy==4 &&
+               !set[selected].express_ids.empty() && mesh_selected<set.size() &&
+               !admit_express_route(p))
+                selected=mesh_selected;
         }
         if(o.source_route_policy<5)p.express_ids=set[selected].express_ids;
         if(o.source_mesh_routing=="phase_xy") {
@@ -1334,7 +1825,7 @@ class Simulator {
             stats.planned[std::min<size_t>(2,p.express_ids.size())]++;
             for(int id:p.express_ids)stats.edge_selected[id]++;
         }
-        for(int id:p.express_ids){reservations[id]++;if(measuring(cycle))stats.reservation_inc[id]++;}
+        register_source_route(p);
         if(o.source_route_policy==6)
             for(const int link_id:p.planned_links)link_reservations[link_id]++;
     }
@@ -1342,12 +1833,21 @@ class Simulator {
     void run_network_interfaces() {
         for(int src=0;src<kNodes;++src) {
             Ni &ni=nis[src];
-            if(!ni.messages.empty() && ni.messages.front().created<=cycle) {
+            const bool ready_message=
+                !ni.messages.empty() && ni.messages.front().created<=cycle;
+            if(ready_message) {
                 const int usable=o.no_escape?4:3;int selected=-1;
                 for(int i=0;i<usable;++i){int vc=(ni.allocator+i)%usable;
                     if(!ni.busy[vc]){selected=vc;ni.allocator=(vc+1)%usable;break;}}
                 if(selected<0) {
                     ++ni.busy_counter;
+                    const uint64_t consecutive=++debug_consecutive_ni_busy[src];
+                    if(src==o.debug_stall_source &&
+                       (consecutive==o.debug_stall_threshold ||
+                        (consecutive>o.debug_stall_threshold &&
+                         (consecutive-o.debug_stall_threshold)%
+                             o.debug_stall_interval==0)))
+                        dump_ni_stall_state(src,"blocked",consecutive);
                     if (ni.busy_counter > max_ni_busy_streak) {
                         max_ni_busy_streak = ni.busy_counter;
                         max_ni_busy_streak_source = src;
@@ -1359,6 +1859,10 @@ class Simulator {
                     if(ni.busy_counter>o.deadlock_threshold)
                         record_ni_watchdog(src);
                 } else {
+                    if(debug_consecutive_ni_busy[src]>=o.debug_stall_threshold)
+                        dump_ni_stall_state(
+                            src,"recovered",debug_consecutive_ni_busy[src]);
+                    debug_consecutive_ni_busy[src]=0;
                     ni.busy_counter=0;Pending pending=ni.messages.front();ni.messages.pop_front();
                     Packet p; p.id=next_packet++;p.src=src;p.dest=pending.dest;
                     p.created=pending.created-1;p.injected=cycle;
@@ -1366,6 +1870,11 @@ class Simulator {
                     packets.emplace(id,std::move(p));ni.slots[selected]=id;ni.busy[selected]=true;
                     if(measuring(cycle))stats.injected++;
                 }
+            } else {
+                if(debug_consecutive_ni_busy[src]>=o.debug_stall_threshold)
+                    dump_ni_stall_state(
+                        src,"queue_idle",debug_consecutive_ni_busy[src]);
+                debug_consecutive_ni_busy[src]=0;
             }
             for(int i=0;i<kVcs;++i){int vc=(ni.rr+i)%kVcs;
                 if(ni.slots[vc]==kEmpty)continue;

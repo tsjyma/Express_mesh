@@ -1,0 +1,52 @@
+[
+  {
+    "accepted_throughput_mean": 0.29059855324074074,
+    "accepted_throughput_sd": 0.005148515899558092,
+    "average_hops_mean": 4.606062888888889,
+    "average_hops_sd": 0.003267756548629425,
+    "average_packet_latency_cycles_mean": 5800.635904146667,
+    "average_packet_latency_cycles_sd": 255.69792244798248,
+    "completed_seeds": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "delivered_escape_fraction_mean": 0.04790102988977543,
+    "delivered_escape_fraction_sd": 0.002007210820860688,
+    "express_admission_fraction": 1.0,
+    "express_info_bits": 4,
+    "express_info_delay": 1,
+    "express_info_mode": "distance-gossip",
+    "express_info_period": 1,
+    "express_reservation_mode": "registered",
+    "express_traversals_per_packet_mean": 0.2031976043793851,
+    "express_traversals_per_packet_sd": 0.0005147247828838149,
+    "failed_sample_count": 0,
+    "max_link_utilization_mean": 0.5848368888888889,
+    "max_link_utilization_sd": 0.01394664569389754,
+    "placement_label": "greedy",
+    "rate": 0.7,
+    "requested_sample_count": 9,
+    "requested_seeds": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "reservation_weight": 0.6,
+    "sample_count": 9,
+    "traffic": "uniform_random",
+    "vc_pressure_weight": 1.0
+  }
+]

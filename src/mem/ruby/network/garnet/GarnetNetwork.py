@@ -77,6 +77,24 @@ class GarnetNetwork(RubyNetwork):
     source_route_vc_weight = Param.Float(
         1.0, "occupied express output VC weight for policy 4"
     )
+    source_route_info_mode = Param.String(
+        "instant", "policy-4 pressure view: instant, delayed-global, or distance-gossip"
+    )
+    source_route_reservation_mode = Param.String(
+        "instant", "express reservation update: instant or registered"
+    )
+    source_route_info_period = Param.UInt32(
+        1, "cycles between express pressure advertisements"
+    )
+    source_route_info_delay = Param.UInt32(
+        0, "base advertisement propagation delay in cycles"
+    )
+    source_route_info_bits = Param.UInt32(
+        0, "pressure advertisement bits per q/r value; zero keeps exact values"
+    )
+    source_route_admission_fraction = Param.Float(
+        1.0, "local fraction of adaptively selected express routes admitted"
+    )
     express_escape_enabled = Param.Bool(True, "reserve one escape VC")
     express_adaptive = Param.Bool(False, "enable congestion-aware routing")
     express_adaptive_threshold = Param.Float(

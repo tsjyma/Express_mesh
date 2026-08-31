@@ -1,0 +1,32 @@
+[
+  {
+    "accepted_throughput_mean": 0.240045703125,
+    "accepted_throughput_sd": 0.0,
+    "average_hops_mean": 4.58115669162,
+    "average_hops_sd": 0.0,
+    "average_packet_latency_cycles_mean": 22555.5854967,
+    "average_packet_latency_cycles_sd": 0.0,
+    "delivered_escape_fraction_mean": 0.0689034368998,
+    "delivered_escape_fraction_sd": 0.0,
+    "express_admission_fraction": 1.0,
+    "express_info_bits": 4,
+    "express_info_delay": 1,
+    "express_info_mode": "distance-gossip",
+    "express_info_period": 1,
+    "express_reservation_mode": "registered",
+    "express_traversals_per_packet_mean": 0.19184280771185608,
+    "express_traversals_per_packet_sd": 0.0,
+    "max_link_utilization_mean": 0.498516666667,
+    "max_link_utilization_sd": 0.0,
+    "placement_file": "express_mesh_project/results/design_space/b32_d1/aspl.json",
+    "placement_label": "Greedy",
+    "rate": 0.7,
+    "reservation_weight": 0.6,
+    "sample_count": 1,
+    "seeds": [
+      3
+    ],
+    "traffic": "uniform_random",
+    "vc_pressure_weight": 1.0
+  }
+]

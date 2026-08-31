@@ -1,0 +1,36 @@
+{
+  "constraints": {
+    "max_degree": 0,
+    "wire_cost": 0
+  },
+  "dimension": 8,
+  "express_links": [],
+  "latency_model": "ideal",
+  "name": "cutstress_bottleneck",
+  "node_count": 64,
+  "search_metadata": {
+    "algorithm": "traffic_aware_greedy",
+    "alpha": 0.5,
+    "flow_proxy": {
+      "commodity_count": 32,
+      "concurrent_flow_proxy": 8.000000000000012,
+      "endpoint_max_load": 0.03125,
+      "mean_latency": 4.000000000000011,
+      "network_max_load": 0.12499999999999982,
+      "overall_max_load": 0.12499999999999982,
+      "p95_link_load": 0.09374999999999993,
+      "route_count": 32
+    },
+    "objective": "bottleneck",
+    "offline_metrics": {
+      "aspl": 4.0,
+      "diameter": 14,
+      "equal_cost_path_count": 1.0,
+      "l_max": 0.125,
+      "load_cv": 1.1858541225631425,
+      "near_shortest_diversity": 1.0,
+      "p95_load": 0.125
+    },
+    "traffic": "cutstress"
+  }
+}

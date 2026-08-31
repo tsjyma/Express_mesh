@@ -81,6 +81,22 @@ def define_options(parser):
     parser.add_argument("--express-reservation-weight", type=float, default=0.5)
     parser.add_argument("--express-vc-pressure-weight", type=float, default=1.0)
     parser.add_argument(
+        "--express-info-mode",
+        choices=["instant", "delayed-global", "distance-gossip"],
+        default="instant",
+    )
+    parser.add_argument("--express-info-period", type=int, default=1)
+    parser.add_argument("--express-info-delay", type=int, default=0)
+    parser.add_argument("--express-info-bits", type=int, default=0)
+    parser.add_argument("--express-admission-fraction", type=float, default=1.0)
+    parser.add_argument(
+        "--express-reservation-mode",
+        choices=["instant", "registered"],
+        default="instant",
+        help=("instant keeps the legacy global counter; registered uses a "
+              "propagating route-setup/ACK protocol"),
+    )
+    parser.add_argument(
         "--express-adaptive-threshold", type=float, default=0.25,
     )
     parser.add_argument("--express-adaptive-lambda", type=float, default=1.0)
@@ -219,6 +235,12 @@ def init_network(options, network, InterfaceClass):
         network.source_route_policy = options.express_source_route_policy
         network.source_route_reservation_weight = options.express_reservation_weight
         network.source_route_vc_weight = options.express_vc_pressure_weight
+        network.source_route_info_mode = options.express_info_mode
+        network.source_route_reservation_mode = options.express_reservation_mode
+        network.source_route_info_period = options.express_info_period
+        network.source_route_info_delay = options.express_info_delay
+        network.source_route_info_bits = options.express_info_bits
+        network.source_route_admission_fraction = options.express_admission_fraction
         network.garnet_deadlock_threshold = options.garnet_deadlock_threshold
 
         # Create Bridges and connect them to the corresponding links

@@ -1,0 +1,213 @@
+{
+  "config": {
+    "binary": "/home/lryp/Express_mesh/express_mesh_project/standalone_noc/express_noc",
+    "final_temperature": 0.0005,
+    "flow_max_commodities": 512,
+    "flow_rounds": 16,
+    "initial": [
+      "express_mesh_project/results/placement_v6/baselines/uniform_random_aspl.json",
+      "express_mesh_project/results/placement_v6/baselines/uniform_random_bottleneck.json",
+      "express_mesh_project/results/placement_v6/baselines/uniform_random_hybrid.json",
+      "express_mesh_project/results/placement_v6/search/uniform_random/flow_swap/best.json"
+    ],
+    "initial_temperature": 0.02,
+    "iterations": 15,
+    "measurement_cycles": 2000,
+    "mode": "flow-lns",
+    "neighbors": 6,
+    "output_dir": "express_mesh_project/results/placement_v6/search/uniform_random/flow_lns",
+    "proposal_pool": 192,
+    "rates": [
+      0.8
+    ],
+    "reheat_period": 15,
+    "replicas": 4,
+    "restarts": 2,
+    "seed": 201,
+    "stagnation_limit": 3,
+    "swap_period": 5,
+    "traffic_seeds": [
+      1
+    ],
+    "traffics": [
+      "uniform_random"
+    ],
+    "warmup_cycles": 500,
+    "workers": 4
+  },
+  "history": [
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.979861412337406,
+      "evaluated_placements": 10,
+      "improved_current": false,
+      "iteration": 1,
+      "winner_utility": 2.890055261058786
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.979861412337406,
+      "evaluated_placements": 16,
+      "improved_current": false,
+      "iteration": 2,
+      "winner_utility": 2.9614475027956293
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.7891937184346105,
+      "evaluated_placements": 22,
+      "improved_current": false,
+      "iteration": 3,
+      "winner_utility": 2.8900606266462723
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.8055221364387686,
+      "evaluated_placements": 28,
+      "improved_current": true,
+      "iteration": 4,
+      "winner_utility": 2.8055221364387686
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.8055221364387686,
+      "evaluated_placements": 34,
+      "improved_current": false,
+      "iteration": 5,
+      "winner_utility": 2.789184624218532
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.8055221364387686,
+      "evaluated_placements": 40,
+      "improved_current": false,
+      "iteration": 6,
+      "winner_utility": 2.789196082930791
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.757083949022215,
+      "evaluated_placements": 47,
+      "improved_current": false,
+      "iteration": 7,
+      "winner_utility": 2.757109731124798
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.757083949022215,
+      "evaluated_placements": 53,
+      "improved_current": false,
+      "iteration": 8,
+      "winner_utility": 2.695109206207773
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.77304578464686,
+      "evaluated_placements": 59,
+      "improved_current": true,
+      "iteration": 9,
+      "winner_utility": 2.77304578464686
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.822002447414033,
+      "evaluated_placements": 65,
+      "improved_current": true,
+      "iteration": 10,
+      "winner_utility": 2.822002447414033
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.822002447414033,
+      "evaluated_placements": 71,
+      "improved_current": false,
+      "iteration": 11,
+      "winner_utility": 2.822001174223782
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.822002447414033,
+      "evaluated_placements": 76,
+      "improved_current": false,
+      "iteration": 12,
+      "winner_utility": 2.8219994008516465
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.5931000056531617,
+      "evaluated_placements": 82,
+      "improved_current": false,
+      "iteration": 13,
+      "winner_utility": 2.8219994008516465
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.741347093748376,
+      "evaluated_placements": 88,
+      "improved_current": true,
+      "iteration": 14,
+      "winner_utility": 2.741347093748376
+    },
+    {
+      "best_utility": 2.979861412337406,
+      "current_utility": 2.822025182954229,
+      "evaluated_placements": 94,
+      "improved_current": true,
+      "iteration": 15,
+      "winner_utility": 2.822025182954229
+    }
+  ],
+  "metadata": {
+    "best_search_result": {
+      "metrics": [
+        {
+          "commodity_count": 512,
+          "concurrent_flow_proxy": 50.88198757763975,
+          "endpoint_max_load": 0.01953125,
+          "mean_latency": 4.0404052734375,
+          "network_max_load": 0.0196533203125,
+          "overall_max_load": 0.0196533203125,
+          "p95_link_load": 0.018798828125,
+          "route_count": 4058
+        }
+      ],
+      "utility": 2.979861412337406
+    },
+    "evaluated_placements": 94,
+    "full_flow_score": {
+      "mesh_metrics": [
+        {
+          "commodity_count": 4032,
+          "concurrent_flow_proxy": 31.499999999996753,
+          "endpoint_max_load": 0.015624999999999972,
+          "mean_latency": 5.333333333338451,
+          "network_max_load": 0.03174603174603502,
+          "overall_max_load": 0.03174603174603502,
+          "p95_link_load": 0.03174603174603502,
+          "route_count": 4032
+        }
+      ],
+      "metrics": [
+        {
+          "commodity_count": 4032,
+          "concurrent_flow_proxy": 50.87697160883065,
+          "endpoint_max_load": 0.015624999999999972,
+          "mean_latency": 3.862219432048058,
+          "network_max_load": 0.01965525793650877,
+          "overall_max_load": 0.01965525793650877,
+          "p95_link_load": 0.018531436011905347,
+          "route_count": 32137
+        }
+      ],
+      "utility": 2.0174791125080587
+    },
+    "mode": "flow-lns",
+    "rates": [
+      0.8
+    ],
+    "search_seed": 201,
+    "traffics": [
+      "uniform_random"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+[
+  {
+    "accepted_throughput_mean": 0.29318645833333334,
+    "accepted_throughput_sd": 0.0,
+    "average_hops_mean": 4.609788,
+    "average_hops_sd": 0.0,
+    "average_packet_latency_cycles_mean": 5688.646492917999,
+    "average_packet_latency_cycles_sd": 0.0,
+    "delivered_escape_fraction_mean": 0.04686828276942645,
+    "delivered_escape_fraction_sd": 0.0,
+    "express_traversals_per_packet_mean": 0.20332712757453128,
+    "express_traversals_per_packet_sd": 0.0,
+    "max_link_utilization_mean": 0.59225,
+    "max_link_utilization_sd": 0.0,
+    "placement_count": 1,
+    "rate": 0.7,
+    "sample_count": 1,
+    "topology_class": "greedy",
+    "traffic": "uniform_random"
+  }
+]
