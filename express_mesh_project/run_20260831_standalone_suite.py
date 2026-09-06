@@ -223,8 +223,8 @@ def topology_catalog(output: Path) -> dict[str, dict[str, Path]]:
     catalog["random"] = {}
     # The main/cross expectations use only the first ten layouts, while the
     # dedicated distribution figure needs a much larger independent topology
-    # sample.  Keeping all 200 in one catalog makes the seed mapping explicit.
-    for seed in range(1, 201):
+    # sample.  Keeping all 400 in one catalog makes the seed mapping explicit.
+    for seed in range(1, 401):
         path = random_dir / f"p{seed}" / "random.json"
         if not path.exists():
             make_random(path, 8, 32, 3, seed)
@@ -261,9 +261,9 @@ def main_cases(catalog) -> list[Case]:
 
 
 def random_distribution_cases(catalog) -> list[Case]:
-    """Two traffic seeds for each of 200 independent Random layouts."""
+    """Two traffic seeds for each of 400 independent Random layouts."""
     cases = []
-    for topology_seed in range(1, 201):
+    for topology_seed in range(1, 401):
         for seed in (7, 8):
             cases.append(Case(
                 "random_distribution", f"random_p{topology_seed}", "random",

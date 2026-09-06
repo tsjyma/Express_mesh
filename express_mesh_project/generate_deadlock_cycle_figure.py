@@ -107,8 +107,11 @@ def main():
             mx += 0.52 if radius > 0 else -0.52
         else:
             dx, dy = destination[0] - source[0], destination[1] - source[1]
-            mx += -0.30 * dy
-            my += 0.30 * dx
+            # Move the two vertical-edge labels far enough sideways that their
+            # boxes do not cover the corresponding arrowheads.
+            offset = 0.58 if index in (0, 5) else 0.30
+            mx += -offset * dy
+            my += offset * dx
         axis.text(
             mx, my, f"{index + 1} · VC{blocker['vc']}", color=color,
             fontsize=8.2, ha="center", va="center", zorder=7,

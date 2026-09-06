@@ -74,10 +74,9 @@ remains unused.
 This motivates a simple question: if only a small additional wiring budget is
 available, can it be spent more effectively on a few long-range express links
 than on uniformly increasing network resources?  Prior work by Ogras and
-Marculescu showed that augmenting a standard mesh with a few application-specific
-long-range links can increase the critical traffic workload and achievable
-throughput \cite{ogras}.  Express links can bypass heavily used cuts and create
-alternative routes, but a poorly placed shortcut may attract traffic without relieving the
+Marculescu establishes the basic premise that a few application-specific long-range links can substantially improve a mesh NoC \cite{ogras}.
+However, while express links can bypass heavily used cuts and create
+alternative routes, a poorly placed shortcut may attract traffic without relieving the
 true bottleneck. Additionally, a shortest-path or purely local routing policy may funnel
 too many packets toward the same express link or fail to observe congestion
 that lies several hops away.  The topology and routing problems are therefore
@@ -229,7 +228,8 @@ two directed express links.  Consecutive waypoints are connected by
 deterministic XY mesh segments.  Candidates are sorted by static latency and
 the first $K$ are retained; the main setting uses $K=8$.  This small set covers
 useful low-cost alternatives without requiring a router to search the full
-graph.
+graph.  The additional route metadata is only about $2\log_2K$ bits per packet
+and is ignored in our simplified accounting.
 
 At injection, candidate $P$ receives cost
 \begin{equation}
@@ -526,11 +526,10 @@ Express latency $\tau(e)$ & 1 cycle & Link bandwidth & 1 flit/cycle\\
 Active traffic vnets & 1 & VCs per active vnet & 4\\
 VC buffer depth & 1 flit & Packet size & 1 flit\\
 Candidate count $K$ & 8 & $q/r$ coefficients $\alpha,\beta$ & $1.0,0.6$\\
-Escape timeout $T_{\rm esc}$ & 32 cycles & Express admission & 1.0\\
 Warmup window & 20k cycles & Measurement window & 100k cycles\\
-SA search budget & $4\times80$ proposals & SA weights $\lambda_w,\lambda_l$ & $0.25,0.006$\\
-SA load grid $\mathcal{R}_{\rm SA}$ &
-$\{0.05,0.10,\cdots,0.80\}$ &  & \\
+Escape timeout $T_{\rm esc}$ & 32 cycles & SA search budget & $4\times80$ proposals\\
+SA weights $\lambda_w,\lambda_l$ & $0.25,0.006$ &
+SA load grid $\mathcal{R}_{\rm SA}$ & $\{0.05,0.10,\cdots,0.80\}$\\
 \bottomrule
 \end{tabular}
 \caption{Main experiment configuration.}
@@ -609,9 +608,9 @@ BitComp & \cellcolor{red!22}0.1498/12799 & \cellcolor{yellow!18}0.1678/8110 & \c
 CutStress & \cellcolor{red!22}0.1875/4069 & \cellcolor{yellow!18}0.1935/1962 & \cellcolor{speedblue!7}$+3.2\%$ & \cellcolor{green!30}0.1999/11 & \cellcolor{speedblue!7}$+3.3\%$ & \cellcolor{green!30}0.1999/11 & \cellcolor{gray!12}$+0.0\%$\\
 \bottomrule
 \end{tabular}
-\caption{Garnet main results at configured injection rate 0.40.  Throughput-change
-columns use a shared blue scale for positive gains, orange for losses, and gray
-for no change.}
+\caption{Garnet main results at configured injection rate 0.40.
+$\Delta_{\rm R/M}$, $\Delta_{\rm G/R}$, and $\Delta_{\rm S/G}$ denote the
+throughput gains of Random over Mesh, Greedy over Random, and SA over Greedy.}
 \label{tab:rate04}
 \end{table}
 
@@ -629,8 +628,7 @@ BitComp & \cellcolor{red!22}0.1298/36082 & \cellcolor{yellow!18}0.1584/30544 & \
 CutStress & \cellcolor{red!22}0.1875/21342 & \cellcolor{orange!18}0.2072/19161 & \cellcolor{speedblue!13}$+10.5\%$ & \cellcolor{green!30}0.2760/9373 & \cellcolor{speedblue!31}$+33.2\%$ & \cellcolor{green!30}0.2786/9543 & \cellcolor{speedblue!5}$+0.9\%$\\
 \bottomrule
 \end{tabular}
-\caption{Garnet main results at configured injection rate 0.70.  Throughput-change
-columns use the separate scale defined in \cref{tab:rate04}.}
+\caption{Garnet main results at configured injection rate 0.70.}
 \label{tab:rate07}
 \end{table}
 
@@ -648,8 +646,7 @@ BitComp & \cellcolor{red!22}0.1283/39760 & \cellcolor{yellow!18}0.1572/34750 & \
 CutStress & \cellcolor{red!22}0.1875/24845 & \cellcolor{orange!18}0.2070/23171 & \cellcolor{speedblue!12}$+10.4\%$ & \cellcolor{green!30}0.2791/14626 & \cellcolor{speedblue!32}$+34.8\%$ & \cellcolor{green!30}0.2827/13795 & \cellcolor{speedblue!5}$+1.3\%$\\
 \bottomrule
 \end{tabular}
-\caption{Garnet main results at configured injection rate 0.80.  Throughput-change
-columns use the separate scale defined in \cref{tab:rate04}.}
+\caption{Garnet main results at configured injection rate 0.80.}
 \label{tab:rate08}
 \end{table}
 
@@ -692,14 +689,14 @@ curves.}
 
 \subsubsection{Random-placement distribution}
 
-At Uniform rate 0.8, 200 independent legal random layouts were each evaluated
-with two traffic seeds.  Greedy exceeds 98\% of their topology means, and
-SA exceeds all 200.
+At Uniform rate 0.8, 400 independent legal random layouts were each evaluated
+with two traffic seeds.  Greedy exceeds 98.8\% of their topology means, and
+SA exceeds all 400.
 
 \begin{figure}[H]
 \centering
 \svginsert[0.96\linewidth]{random_distribution}
-\caption{Central Uniform rate-0.8 throughput distribution over 200 random
+\caption{Central Uniform rate-0.8 throughput distribution over 400 random
 placements; the annotation records layouts below the displayed range.}
 \label{fig:random-dist}
 \end{figure}
@@ -967,7 +964,7 @@ delay, two-flit serialization, and the move to $16\times16$.  The final SoC
 case is a more severe placement test.  Its local escape timeout is increased
 from 64 to 256 cycles so that recoverable adaptive congestion is not
 prematurely funnelled into the single escape VC; the routing policy and all
-other network resources remain unchanged.  Under this setting ASPL Greedy is
+other network resources remain unchanged.  Under this setting, Greedy is
 a stable intermediate design, while traffic-matched simulation-guided SA
 provides a further substantial improvement.
 
@@ -997,7 +994,7 @@ hard configured-rate ceiling of $R=2/3$.  The reported $R=0.55$ point is below
 that bound but close enough to expose placement-induced internal congestion.
 Under this configuration, Mesh delivers 0.1751 packets/router/cycle at
 11,253-cycle mean latency.  Random placement is highly topology-sensitive and
-its ten-topology expectation is worse, at 0.1228 and 21,392 cycles.  ASPL
+its ten-topology expectation is worse, at 0.1228 and 21,392 cycles.
 Greedy remains stable at 0.2191 and 6,056 cycles, improving throughput by
 25.1\% over Mesh.  The SA placement further raises
 throughput to 0.2466, 12.6\% above Greedy, while reducing latency by 58.3\% to

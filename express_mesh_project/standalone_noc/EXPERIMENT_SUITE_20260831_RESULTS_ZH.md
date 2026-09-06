@@ -4,7 +4,7 @@
 
 ## 完成范围
 
-已聚合 8984 个样本；包含 section：`cross, escape, escape_deadlock_contrast, escape_off, information_ablation, main, random_distribution, routing_ablation, scaling`；命令失败 0 个。
+已聚合 9384 个样本；包含 section：`cross, escape, escape_deadlock_contrast, escape_off, information_ablation, main, random_distribution, routing_ablation, scaling`；命令失败 0 个。
 
 ## 0. 静态数据
 
@@ -278,8 +278,8 @@ Scaling 配置使用与图横轴一致的语义名称：`8x8-B32` 是完整参�
 ## 异常和不符合预期的现象
 
 - 检测到 20 个 global-no-progress 样本。
-- 检测到 236 个 NI watchdog 事件（escape=164、escape_deadlock_contrast=20、random_distribution=10、routing_ablation=1、scaling=41）；其中 215 个按配置继续运行到 simulation limit 并纳入统计，21 个提前终止样本不纳入 throughput/latency 均值。
-- Random distribution 中 5/200 个 topology 在两个 seed 共触发 10 次 NI starvation watchdog；这些 case 均继续运行到完整 measurement limit，图中的低吞吐长尾不是提前终止值。
+- 检测到 243 个 NI watchdog 事件（escape=164、escape_deadlock_contrast=20、random_distribution=17、routing_ablation=1、scaling=41）；其中 222 个按配置继续运行到 simulation limit 并纳入统计，21 个提前终止样本不纳入 throughput/latency 均值。
+- Random distribution 中 9/200 个 topology 在两个 seed 共触发 17 次 NI starvation watchdog；这些 case 均继续运行到完整 measurement limit，图中的低吞吐长尾不是提前终止值。
 - Scaling watchdog 来自 16x16-B256:random_p1, 16x16-B256:random_p10, 16x16-B256:random_p2, 16x16-B256:random_p3, 16x16-B256:random_p4, 16x16-B256:random_p5, 16x16-B256:random_p6, 16x16-B256:random_p8, 16x16-B256:random_p9, 16x16-B256-L4:random_p1, 16x16-B256-L4:random_p10, 16x16-B256-L4:random_p3, 16x16-B256-L4:random_p4, 16x16-B256-L4:random_p5, 16x16-B256-L4:random_p6, 16x16-B256-L4:random_p7, 16x16-B256-L4:random_p9, 16x16-B256-SoC:mesh, 16x16-B256-SoC:random_p1, 16x16-B256-SoC:random_p2, 16x16-B256-SoC:random_p3, 16x16-B256-SoC:random_p4, 16x16-B256-SoC:random_p8, 16x16-B256-SoC:random_p9；这些 case 均按配置继续运行到 simulation limit，未把 watchdog 时刻的瞬时值当作最终结果。
 - 16x16-B256-SoC: ASPL Greedy 接受吞吐 0.2191，比 Mesh 的 0.1751 高 25.1%；平均延迟从 11252.9 降到 6055.9（变化 -46.2%）。
 - 16x16-B256-SoC 的 Greedy/SA 各四个 holdout seeds 均运行到 simulation limit；NI watchdog 数分别为 0/0，最大 busy streak 为 21657/5241。SA throughput=0.2466，相对 Greedy +12.6%；SA latency=2525.8，相对 Greedy -58.3%。

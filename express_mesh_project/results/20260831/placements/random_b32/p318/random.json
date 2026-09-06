@@ -1,0 +1,87 @@
+{
+  "constraints": {
+    "max_degree": 1,
+    "wire_cost": 32
+  },
+  "dimension": 8,
+  "express_links": [
+    {
+      "latency": 1,
+      "u": 0,
+      "u_coord": [
+        0,
+        0
+      ],
+      "v": 10,
+      "v_coord": [
+        2,
+        1
+      ],
+      "wire_length": 3
+    },
+    {
+      "latency": 1,
+      "u": 3,
+      "u_coord": [
+        3,
+        0
+      ],
+      "v": 52,
+      "v_coord": [
+        4,
+        6
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 22,
+      "u_coord": [
+        6,
+        2
+      ],
+      "v": 58,
+      "v_coord": [
+        2,
+        7
+      ],
+      "wire_length": 9
+    },
+    {
+      "latency": 1,
+      "u": 24,
+      "u_coord": [
+        0,
+        3
+      ],
+      "v": 44,
+      "v_coord": [
+        4,
+        5
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 25,
+      "u_coord": [
+        1,
+        3
+      ],
+      "v": 39,
+      "v_coord": [
+        7,
+        4
+      ],
+      "wire_length": 7
+    }
+  ],
+  "express_wire_per_cycle": 4,
+  "latency_model": "ideal",
+  "name": "random_8_32_318",
+  "node_count": 64,
+  "search_metadata": {
+    "algorithm": "random",
+    "seed": 318
+  }
+}

@@ -672,7 +672,7 @@ def plot_scaling(frame, output):
              ylabel="Average packet latency (cycles, log scale)")
     if latency_values:
         axis.set_ylim(min(latency_values) / 1.25,
-                      max(latency_values) * 2.8)
+                      max(latency_values) * 4.0)
     axis.legend(loc="upper center", bbox_to_anchor=(.5, .985), ncol=4)
     axis.grid(axis="y", alpha=.2); fig.tight_layout()
     fig.savefig(output / "scaling_latency.svg", bbox_inches="tight"); plt.close(fig)
