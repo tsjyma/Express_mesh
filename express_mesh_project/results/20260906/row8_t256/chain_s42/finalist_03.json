@@ -1,0 +1,822 @@
+{
+  "constraints": {
+    "max_degree": 1,
+    "wire_cost": 253
+  },
+  "dimension": 16,
+  "express_links": [
+    {
+      "latency": 1,
+      "u": 35,
+      "u_coord": [
+        3,
+        2
+      ],
+      "v": 163,
+      "v_coord": [
+        3,
+        10
+      ],
+      "wire_length": 8
+    },
+    {
+      "latency": 1,
+      "u": 39,
+      "u_coord": [
+        7,
+        2
+      ],
+      "v": 135,
+      "v_coord": [
+        7,
+        8
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 40,
+      "u_coord": [
+        8,
+        2
+      ],
+      "v": 121,
+      "v_coord": [
+        9,
+        7
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 42,
+      "u_coord": [
+        10,
+        2
+      ],
+      "v": 202,
+      "v_coord": [
+        10,
+        12
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 50,
+      "u_coord": [
+        2,
+        3
+      ],
+      "v": 58,
+      "v_coord": [
+        10,
+        3
+      ],
+      "wire_length": 8
+    },
+    {
+      "latency": 1,
+      "u": 51,
+      "u_coord": [
+        3,
+        3
+      ],
+      "v": 195,
+      "v_coord": [
+        3,
+        12
+      ],
+      "wire_length": 9
+    },
+    {
+      "latency": 1,
+      "u": 53,
+      "u_coord": [
+        5,
+        3
+      ],
+      "v": 60,
+      "v_coord": [
+        12,
+        3
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 55,
+      "u_coord": [
+        7,
+        3
+      ],
+      "v": 61,
+      "v_coord": [
+        13,
+        3
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 66,
+      "u_coord": [
+        2,
+        4
+      ],
+      "v": 72,
+      "v_coord": [
+        8,
+        4
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 68,
+      "u_coord": [
+        4,
+        4
+      ],
+      "v": 197,
+      "v_coord": [
+        5,
+        12
+      ],
+      "wire_length": 9
+    },
+    {
+      "latency": 1,
+      "u": 71,
+      "u_coord": [
+        7,
+        4
+      ],
+      "v": 183,
+      "v_coord": [
+        7,
+        11
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 75,
+      "u_coord": [
+        11,
+        4
+      ],
+      "v": 85,
+      "v_coord": [
+        5,
+        5
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 77,
+      "u_coord": [
+        13,
+        4
+      ],
+      "v": 173,
+      "v_coord": [
+        13,
+        10
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 84,
+      "u_coord": [
+        4,
+        5
+      ],
+      "v": 108,
+      "v_coord": [
+        12,
+        6
+      ],
+      "wire_length": 9
+    },
+    {
+      "latency": 1,
+      "u": 86,
+      "u_coord": [
+        6,
+        5
+      ],
+      "v": 182,
+      "v_coord": [
+        6,
+        11
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 88,
+      "u_coord": [
+        8,
+        5
+      ],
+      "v": 94,
+      "v_coord": [
+        14,
+        5
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 89,
+      "u_coord": [
+        9,
+        5
+      ],
+      "v": 185,
+      "v_coord": [
+        9,
+        11
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 91,
+      "u_coord": [
+        11,
+        5
+      ],
+      "v": 186,
+      "v_coord": [
+        10,
+        11
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 92,
+      "u_coord": [
+        12,
+        5
+      ],
+      "v": 204,
+      "v_coord": [
+        12,
+        12
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 100,
+      "u_coord": [
+        4,
+        6
+      ],
+      "v": 106,
+      "v_coord": [
+        10,
+        6
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 103,
+      "u_coord": [
+        7,
+        6
+      ],
+      "v": 199,
+      "v_coord": [
+        7,
+        12
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 104,
+      "u_coord": [
+        8,
+        6
+      ],
+      "v": 200,
+      "v_coord": [
+        8,
+        12
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 113,
+      "u_coord": [
+        1,
+        7
+      ],
+      "v": 119,
+      "v_coord": [
+        7,
+        7
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 114,
+      "u_coord": [
+        2,
+        7
+      ],
+      "v": 157,
+      "v_coord": [
+        13,
+        9
+      ],
+      "wire_length": 13
+    },
+    {
+      "latency": 1,
+      "u": 115,
+      "u_coord": [
+        3,
+        7
+      ],
+      "v": 141,
+      "v_coord": [
+        13,
+        8
+      ],
+      "wire_length": 11
+    },
+    {
+      "latency": 1,
+      "u": 116,
+      "u_coord": [
+        4,
+        7
+      ],
+      "v": 212,
+      "v_coord": [
+        4,
+        13
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 117,
+      "u_coord": [
+        5,
+        7
+      ],
+      "v": 123,
+      "v_coord": [
+        11,
+        7
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 124,
+      "u_coord": [
+        12,
+        7
+      ],
+      "v": 220,
+      "v_coord": [
+        12,
+        13
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 132,
+      "u_coord": [
+        4,
+        8
+      ],
+      "v": 138,
+      "v_coord": [
+        10,
+        8
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 140,
+      "u_coord": [
+        12,
+        8
+      ],
+      "v": 151,
+      "v_coord": [
+        7,
+        9
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 148,
+      "u_coord": [
+        4,
+        9
+      ],
+      "v": 172,
+      "v_coord": [
+        12,
+        10
+      ],
+      "wire_length": 9
+    },
+    {
+      "latency": 1,
+      "u": 149,
+      "u_coord": [
+        5,
+        9
+      ],
+      "v": 155,
+      "v_coord": [
+        11,
+        9
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 150,
+      "u_coord": [
+        6,
+        9
+      ],
+      "v": 156,
+      "v_coord": [
+        12,
+        9
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 164,
+      "u_coord": [
+        4,
+        10
+      ],
+      "v": 170,
+      "v_coord": [
+        10,
+        10
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 180,
+      "u_coord": [
+        4,
+        11
+      ],
+      "v": 201,
+      "v_coord": [
+        9,
+        12
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 213,
+      "u_coord": [
+        5,
+        13
+      ],
+      "v": 219,
+      "v_coord": [
+        11,
+        13
+      ],
+      "wire_length": 6
+    }
+  ],
+  "express_wire_per_cycle": 4,
+  "latency_model": "ideal",
+  "name": "v8_sa-reheat_finalist_3",
+  "node_count": 256,
+  "search_metadata": {
+    "rank": 3,
+    "search_result": {
+      "by_traffic": [
+        {
+          "accepted_throughput": 0.2248149804689,
+          "latency": 16.80294702354,
+          "normalized_throughput": 0.9991776909728888,
+          "rate": 0.45,
+          "samples": [
+            {
+              "accepted_throughput": 0.22471078125,
+              "average_packet_latency_cycles": 16.7955945455,
+              "max_ni_busy_streak": 13,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5752596,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.224769414063,
+              "average_packet_latency_cycles": 16.8014204488,
+              "max_ni_busy_streak": 13,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5754097,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.224863945313,
+              "average_packet_latency_cycles": 16.8090406056,
+              "max_ni_busy_streak": 4,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5756517,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.224836601562,
+              "average_packet_latency_cycles": 16.8152425624,
+              "max_ni_busy_streak": 22,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5755817,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.224859453125,
+              "average_packet_latency_cycles": 16.8105061113,
+              "max_ni_busy_streak": 5,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5756402,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.2248553125,
+              "average_packet_latency_cycles": 16.7943783641,
+              "max_ni_busy_streak": 26,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5756296,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.224853789063,
+              "average_packet_latency_cycles": 16.8150853932,
+              "max_ni_busy_streak": 3,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5756257,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.224795390625,
+              "average_packet_latency_cycles": 16.7885087168,
+              "max_ni_busy_streak": 16,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5754762,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.224844804688,
+              "average_packet_latency_cycles": 16.7962229851,
+              "max_ni_busy_streak": 5,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5756027,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.2247603125,
+              "average_packet_latency_cycles": 16.8034705026,
+              "max_ni_busy_streak": 10,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5753864,
+              "termination_reason": "simulate_limit"
+            }
+          ],
+          "traffic": "soc_heterogeneous"
+        },
+        {
+          "accepted_throughput": 0.2497875585939,
+          "latency": 17.99935804498,
+          "normalized_throughput": 0.9991502343756,
+          "rate": 0.5,
+          "samples": [
+            {
+              "accepted_throughput": 0.249738320313,
+              "average_packet_latency_cycles": 18.0195406098,
+              "max_ni_busy_streak": 63,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6393301,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.249756757813,
+              "average_packet_latency_cycles": 17.9847825376,
+              "max_ni_busy_streak": 37,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6393773,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.249917304688,
+              "average_packet_latency_cycles": 17.9886049807,
+              "max_ni_busy_streak": 39,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6397883,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.249769140625,
+              "average_packet_latency_cycles": 17.960579066,
+              "max_ni_busy_streak": 46,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6394090,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.249774414063,
+              "average_packet_latency_cycles": 17.9661269349,
+              "max_ni_busy_streak": 39,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6394225,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.249857265625,
+              "average_packet_latency_cycles": 17.9959444033,
+              "max_ni_busy_streak": 48,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6396346,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.2498321875,
+              "average_packet_latency_cycles": 18.0747645607,
+              "max_ni_busy_streak": 69,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6395704,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.249755117187,
+              "average_packet_latency_cycles": 17.931047928,
+              "max_ni_busy_streak": 43,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6393731,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.249797773438,
+              "average_packet_latency_cycles": 18.0752310111,
+              "max_ni_busy_streak": 67,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6394823,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.249677304687,
+              "average_packet_latency_cycles": 17.9969584177,
+              "max_ni_busy_streak": 50,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6391739,
+              "termination_reason": "simulate_limit"
+            }
+          ],
+          "traffic": "soc_heterogeneous"
+        },
+        {
+          "accepted_throughput": 0.23878271875,
+          "latency": 3280.6373300549994,
+          "normalized_throughput": 0.8683007954545454,
+          "rate": 0.55,
+          "samples": [
+            {
+              "accepted_throughput": 0.23689640625,
+              "average_packet_latency_cycles": 3107.5640953,
+              "max_ni_busy_streak": 6728,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6064548,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.229753789062,
+              "average_packet_latency_cycles": 3360.82666941,
+              "max_ni_busy_streak": 12058,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5881697,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.244961484375,
+              "average_packet_latency_cycles": 2595.20093114,
+              "max_ni_busy_streak": 2801,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6271014,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.246974492188,
+              "average_packet_latency_cycles": 3145.93375407,
+              "max_ni_busy_streak": 1751,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6322547,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.23239109375,
+              "average_packet_latency_cycles": 3093.69820037,
+              "max_ni_busy_streak": 6728,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5949212,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.249794257813,
+              "average_packet_latency_cycles": 2297.0217185,
+              "max_ni_busy_streak": 2369,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6394733,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.243910078125,
+              "average_packet_latency_cycles": 3216.67861811,
+              "max_ni_busy_streak": 1976,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6244098,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.241034882812,
+              "average_packet_latency_cycles": 3684.54989204,
+              "max_ni_busy_streak": 3765,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6170493,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.245259726563,
+              "average_packet_latency_cycles": 2688.1950727,
+              "max_ni_busy_streak": 2429,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 6278649,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.216850976562,
+              "average_packet_latency_cycles": 5616.70434891,
+              "max_ni_busy_streak": 8862,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 5551385,
+              "termination_reason": "simulate_limit"
+            }
+          ],
+          "traffic": "soc_heterogeneous"
+        }
+      ],
+      "utility": 1.1701999793343287
+    }
+  }
+}

@@ -34,6 +34,7 @@
 
 #include <deque>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <string>
 #include <unordered_map>
@@ -86,10 +87,6 @@ class GarnetNetwork : public Network
     uint32_t getBuffersPerDataVC() { return m_buffers_per_data_vc; }
     uint32_t getBuffersPerCtrlVC() { return m_buffers_per_ctrl_vc; }
     int getRoutingAlgorithm() const { return m_routing_algorithm; }
-    int getExpressNextHop(int source, int destination) const;
-    const std::vector<int>& getExpressNeighbors(int router) const;
-    uint32_t getExpressDistance(int source, int destination) const;
-    uint32_t getExpressEdgeLatency(int source, int destination) const;
     int getExpressRouteSource(int directed_id) const;
     int getExpressRouteDestination(int directed_id) const;
     bool isSourceRouteEnabled() const { return m_source_route_enabled; }
@@ -98,24 +95,18 @@ class GarnetNetwork : public Network
     void releaseSourceRouteExpress(
         const RouteInfo &route, uint8_t stage, int current_router,
         bool cancellation);
-    double expressQueue(int directed_id) const;
     double expressVcOccupancy(int directed_id, int vnet);
-    bool isExpressAdaptive() const { return m_express_adaptive; }
-    double getExpressAdaptiveThreshold() const
-    { return m_express_adaptive_threshold; }
-    double getExpressAdaptiveLambda() const { return m_express_adaptive_lambda; }
-    double getExpressDetourRatio() const { return m_express_detour_ratio; }
     uint32_t getExpressEscapeTimeout() const
     { return m_express_escape_timeout; }
     bool isExpressEscapeEnabled() const { return m_express_escape_enabled; }
     void incrementExpressLinkTraversal() { m_express_link_traversals++; }
     void incrementEscapeTraversal() { m_escape_vc_traversals++; }
     void recordEscapeTransition(RouteInfo &route, Tick tick);
-    void incrementNonminimalDecision() { m_nonminimal_route_decisions++; }
     void recordSourceRouteSelection(const RouteInfo &route);
     void recordDeliveredSourceRoute(const RouteInfo &route);
     void recordDeliveredEscape(const RouteInfo &route);
     void sampleExpressState();
+    void recordRouterWakeup(int router_id);
 
     bool isFaultModelEnabled() const { return m_enable_fault_model; }
     FaultModel* fault_model;
@@ -202,7 +193,6 @@ class GarnetNetwork : public Network
     uint32_t m_buffers_per_ctrl_vc;
     uint32_t m_buffers_per_data_vc;
     int m_routing_algorithm;
-    uint32_t m_express_mesh_link_latency;
     std::vector<uint32_t> m_express_link_endpoints;
     std::vector<uint32_t> m_express_link_latencies;
     bool m_source_route_enabled;
@@ -212,6 +202,7 @@ class GarnetNetwork : public Network
     std::vector<uint32_t> m_source_route_candidate_latencies;
     std::vector<uint32_t> m_source_route_candidate_express_counts;
     std::vector<uint32_t> m_source_route_candidate_express_ids;
+    uint32_t m_source_route_candidates;
     uint32_t m_source_route_policy;
     double m_source_route_reservation_weight;
     double m_source_route_vc_weight;
@@ -221,14 +212,6 @@ class GarnetNetwork : public Network
     uint32_t m_source_route_info_delay;
     uint32_t m_source_route_info_bits;
     double m_source_route_admission_fraction;
-    std::vector<std::vector<int>> m_express_next_hop;
-    std::vector<std::vector<int>> m_express_neighbors;
-    std::vector<std::vector<uint32_t>> m_express_edge_latency;
-    std::vector<std::vector<uint32_t>> m_express_distance;
-    bool m_express_adaptive;
-    double m_express_adaptive_threshold;
-    double m_express_adaptive_lambda;
-    double m_express_detour_ratio;
     uint32_t m_express_escape_timeout;
     bool m_express_escape_enabled;
     bool m_enable_fault_model;
@@ -268,7 +251,6 @@ class GarnetNetwork : public Network
     statistics::Scalar m_escape_vc_transitions;
     statistics::Scalar m_escape_transition_delay_ticks;
     statistics::Scalar m_delivered_escape_packets;
-    statistics::Scalar m_nonminimal_route_decisions;
     statistics::Vector m_express_reservation_current;
     statistics::Vector m_express_reservation_increments;
     statistics::Vector m_express_reservation_decrements;
@@ -284,6 +266,21 @@ class GarnetNetwork : public Network
     statistics::Scalar m_reservation_registration_acks;
     statistics::Scalar m_reservation_registration_cancels;
     statistics::Scalar m_reservation_late_registrations;
+    statistics::Scalar m_express_info_queries;
+    statistics::Scalar m_express_info_true_q_sum;
+    statistics::Scalar m_express_info_observed_q_sum;
+    statistics::Scalar m_express_info_true_r_sum;
+    statistics::Scalar m_express_info_observed_r_sum;
+    statistics::Scalar m_express_info_local_pending_sum;
+    // Diagnostic counters used to pin down same-cycle ordering between the
+    // periodic information event, router credit processing, and NI route
+    // selection.  They observe the existing implementation and do not alter
+    // routing or control decisions.
+    statistics::Scalar m_express_info_queries_before_periodic_event;
+    statistics::Scalar m_express_info_queries_after_entry_router_wakeup;
+    statistics::Scalar m_express_info_snapshots_before_periodic_event;
+    statistics::Vector m_express_info_snapshots_before_periodic_by_parity;
+    statistics::Scalar m_express_info_snapshot_router_wakeups_sum;
     statistics::Vector m_int_link_utilization;
     statistics::Formula m_avg_hops;
 
@@ -352,6 +349,9 @@ class GarnetNetwork : public Network
     std::vector<int64_t> m_reservation_current;
     std::deque<ExpressInfoSnapshot> m_express_info_history;
     uint64_t m_express_info_last_cycle;
+    uint64_t m_express_info_event_last_cycle =
+        std::numeric_limits<uint64_t>::max();
+    std::vector<uint64_t> m_router_last_wakeup_cycle;
     EventFunctionWrapper m_express_info_event;
     std::multimap<uint64_t, ReservationControlEvent> m_reservation_control;
     std::unordered_map<uint64_t, ReservationToken> m_reservation_tokens;

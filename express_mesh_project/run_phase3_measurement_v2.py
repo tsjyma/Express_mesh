@@ -3,6 +3,7 @@
 import argparse
 import csv
 import json
+import math
 import re
 import subprocess
 import os
@@ -19,30 +20,22 @@ TOPOLOGIES = {
     "mesh": "mesh.json",
     "random": "random.json",
     "aspl": "aspl.json",
-    "bottleneck": "bottleneck.json",
-    "handcrafted": "handcrafted.json",
-    "hybrid": "hybrid.json",
-    "hybrid_cutstress": "hybrid_cutstress.json",
-    "stride_random": "stride_random.json",
-    "stride_aspl": "stride_aspl.json",
     "bitcomp_aspl": "bitcomp_aspl.json",
-    "bitcomp_hybrid": "bitcomp_hybrid.json",
     "tornado_aspl": "tornado_aspl.json",
-    "tornado_hybrid": "tornado_hybrid.json",
 }
-TRAFFICS = ("uniform_random", "cutstress", "hotspot", "bit_complement",
-            "tornado")
-ROUTINGS = ("deterministic", "adaptive")
+TRAFFICS = ("uniform_random", "cutstress", "cutstress_bidirectional",
+            "hotspot", "bit_complement", "tornado")
+ROUTINGS = ("committed",)
 
 # Garnet runs at the default 2 GHz Ruby clock while gem5 ticks are 1 ps.
 # GarnetNetwork latency statistics are accumulated in ticks, so one network
 # cycle is 500 ticks. Keep this explicit so latency and throughput use the
 # same network-cycle unit.
 RUBY_CLOCK_PERIOD_TICKS = 500.0
-RESULT_SCHEMA_VERSION = 7
+RESULT_SCHEMA_VERSION = 10
 
 
-def traffic_mapping_stats(text, traffic):
+def traffic_mapping_stats(text, traffic, node_count=64):
     """Summarize the source/destination router matrix seen by Garnet.
 
     Deterministic synthetic traffic must remain deterministic after Ruby's
@@ -53,11 +46,15 @@ def traffic_mapping_stats(text, traffic):
     pattern = re.compile(
         r"^system\.ruby\.network\.ctrl_traffic_distribution\.n(\d+)\.n(\d+)"
         r"\s+(\S+)", re.M)
-    matrix = [[0.0 for _ in range(64)] for _ in range(64)]
+    radix = round(node_count ** 0.5)
+    if radix * radix != node_count:
+        raise ValueError("ExpressMesh synthetic traffic requires a square grid")
+    matrix = [[0.0 for _ in range(node_count)]
+              for _ in range(node_count)]
     for source, destination, value in pattern.findall(text):
         matrix[int(source)][int(destination)] = float(value)
 
-    active_sources = [source for source in range(64)
+    active_sources = [source for source in range(node_count)
                       if sum(matrix[source]) > 0]
     active_destinations = [
         sum(value > 0 for value in matrix[source])
@@ -65,23 +62,33 @@ def traffic_mapping_stats(text, traffic):
     ]
     expected = {}
     if traffic == "bit_complement":
-        expected = {source: 63 - source for source in range(64)}
+        expected = {source: node_count - 1 - source
+                    for source in range(node_count)}
     elif traffic == "tornado":
         expected = {
-            source: (source // 8) * 8 + (source % 8 + 3) % 8
-            for source in range(64)
+            source: (source // radix) * radix +
+                    (source % radix + math.ceil(radix / 2) - 1) % radix
+            for source in range(node_count)
         }
     elif traffic == "cutstress":
         expected = {
-            source: (source // 8) * 8 + (7 - source % 8)
-            for source in range(64) if source % 8 < 4
+            source: (source // radix) * radix +
+                    (radix - 1 - source % radix)
+            for source in range(node_count) if source % radix < radix // 2
+        }
+    elif traffic == "cutstress_bidirectional":
+        expected = {
+            source: (source // radix) * radix +
+                    (radix - 1 - source % radix)
+            for source in range(node_count)
         }
 
     expected_total = sum(sum(matrix[source]) for source in expected)
     expected_hits = sum(matrix[source][destination]
                         for source, destination in expected.items())
     unexpected_source_packets = sum(
-        sum(matrix[source]) for source in range(64) if source not in expected
+        sum(matrix[source]) for source in range(node_count)
+        if source not in expected
     ) if expected else 0.0
     return {
         "traffic_matrix_packet_total": sum(map(sum, matrix)),
@@ -98,17 +105,51 @@ def traffic_mapping_stats(text, traffic):
 
 
 def run_tag(spec, source_route=False, source_route_policy=0, no_escape=False,
-            random_placement_seed=1):
+            random_placement_seed=1, dimension=8,
+            source_route_candidates=8, router_latency=1,
+            mesh_link_latency=1, vcs_per_vnet=4,
+            buffers_per_data_vc=4, buffers_per_ctrl_vc=1,
+            inj_vnet=0, escape_timeout=32):
     topology, routing, traffic, rate, seed = spec
     mode = "_source_route" if source_route else ""
     if source_route and source_route_policy:
-        mode += {1: "_q", 2: "_qr", 3: "_random_candidate",
+        mode += {3: "_random_candidate",
                  4: "_pressure"}[source_route_policy]
     if no_escape:
         mode += "_no_escape"
+    if dimension != 8:
+        mode += f"_n{dimension}"
+    if source_route_candidates != 8:
+        mode += f"_k{source_route_candidates}"
+    hardware = (
+        router_latency, mesh_link_latency, vcs_per_vnet,
+        buffers_per_data_vc, buffers_per_ctrl_vc, inj_vnet, escape_timeout,
+    )
+    if hardware != (1, 1, 4, 4, 1, 0, 32):
+        mode += (
+            f"_rl{router_latency}_ml{mesh_link_latency}_vc{vcs_per_vnet}"
+            f"_bd{buffers_per_data_vc}_bc{buffers_per_ctrl_vc}"
+            f"_vn{inj_vnet}_et{escape_timeout}"
+        )
     placement = (f"_p{random_placement_seed}"
-                 if topology in {"random", "stride_random"} else "")
+                 if topology == "random" else "")
     return f"{topology}_{routing}_{traffic}_r{rate:.3f}_s{seed}{placement}{mode}"
+
+
+def configurable_suffix(
+        reservation_weight, vc_pressure_weight, express_budget,
+        express_max_degree, express_min_wire_length, express_info_mode,
+        express_info_period, express_info_delay, express_info_bits,
+        express_admission_fraction, express_reservation_mode):
+    """Give every behavior-affecting CLI setting a distinct run directory."""
+    return (
+        f"_qw{vc_pressure_weight:g}_rw{reservation_weight:g}"
+        f"_b{express_budget}_deg{express_max_degree}"
+        f"_min{express_min_wire_length}_info{express_info_mode}"
+        f"_p{express_info_period}_d{express_info_delay}"
+        f"_bits{express_info_bits}_adm{express_admission_fraction:g}"
+        f"_res{express_reservation_mode}"
+    )
 
 
 def stat_values(text, name):
@@ -134,13 +175,15 @@ def stat_values_or_zero(text, name):
         return [0.0]
 
 
-def sum_scalar_suffix(text, suffix, allow_missing=False):
+def sum_scalar_suffix(text, suffix, allow_missing=False, node_count=64):
     pattern = rf"^system\.cpu\d+\.{re.escape(suffix)}\s+(\S+)"
     values = [float(value) for value in re.findall(pattern, text, re.M)]
     if not values and allow_missing:
         return 0.0
-    if len(values) != 64:
-        raise ValueError(f"expected 64 {suffix} statistics, found {len(values)}")
+    if len(values) != node_count:
+        raise ValueError(
+            f"expected {node_count} {suffix} statistics, found {len(values)}"
+        )
     return sum(values)
 
 
@@ -152,18 +195,23 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
             express_min_wire_length=3, express_info_mode="instant",
             express_info_period=1, express_info_delay=0,
             express_info_bits=0, express_admission_fraction=1.0,
-            express_reservation_mode="instant"):
+            express_reservation_mode="instant", dimension=8,
+            source_route_candidates=8, router_latency=1,
+            mesh_link_latency=1, vcs_per_vnet=4,
+            buffers_per_data_vc=4, buffers_per_ctrl_vc=1,
+            inj_vnet=0, escape_timeout=32):
     topology, routing, traffic, rate, seed = spec
     tag = run_tag(spec, source_route, source_route_policy, no_escape,
-                  random_placement_seed)
-    if express_info_mode != "instant" or express_admission_fraction != 1.0:
-        tag += (
-            f"_info_{express_info_mode}_p{express_info_period}"
-            f"_d{express_info_delay}_b{express_info_bits}"
-            f"_a{express_admission_fraction:.2f}"
-        )
-    if express_reservation_mode != "instant":
-        tag += f"_reservation_{express_reservation_mode}"
+                  random_placement_seed, dimension,
+                  source_route_candidates, router_latency,
+                  mesh_link_latency, vcs_per_vnet, buffers_per_data_vc,
+                  buffers_per_ctrl_vc, inj_vnet, escape_timeout)
+    tag += configurable_suffix(
+        reservation_weight, vc_pressure_weight, express_budget,
+        express_max_degree, express_min_wire_length, express_info_mode,
+        express_info_period, express_info_delay, express_info_bits,
+        express_admission_fraction, express_reservation_mode,
+    )
     outdir = RESULTS / "runs" / tag
     outdir.mkdir(parents=True, exist_ok=True)
     placement_dir = topology_dir
@@ -177,13 +225,19 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         str(GEM5_BINARY),
         f"--outdir={outdir}",
         "configs/example/garnet_synth_traffic.py",
-        "--network=garnet", "--num-cpus=64", "--num-dirs=64",
+        "--network=garnet", f"--num-cpus={dimension * dimension}",
+        f"--num-dirs={dimension * dimension}",
         # The synthetic tester embeds the requested directory in address bits
         # 6--11.  gem5's general memory-controller default XORs those bits
         # with changing tag bits and destroys deterministic traffic patterns.
         "--xor-low-bit=0",
-        "--topology=ExpressMesh", "--mesh-rows=8", "--routing-algorithm=2",
-        "--vcs-per-vnet=4", "--inj-vnet=0",
+        "--topology=ExpressMesh", f"--mesh-rows={dimension}",
+        "--routing-algorithm=2", f"--router-latency={router_latency}",
+        f"--link-latency={mesh_link_latency}",
+        f"--vcs-per-vnet={vcs_per_vnet}",
+        f"--buffers-per-data-vc={buffers_per_data_vc}",
+        f"--buffers-per-ctrl-vc={buffers_per_ctrl_vc}",
+        f"--inj-vnet={inj_vnet}",
         f"--garnet-deadlock-threshold={deadlock_threshold}",
         f"--warmup-cycles={warmup_cycles}",
         f"--measurement-cycles={measurement_cycles}",
@@ -192,8 +246,8 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         f"--express-budget={express_budget}",
         f"--express-max-degree={express_max_degree}",
         f"--express-min-wire-length={express_min_wire_length}",
-        "--express-adaptive-threshold=0.25", "--express-adaptive-lambda=1.0",
-        "--express-detour-ratio=1.5", "--express-escape-timeout=32",
+        f"--express-source-route-candidates={source_route_candidates}",
+        f"--express-escape-timeout={escape_timeout}",
         f"--express-reservation-weight={reservation_weight}",
         f"--express-vc-pressure-weight={vc_pressure_weight}",
         f"--express-info-mode={express_info_mode}",
@@ -203,8 +257,6 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         f"--express-admission-fraction={express_admission_fraction}",
         f"--express-reservation-mode={express_reservation_mode}",
     ]
-    if routing == "adaptive":
-        command.append("--express-adaptive")
     if source_route:
         command.append("--express-source-route")
         command.extend(["--express-source-route-policy", str(source_route_policy)])
@@ -238,16 +290,22 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
     injected_flits = stat_scalar_or_zero(stats, prefix + "flits_injected::total")
     received_flits = stat_scalar_or_zero(stats, prefix + "flits_received::total")
     allow_missing_stats = termination_reason == "deadlock_panic"
-    offered_requests = sum_scalar_suffix(stats, "offeredRequests", allow_missing_stats)
-    generated_requests = sum_scalar_suffix(stats, "generatedRequests", allow_missing_stats)
-    source_blocked_offers = sum_scalar_suffix(stats, "sourceBlockedOffers", allow_missing_stats)
-    attempts = sum_scalar_suffix(stats, "injectionAttempts", allow_missing_stats)
-    initial_retries = sum_scalar_suffix(stats, "initialSendRetries", allow_missing_stats)
+    node_count = dimension * dimension
+    offered_requests = sum_scalar_suffix(
+        stats, "offeredRequests", allow_missing_stats, node_count)
+    generated_requests = sum_scalar_suffix(
+        stats, "generatedRequests", allow_missing_stats, node_count)
+    source_blocked_offers = sum_scalar_suffix(
+        stats, "sourceBlockedOffers", allow_missing_stats, node_count)
+    attempts = sum_scalar_suffix(
+        stats, "injectionAttempts", allow_missing_stats, node_count)
+    initial_retries = sum_scalar_suffix(
+        stats, "initialSendRetries", allow_missing_stats, node_count)
     link_util = stat_values_or_zero(stats, prefix + "express_mesh_int_link_utilization")
     mean = sum(link_util) / len(link_util)
     variance = sum((value - mean) ** 2 for value in link_util) / len(link_util)
     ordered = sorted(link_util)
-    denominator = 64.0 * measurement_cycles
+    denominator = float(node_count) * measurement_cycles
     reservation_current = stat_values_or_zero(
         stats, prefix + "express_reservation_current")
     reservation_increments = stat_values_or_zero(
@@ -262,6 +320,15 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
     r_sum = stat_values_or_zero(stats, prefix + "express_r_sample_sum")
     r_max = stat_values_or_zero(stats, prefix + "express_r_sample_max")
     state_samples = stat_scalar_or_zero(stats, prefix + "express_state_sample_count")
+    info_queries = stat_scalar_or_zero(stats, prefix + "express_info_queries")
+    info_queries_before_event = stat_scalar_or_zero(
+        stats, prefix + "express_info_queries_before_periodic_event")
+    info_queries_after_entry_router = stat_scalar_or_zero(
+        stats, prefix + "express_info_queries_after_entry_router_wakeup")
+    info_snapshots_before_event = stat_scalar_or_zero(
+        stats, prefix + "express_info_snapshots_before_periodic_event")
+    info_snapshot_router_wakeups = stat_scalar_or_zero(
+        stats, prefix + "express_info_snapshot_router_wakeups_sum")
     escape_transitions = stat_scalar_or_zero(stats, prefix + "escape_vc_transitions")
     escape_delay_cycles = stat_scalar_or_zero(
         stats, prefix + "escape_transition_delay_ticks") / RUBY_CLOCK_PERIOD_TICKS
@@ -274,7 +341,7 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
     # including cases where a few packets were injected before the stall.
     no_progress = (termination_reason == "deadlock_panic" or
                    (no_escape and received_packets == 0 and end_tick is not None))
-    mapping_stats = traffic_mapping_stats(stats, traffic)
+    mapping_stats = traffic_mapping_stats(stats, traffic, node_count)
     row = {
         "result_schema_version": RESULT_SCHEMA_VERSION,
         "source_route": source_route,
@@ -286,6 +353,15 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         "simulation_end_tick": end_tick,
         "termination_reason": termination_reason,
         "topology": topology, "random_placement_seed": random_placement_seed,
+        "dimension": dimension,
+        "source_route_candidates": source_route_candidates,
+        "router_latency": router_latency,
+        "mesh_link_latency": mesh_link_latency,
+        "vcs_per_vnet": vcs_per_vnet,
+        "buffers_per_data_vc": buffers_per_data_vc,
+        "buffers_per_ctrl_vc": buffers_per_ctrl_vc,
+        "inj_vnet": inj_vnet,
+        "escape_timeout": escape_timeout,
         "topology_file": str(topology_file),
         "express_budget": express_budget,
         "express_max_degree": express_max_degree,
@@ -326,7 +402,6 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
                                       if received_packets else 0.0),
         "average_cycles_before_escape": (escape_delay_cycles / escape_transitions
                                          if escape_transitions else 0.0),
-        "nonminimal_decisions": stat_values_or_zero(stats, prefix + "nonminimal_route_decisions")[0],
         "reservation_current_total": sum(reservation_current),
         "reservation_current_max": max(reservation_current),
         "reservation_increments_total": sum(reservation_increments),
@@ -349,6 +424,35 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         if state_samples else [0.0 for value in q_sum],
         "express_r_sample_average": [value / state_samples for value in r_sum]
         if state_samples else [0.0 for value in r_sum],
+        "express_info_queries": info_queries,
+        "express_info_queries_before_periodic_event":
+            info_queries_before_event,
+        "express_info_queries_before_periodic_fraction":
+            info_queries_before_event / info_queries if info_queries else 0.0,
+        "express_info_queries_after_entry_router_wakeup":
+            info_queries_after_entry_router,
+        "express_info_queries_after_entry_router_fraction":
+            info_queries_after_entry_router / info_queries
+            if info_queries else 0.0,
+        "express_info_snapshots_before_periodic_event":
+            info_snapshots_before_event,
+        "express_info_snapshot_router_wakeups_per_measurement_cycle":
+            info_snapshot_router_wakeups / measurement_cycles,
+        "express_info_true_q_mean": stat_scalar_or_zero(
+            stats, prefix + "express_info_true_q_sum") / info_queries
+        if info_queries else 0.0,
+        "express_info_observed_q_mean": stat_scalar_or_zero(
+            stats, prefix + "express_info_observed_q_sum") / info_queries
+        if info_queries else 0.0,
+        "express_info_true_r_mean": stat_scalar_or_zero(
+            stats, prefix + "express_info_true_r_sum") / info_queries
+        if info_queries else 0.0,
+        "express_info_observed_r_mean": stat_scalar_or_zero(
+            stats, prefix + "express_info_observed_r_sum") / info_queries
+        if info_queries else 0.0,
+        "express_info_local_pending_mean": stat_scalar_or_zero(
+            stats, prefix + "express_info_local_pending_sum") / info_queries
+        if info_queries else 0.0,
         "reservation_registration_messages": stat_scalar_or_zero(
             stats, prefix + "reservation_registration_messages"),
         "reservation_registration_acks": stat_scalar_or_zero(
@@ -363,7 +467,8 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         "run_dir": str(outdir),
     }
     row.update(mapping_stats)
-    if (traffic in {"bit_complement", "tornado", "cutstress"} and
+    if (traffic in {"bit_complement", "tornado", "cutstress",
+                    "cutstress_bidirectional"} and
             termination_reason != "deadlock_panic" and
             (mapping_stats["traffic_expected_destination_fraction"] != 1.0 or
              mapping_stats["traffic_unexpected_source_packets"] != 0.0)):
@@ -384,18 +489,23 @@ def cached_result(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
                   express_min_wire_length=3, express_info_mode="instant",
                   express_info_period=1, express_info_delay=0,
                   express_info_bits=0, express_admission_fraction=1.0,
-                  express_reservation_mode="instant"):
+                  express_reservation_mode="instant", dimension=8,
+                  source_route_candidates=8, router_latency=1,
+                  mesh_link_latency=1, vcs_per_vnet=4,
+                  buffers_per_data_vc=4, buffers_per_ctrl_vc=1,
+                  inj_vnet=0, escape_timeout=32):
     topology, routing, traffic, rate, seed = spec
     tag = run_tag(spec, source_route, source_route_policy, no_escape,
-                  random_placement_seed)
-    if express_info_mode != "instant" or express_admission_fraction != 1.0:
-        tag += (
-            f"_info_{express_info_mode}_p{express_info_period}"
-            f"_d{express_info_delay}_b{express_info_bits}"
-            f"_a{express_admission_fraction:.2f}"
-        )
-    if express_reservation_mode != "instant":
-        tag += f"_reservation_{express_reservation_mode}"
+                  random_placement_seed, dimension,
+                  source_route_candidates, router_latency,
+                  mesh_link_latency, vcs_per_vnet, buffers_per_data_vc,
+                  buffers_per_ctrl_vc, inj_vnet, escape_timeout)
+    tag += configurable_suffix(
+        reservation_weight, vc_pressure_weight, express_budget,
+        express_max_degree, express_min_wire_length, express_info_mode,
+        express_info_period, express_info_delay, express_info_bits,
+        express_admission_fraction, express_reservation_mode,
+    )
     placement_dir = topology_dir
     if placement_dir is None:
         placement_dir = (Path(__file__).resolve().parent / "results" /
@@ -410,6 +520,16 @@ def cached_result(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
     if (row.get("result_schema_version") != RESULT_SCHEMA_VERSION or
             row.get("source_route", False) != source_route or
             row.get("source_route_policy", 0) != source_route_policy or
+            row.get("dimension", 8) != dimension or
+            row.get("source_route_candidates", 8) !=
+                source_route_candidates or
+            row.get("router_latency", 1) != router_latency or
+            row.get("mesh_link_latency", 1) != mesh_link_latency or
+            row.get("vcs_per_vnet", 4) != vcs_per_vnet or
+            row.get("buffers_per_data_vc", 4) != buffers_per_data_vc or
+            row.get("buffers_per_ctrl_vc", 1) != buffers_per_ctrl_vc or
+            row.get("inj_vnet", 0) != inj_vnet or
+            row.get("escape_timeout", 32) != escape_timeout or
             row.get("random_placement_seed", 1) != random_placement_seed or
             row.get("topology_file") != str(topology_file) or
             row.get("reservation_weight", 0.5) != reservation_weight or
@@ -452,11 +572,16 @@ def main():
                         default=list(TRAFFICS))
     parser.add_argument("--resume", action="store_true",
                         help="Reuse per-run results with matching windows")
-    parser.add_argument("--source-route", action="store_true",
-                        help="Commit the static source route at injection")
-    parser.add_argument("--source-route-policy", type=int, choices=[0, 1, 2, 3, 4], default=0,
-                        help=("0 static, 1 staging q, 2 staging q+r, "
-                              "3 random candidate, 4 reservation+VC pressure"))
+    parser.add_argument(
+        "--source-route", action=argparse.BooleanOptionalAction, default=True,
+        help="commit one selected top-K route at injection (required)",
+    )
+    parser.add_argument("--source-route-policy", type=int,
+                        choices=[0, 3, 4], default=4,
+                        help=("0 static, 3 random top-K candidate, "
+                              "4 q/r pressure-aware"))
+    parser.add_argument("--source-route-candidates", type=int, default=8,
+                        help="number K of source-route candidates per pair")
     parser.add_argument("--no-escape", action="store_true",
                         help="use all four VCs as adaptive VCs")
     parser.add_argument("--random-placement-seed", type=int, default=1,
@@ -465,26 +590,44 @@ def main():
                         help="directory containing the selected topology JSON files")
     parser.add_argument("--results", type=Path, default=RESULTS,
                         help="output directory (defaults to phase3_measurement_v2)")
-    parser.add_argument("--reservation-weight", type=float, default=0.5)
-    parser.add_argument("--express-vc-weight", type=float, default=1.0)
-    parser.add_argument("--express-budget", type=int, default=16)
+    parser.add_argument("--r-weight", "--reservation-weight",
+                        dest="reservation_weight", type=float, default=0.6)
+    parser.add_argument("--q-weight", "--express-vc-weight",
+                        dest="express_vc_weight", type=float, default=1.0)
+    parser.add_argument("--dimension", type=int, default=8,
+                        help="side length of the square ExpressMesh")
+    parser.add_argument("--express-budget", type=int, default=32)
     parser.add_argument("--express-max-degree", type=int, default=1)
     parser.add_argument("--express-min-wire-length", type=int, default=3)
     parser.add_argument(
         "--express-info-mode",
-        choices=["instant", "delayed-global", "distance-gossip"],
-        default="instant",
+        choices=["instant", "distance-gossip"],
+        default="distance-gossip",
     )
     parser.add_argument("--express-info-period", type=int, default=1)
-    parser.add_argument("--express-info-delay", type=int, default=0)
-    parser.add_argument("--express-info-bits", type=int, default=0)
+    parser.add_argument("--express-info-delay", type=int, default=1)
+    parser.add_argument("--express-info-bits", type=int, default=4)
     parser.add_argument("--express-admission-fraction", type=float, default=1.0)
     parser.add_argument(
         "--express-reservation-mode",
         choices=["instant", "registered"],
-        default="instant",
+        default="registered",
     )
+    parser.add_argument("--router-latency", type=int, default=1)
+    parser.add_argument("--mesh-link-latency", type=int, default=1)
+    parser.add_argument("--vcs-per-vnet", type=int, default=4)
+    parser.add_argument("--buffers-per-data-vc", type=int, default=4)
+    parser.add_argument("--buffers-per-ctrl-vc", type=int, default=1)
+    parser.add_argument("--inj-vnet", type=int, choices=[0, 1, 2], default=0,
+                        help="vnet 0/1 uses one-flit packets; vnet 2 uses five")
+    parser.add_argument("--escape-timeout", type=int, default=32)
     args = parser.parse_args()
+    if args.dimension <= 1:
+        parser.error("--dimension must be greater than one")
+    if args.source_route_candidates <= 0:
+        parser.error("--source-route-candidates must be positive")
+    if not args.source_route:
+        parser.error("the cleaned ExpressMesh Garnet path requires source routing")
 
     RESULTS = args.results.resolve()
     RESULTS.mkdir(parents=True, exist_ok=True)
@@ -506,7 +649,11 @@ def main():
             args.express_info_period, args.express_info_delay,
             args.express_info_bits,
             args.express_admission_fraction,
-            args.express_reservation_mode) if args.resume else None
+            args.express_reservation_mode, args.dimension,
+            args.source_route_candidates, args.router_latency,
+            args.mesh_link_latency, args.vcs_per_vnet,
+            args.buffers_per_data_vc, args.buffers_per_ctrl_vc,
+            args.inj_vnet, args.escape_timeout) if args.resume else None
         if cached is None:
             pending.append(spec)
         else:
@@ -525,7 +672,11 @@ def main():
             args.express_info_period, args.express_info_delay,
             args.express_info_bits,
             args.express_admission_fraction,
-            args.express_reservation_mode): spec for spec in pending}
+            args.express_reservation_mode, args.dimension,
+            args.source_route_candidates, args.router_latency,
+            args.mesh_link_latency, args.vcs_per_vnet,
+            args.buffers_per_data_vc, args.buffers_per_ctrl_vc,
+            args.inj_vnet, args.escape_timeout): spec for spec in pending}
         for index, future in enumerate(as_completed(futures), 1):
             spec = futures[future]
             try:

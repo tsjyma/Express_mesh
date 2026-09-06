@@ -46,9 +46,6 @@ class GarnetNetwork(RubyNetwork):
     buffers_per_data_vc = Param.UInt32(4, "buffers per data virtual channel")
     buffers_per_ctrl_vc = Param.UInt32(1, "buffers per ctrl virtual channel")
     routing_algorithm = Param.Int(0, "0: Weight-based Table, 1: XY, 2: Custom")
-    express_mesh_link_latency = Param.UInt32(
-        1, "latency of base mesh links used by custom shortest-path routing"
-    )
     express_link_endpoints = VectorParam.UInt32(
         [], "flattened pairs of bidirectional express-link endpoints"
     )
@@ -65,23 +62,30 @@ class GarnetNetwork(RubyNetwork):
         [], "flattened two-entry directed express IDs for each pair"
     )
     source_route_candidate_counts = VectorParam.UInt32([], "candidate count per pair")
-    source_route_candidate_latencies = VectorParam.UInt32([], "candidate static latencies")
-    source_route_candidate_express_counts = VectorParam.UInt32([], "candidate express counts")
+    source_route_candidate_latencies = VectorParam.UInt32(
+        [], "candidate static latencies"
+    )
+    source_route_candidate_express_counts = VectorParam.UInt32(
+        [], "candidate express counts"
+    )
     source_route_candidate_express_ids = VectorParam.UInt32([], "candidate express IDs")
+    source_route_candidates = Param.UInt32(
+        8, "number K of committed source-route candidates retained per pair"
+    )
     source_route_policy = Param.UInt32(
-        0, "0 static, 1 staging-q, 2 staging-q+r, 3 random, 4 pressure-aware"
+        4, "0 static, 3 random top-K, 4 q/r pressure-aware"
     )
     source_route_reservation_weight = Param.Float(
-        0.5, "in-flight express reservation weight for policy 4"
+        0.6, "in-flight express reservation weight r for policy 4"
     )
     source_route_vc_weight = Param.Float(
         1.0, "occupied express output VC weight for policy 4"
     )
     source_route_info_mode = Param.String(
-        "instant", "policy-4 pressure view: instant, delayed-global, or distance-gossip"
+        "distance-gossip", "policy-4 pressure view: instant or distance-gossip"
     )
     source_route_reservation_mode = Param.String(
-        "instant", "express reservation update: instant or registered"
+        "registered", "express reservation update: instant or registered"
     )
     source_route_info_period = Param.UInt32(
         1, "cycles between express pressure advertisements"
@@ -96,16 +100,6 @@ class GarnetNetwork(RubyNetwork):
         1.0, "local fraction of adaptively selected express routes admitted"
     )
     express_escape_enabled = Param.Bool(True, "reserve one escape VC")
-    express_adaptive = Param.Bool(False, "enable congestion-aware routing")
-    express_adaptive_threshold = Param.Float(
-        0.25, "minimum-output congestion that enables adaptive selection"
-    )
-    express_adaptive_lambda = Param.Float(
-        1.0, "congestion weight in adaptive path scoring"
-    )
-    express_detour_ratio = Param.Float(
-        1.5, "maximum local bounded-detour stretch"
-    )
     express_escape_timeout = Param.UInt32(
         32, "cycles before an adaptive VC irreversibly enters escape VC"
     )

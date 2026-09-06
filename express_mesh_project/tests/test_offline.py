@@ -7,12 +7,15 @@ from express_mesh_project.model import (
     ExpressEdge,
     GridGraph,
     cutstress_demand,
+    cutstress_bidirectional_demand,
     core_metrics,
     hotspot_demand,
     tornado_demand,
+    soc_heterogeneous_demand,
     uniform_demand,
 )
 from express_mesh_project.placement import (
+    edge_latency,
     greedy_placement,
     random_placement,
     validate_placement,
@@ -28,9 +31,50 @@ from express_mesh_project.candidates import (
 )
 from express_mesh_project.run_phase3_measurement_v2 import traffic_mapping_stats
 from express_mesh_project.flow_placement import compress_demand, flow_metrics
+from express_mesh_project.search_placement_advanced import (
+    _curve_throughput_guardrail,
+)
 
 
 class OfflineModelTest(unittest.TestCase):
+    def test_length_aware_latency_uses_configured_wire_rate(self):
+        self.assertEqual(
+            [edge_latency(length, "length-aware", 2)
+             for length in (3, 4, 5, 6)],
+            [2, 2, 3, 3],
+        )
+        self.assertEqual(
+            [edge_latency(length, "length-aware", 4)
+             for length in (3, 4, 5, 8)],
+            [1, 1, 2, 2],
+        )
+
+    def test_curve_guardrail_checks_every_rate_with_one_relative_tolerance(self):
+        incumbent = {"by_traffic": [
+            {"traffic": "uniform_random", "rate": 0.4,
+             "accepted_throughput": 0.2},
+            {"traffic": "uniform_random", "rate": 0.8,
+             "accepted_throughput": 0.3},
+        ]}
+        acceptable = {"by_traffic": [
+            {"traffic": "uniform_random", "rate": 0.4,
+             "accepted_throughput": 0.1995},
+            {"traffic": "uniform_random", "rate": 0.8,
+             "accepted_throughput": 0.31},
+        ]}
+        regressed = {"by_traffic": [
+            {"traffic": "uniform_random", "rate": 0.4,
+             "accepted_throughput": 0.1994},
+            {"traffic": "uniform_random", "rate": 0.8,
+             "accepted_throughput": 0.32},
+        ]}
+        self.assertTrue(_curve_throughput_guardrail(
+            acceptable, incumbent, tolerance=0.0025,
+        ))
+        self.assertFalse(_curve_throughput_guardrail(
+            regressed, incumbent, tolerance=0.0025,
+        ))
+
     def test_flow_proxy_splits_demand_and_rewards_useful_capacity(self):
         demand = bit_complement_demand(4)
         mesh = flow_metrics(4, [], demand, rounds=32)
@@ -92,6 +136,29 @@ class OfflineModelTest(unittest.TestCase):
             dx, dy = dest % 8, dest // 8
             self.assertEqual((dx, dy), (7 - sx, sy))
             self.assertGreater(weight, 0)
+
+    def test_bidirectional_cutstress_uses_every_source(self):
+        demand = cutstress_bidirectional_demand(8)
+        self.assertAlmostEqual(sum(demand.values()), 1.0)
+        self.assertEqual(len(demand), 64)
+        self.assertEqual({source for source, _ in demand}, set(range(64)))
+        for source, dest in demand:
+            self.assertEqual(dest // 8, source // 8)
+            self.assertEqual(dest % 8, 7 - source % 8)
+
+    def test_soc_heterogeneous_demand_is_normalized(self):
+        demand = soc_heterogeneous_demand(16)
+        self.assertAlmostEqual(sum(demand.values()), 1.0)
+        self.assertEqual({source for source, _ in demand}, set(range(256)))
+        self.assertTrue(all(source != dest for source, dest in demand))
+        destination_share = [
+            sum(weight for (source, destination), weight in demand.items()
+                if destination == node)
+            for node in range(256)
+        ]
+        # The revised workload remains strongly non-uniform without making a
+        # shared endpoint ten times hotter than the uniform mean.
+        self.assertAlmostEqual(max(destination_share) * 256, 3.0)
 
     def test_hotspot_is_normalized(self):
         demand = hotspot_demand(8)

@@ -21,13 +21,13 @@ from express_mesh_project.search_placement_advanced import (
 )
 
 
-def mixed_demand(traffics, weights):
+def mixed_demand(traffics, weights, dimension=8):
     total = sum(weights)
     if total <= 0.0 or any(weight < 0.0 for weight in weights):
         raise ValueError("mixture weights must be nonnegative with positive sum")
     result = {}
     for traffic, weight in zip(traffics, weights):
-        for pair, value in traffic_demand(traffic).items():
+        for pair, value in traffic_demand(traffic, dimension).items():
             result[pair] = result.get(pair, 0.0) + weight / total * value
     return result
 
@@ -42,12 +42,16 @@ def main():
                         choices=["aspl", "bottleneck", "hybrid"],
                         default=["aspl", "bottleneck", "hybrid"])
     parser.add_argument("--alpha", type=float, default=0.5)
+    parser.add_argument("--dimension", type=int, default=8)
+    parser.add_argument("--wire-budget", type=int, default=64)
+    parser.add_argument("--max-degree", type=int, default=1)
+    parser.add_argument("--min-wire-length", type=int, default=3)
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
     weights = args.weights or [1.0] * len(args.traffics)
     if len(weights) != len(args.traffics):
         parser.error("--weights must match --traffics")
-    demand = mixed_demand(args.traffics, weights)
+    demand = mixed_demand(args.traffics, weights, args.dimension)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     summary = {"config": vars(args) | {
         "output_dir": str(args.output_dir), "weights": weights,
@@ -56,10 +60,14 @@ def main():
         name = f"{args.name}_{objective}"
         print(f"generating {name}", flush=True)
         edges = greedy_placement(
-            8, demand, 64, 1, 3, "ideal", objective, args.alpha,
+            args.dimension, demand, args.wire_budget, args.max_degree,
+            args.min_wire_length, "ideal", objective, args.alpha,
         )
-        validate_placement(8, edges, 64, 1, 3)
-        graph = GridGraph(8, tuple(edges))
+        validate_placement(
+            args.dimension, edges, args.wire_budget, args.max_degree,
+            args.min_wire_length,
+        )
+        graph = GridGraph(args.dimension, tuple(edges))
         metadata = {
             "algorithm": "traffic_mixture_greedy",
             "traffics": args.traffics,
@@ -69,13 +77,18 @@ def main():
             "mixed_metrics": public_metrics(graph, demand),
             "per_traffic_flow": {
                 traffic: flow_metrics(
-                    8, edges, traffic_demand(traffic), rounds=24,
+                    args.dimension, edges,
+                    traffic_demand(traffic, args.dimension), rounds=24,
                     max_express=1,
                 ).as_dict()
                 for traffic in args.traffics
             },
         }
-        record = placement_record(name, edges, metadata)
+        record = placement_record(
+            name, edges, metadata, dimension=args.dimension,
+            wire_budget=args.wire_budget, max_degree=args.max_degree,
+            min_wire_length=args.min_wire_length,
+        )
         summary["placements"][name] = record
         (args.output_dir / f"{name}.json").write_text(
             json.dumps(record, indent=2, sort_keys=True) + "\n",

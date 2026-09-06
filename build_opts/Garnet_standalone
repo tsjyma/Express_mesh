@@ -1,2 +1,4 @@
 USE_NULL_ISA = True
 PROTOCOL = 'Garnet_standalone'
+# ExpressMesh scaling experiments instantiate up to a 16x16 directory set.
+NUMBER_BITS_PER_SET = '256'

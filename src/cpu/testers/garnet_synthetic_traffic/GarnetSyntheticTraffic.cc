@@ -254,7 +254,8 @@ GarnetSyntheticTraffic::generatePkt()
         dest_x = (src_x + (int) ceil(radix/2) - 1) % radix;
         dest_y = src_y;
         destination = dest_y*radix + dest_x;
-    } else if (traffic == CUTSTRESS_) {
+    } else if (traffic == CUTSTRESS_ ||
+               traffic == CUTSTRESS_BIDIRECTIONAL_) {
         dest_x = radix - src_x - 1;
         dest_y = src_y;
         destination = dest_y * radix + dest_x;
@@ -376,6 +377,8 @@ GarnetSyntheticTraffic::initTrafficType()
     trafficStringToEnum["transpose"] = TRANSPOSE_;
     trafficStringToEnum["uniform_random"] = UNIFORM_RANDOM_;
     trafficStringToEnum["cutstress"] = CUTSTRESS_;
+    trafficStringToEnum["cutstress_bidirectional"] =
+        CUTSTRESS_BIDIRECTIONAL_;
     trafficStringToEnum["hotspot"] = HOTSPOT_;
 }
 

@@ -1,0 +1,206 @@
+{
+  "constraints": {
+    "max_degree": 1,
+    "wire_cost": 30
+  },
+  "dimension": 8,
+  "express_links": [
+    {
+      "latency": 1,
+      "u": 4,
+      "u_coord": [
+        4,
+        0
+      ],
+      "v": 10,
+      "v_coord": [
+        2,
+        1
+      ],
+      "wire_length": 3
+    },
+    {
+      "latency": 1,
+      "u": 6,
+      "u_coord": [
+        6,
+        0
+      ],
+      "v": 23,
+      "v_coord": [
+        7,
+        2
+      ],
+      "wire_length": 3
+    },
+    {
+      "latency": 1,
+      "u": 11,
+      "u_coord": [
+        3,
+        1
+      ],
+      "v": 29,
+      "v_coord": [
+        5,
+        3
+      ],
+      "wire_length": 4
+    },
+    {
+      "latency": 1,
+      "u": 12,
+      "u_coord": [
+        4,
+        1
+      ],
+      "v": 27,
+      "v_coord": [
+        3,
+        3
+      ],
+      "wire_length": 3
+    },
+    {
+      "latency": 1,
+      "u": 19,
+      "u_coord": [
+        3,
+        2
+      ],
+      "v": 36,
+      "v_coord": [
+        4,
+        4
+      ],
+      "wire_length": 3
+    },
+    {
+      "latency": 1,
+      "u": 21,
+      "u_coord": [
+        5,
+        2
+      ],
+      "v": 31,
+      "v_coord": [
+        7,
+        3
+      ],
+      "wire_length": 3
+    },
+    {
+      "latency": 1,
+      "u": 22,
+      "u_coord": [
+        6,
+        2
+      ],
+      "v": 46,
+      "v_coord": [
+        6,
+        5
+      ],
+      "wire_length": 3
+    },
+    {
+      "latency": 1,
+      "u": 33,
+      "u_coord": [
+        1,
+        4
+      ],
+      "v": 51,
+      "v_coord": [
+        3,
+        6
+      ],
+      "wire_length": 4
+    },
+    {
+      "latency": 1,
+      "u": 39,
+      "u_coord": [
+        7,
+        4
+      ],
+      "v": 62,
+      "v_coord": [
+        6,
+        7
+      ],
+      "wire_length": 4
+    }
+  ],
+  "latency_model": "ideal",
+  "name": "network_mix4_bottleneck",
+  "node_count": 64,
+  "search_metadata": {
+    "algorithm": "traffic_mixture_greedy",
+    "alpha": 0.5,
+    "mixed_metrics": {
+      "aspl": 4.636532738095056,
+      "diameter": 11,
+      "equal_cost_path_count": 4.893043154761778,
+      "l_max": 0.09012148060132232,
+      "load_cv": 0.6725422556063918,
+      "near_shortest_diversity": 4.183345734126839,
+      "p95_load": 0.08540630548562078
+    },
+    "objective": "bottleneck",
+    "per_traffic_flow": {
+      "bit_complement": {
+        "commodity_count": 64,
+        "concurrent_flow_proxy": 18.73170731707319,
+        "endpoint_max_load": 0.015625,
+        "mean_latency": 7.453124999999984,
+        "network_max_load": 0.05338541666666661,
+        "overall_max_load": 0.05338541666666661,
+        "p95_link_load": 0.04947916666666662,
+        "route_count": 512
+      },
+      "cutstress_bidirectional": {
+        "commodity_count": 64,
+        "concurrent_flow_proxy": 20.756756756756772,
+        "endpoint_max_load": 0.015625,
+        "mean_latency": 5.78710937500001,
+        "network_max_load": 0.048177083333333294,
+        "overall_max_load": 0.048177083333333294,
+        "p95_link_load": 0.04492187499999997,
+        "route_count": 494
+      },
+      "tornado": {
+        "commodity_count": 64,
+        "concurrent_flow_proxy": 23.272727272727284,
+        "endpoint_max_load": 0.015625,
+        "mean_latency": 5.123046874999996,
+        "network_max_load": 0.04296874999999998,
+        "overall_max_load": 0.04296874999999998,
+        "p95_link_load": 0.04166666666666665,
+        "route_count": 455
+      },
+      "uniform_random": {
+        "commodity_count": 4032,
+        "concurrent_flow_proxy": 34.934296028882315,
+        "endpoint_max_load": 0.015624999999999972,
+        "mean_latency": 4.82105654761941,
+        "network_max_load": 0.02862516534391416,
+        "overall_max_load": 0.02862516534391416,
+        "p95_link_load": 0.027064732142856138,
+        "route_count": 31141
+      }
+    },
+    "traffics": [
+      "uniform_random",
+      "tornado",
+      "bit_complement",
+      "cutstress_bidirectional"
+    ],
+    "weights": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "mesh_16x16",
+  "dimension": 16,
+  "node_count": 256,
+  "latency_model": "ideal",
+  "constraints": {
+    "wire_cost": 0,
+    "max_degree": 0
+  },
+  "express_links": []
+}

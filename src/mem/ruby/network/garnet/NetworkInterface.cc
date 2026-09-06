@@ -56,7 +56,8 @@ NetworkInterface::NetworkInterface(const Params &p)
     m_virtual_networks(p.virt_nets), m_vc_per_vnet(0),
     m_vc_allocator(m_virtual_networks, 0),
     m_deadlock_threshold(p.garnet_deadlock_threshold),
-    vc_busy_counter(m_virtual_networks, 0)
+    vc_busy_counter(m_virtual_networks, 0),
+    vc_busy_last_tick(m_virtual_networks, 0)
 {
     m_stall_count.resize(m_virtual_networks);
     niOutVcs.resize(0);
@@ -478,11 +479,25 @@ NetworkInterface::calculateVC(int vnet)
         if (outVcState[(vnet*m_vc_per_vnet) + delta].isInState(
                     IDLE_, curTick())) {
             vc_busy_counter[vnet] = 0;
+            vc_busy_last_tick[vnet] = 0;
             return ((vnet*m_vc_per_vnet) + delta);
         }
     }
 
-    vc_busy_counter[vnet] += 1;
+    // calculateVC() is demand driven: it may not be called in cycles where
+    // this NI has no ready message.  Counting calls across such gaps can
+    // therefore manufacture a false "continuous" deadlock interval.  Count
+    // at most once per tick and extend the streak only across adjacent clock
+    // cycles.
+    if (vc_busy_last_tick[vnet] != curTick()) {
+        if (vc_busy_counter[vnet] > 0 &&
+            vc_busy_last_tick[vnet] + clockPeriod() == curTick()) {
+            vc_busy_counter[vnet] += 1;
+        } else {
+            vc_busy_counter[vnet] = 1;
+        }
+        vc_busy_last_tick[vnet] = curTick();
+    }
     panic_if(vc_busy_counter[vnet] > m_deadlock_threshold,
         "%s: Possible network deadlock in vnet: %d at time: %llu \n",
         name(), vnet, curTick());

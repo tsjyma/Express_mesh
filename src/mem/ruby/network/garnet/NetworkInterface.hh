@@ -292,6 +292,9 @@ class NetworkInterface : public ClockedObject, public Consumer
     std::vector<MessageBuffer *> outNode_ptr;
     // When a vc stays busy for a long time, it indicates a deadlock
     std::vector<int> vc_busy_counter;
+    // Last cycle in which allocation failed.  The deadlock watchdog is a
+    // consecutive-cycle streak, not a cumulative count across idle gaps.
+    std::vector<Tick> vc_busy_last_tick;
 
     void checkStallQueue();
     bool flitisizeMessage(MsgPtr msg_ptr, int vnet);

@@ -1,0 +1,4011 @@
+{
+  "constraints": {
+    "max_degree": 1,
+    "wire_cost": 256
+  },
+  "dimension": 16,
+  "express_links": [
+    {
+      "latency": 1,
+      "u": 21,
+      "u_coord": [
+        5,
+        1
+      ],
+      "v": 117,
+      "v_coord": [
+        5,
+        7
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 26,
+      "u_coord": [
+        10,
+        1
+      ],
+      "v": 122,
+      "v_coord": [
+        10,
+        7
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 39,
+      "u_coord": [
+        7,
+        2
+      ],
+      "v": 135,
+      "v_coord": [
+        7,
+        8
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 40,
+      "u_coord": [
+        8,
+        2
+      ],
+      "v": 183,
+      "v_coord": [
+        7,
+        11
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 43,
+      "u_coord": [
+        11,
+        2
+      ],
+      "v": 203,
+      "v_coord": [
+        11,
+        12
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 51,
+      "u_coord": [
+        3,
+        3
+      ],
+      "v": 60,
+      "v_coord": [
+        12,
+        3
+      ],
+      "wire_length": 9
+    },
+    {
+      "latency": 1,
+      "u": 55,
+      "u_coord": [
+        7,
+        3
+      ],
+      "v": 61,
+      "v_coord": [
+        13,
+        3
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 56,
+      "u_coord": [
+        8,
+        3
+      ],
+      "v": 216,
+      "v_coord": [
+        8,
+        13
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 66,
+      "u_coord": [
+        2,
+        4
+      ],
+      "v": 72,
+      "v_coord": [
+        8,
+        4
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 67,
+      "u_coord": [
+        3,
+        4
+      ],
+      "v": 196,
+      "v_coord": [
+        4,
+        12
+      ],
+      "wire_length": 9
+    },
+    {
+      "latency": 1,
+      "u": 70,
+      "u_coord": [
+        6,
+        4
+      ],
+      "v": 166,
+      "v_coord": [
+        6,
+        10
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 73,
+      "u_coord": [
+        9,
+        4
+      ],
+      "v": 169,
+      "v_coord": [
+        9,
+        10
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 75,
+      "u_coord": [
+        11,
+        4
+      ],
+      "v": 186,
+      "v_coord": [
+        10,
+        11
+      ],
+      "wire_length": 8
+    },
+    {
+      "latency": 1,
+      "u": 76,
+      "u_coord": [
+        12,
+        4
+      ],
+      "v": 188,
+      "v_coord": [
+        12,
+        11
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 85,
+      "u_coord": [
+        5,
+        5
+      ],
+      "v": 181,
+      "v_coord": [
+        5,
+        11
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 88,
+      "u_coord": [
+        8,
+        5
+      ],
+      "v": 109,
+      "v_coord": [
+        13,
+        6
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 89,
+      "u_coord": [
+        9,
+        5
+      ],
+      "v": 185,
+      "v_coord": [
+        9,
+        11
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 91,
+      "u_coord": [
+        11,
+        5
+      ],
+      "v": 102,
+      "v_coord": [
+        6,
+        6
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 92,
+      "u_coord": [
+        12,
+        5
+      ],
+      "v": 101,
+      "v_coord": [
+        5,
+        6
+      ],
+      "wire_length": 8
+    },
+    {
+      "latency": 1,
+      "u": 98,
+      "u_coord": [
+        2,
+        6
+      ],
+      "v": 108,
+      "v_coord": [
+        12,
+        6
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 100,
+      "u_coord": [
+        4,
+        6
+      ],
+      "v": 107,
+      "v_coord": [
+        11,
+        6
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 106,
+      "u_coord": [
+        10,
+        6
+      ],
+      "v": 184,
+      "v_coord": [
+        8,
+        11
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 113,
+      "u_coord": [
+        1,
+        7
+      ],
+      "v": 119,
+      "v_coord": [
+        7,
+        7
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 115,
+      "u_coord": [
+        3,
+        7
+      ],
+      "v": 211,
+      "v_coord": [
+        3,
+        13
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 116,
+      "u_coord": [
+        4,
+        7
+      ],
+      "v": 139,
+      "v_coord": [
+        11,
+        8
+      ],
+      "wire_length": 8
+    },
+    {
+      "latency": 1,
+      "u": 124,
+      "u_coord": [
+        12,
+        7
+      ],
+      "v": 147,
+      "v_coord": [
+        3,
+        9
+      ],
+      "wire_length": 11
+    },
+    {
+      "latency": 1,
+      "u": 130,
+      "u_coord": [
+        2,
+        8
+      ],
+      "v": 136,
+      "v_coord": [
+        8,
+        8
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 133,
+      "u_coord": [
+        5,
+        8
+      ],
+      "v": 229,
+      "v_coord": [
+        5,
+        14
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 134,
+      "u_coord": [
+        6,
+        8
+      ],
+      "v": 142,
+      "v_coord": [
+        14,
+        8
+      ],
+      "wire_length": 8
+    },
+    {
+      "latency": 1,
+      "u": 148,
+      "u_coord": [
+        4,
+        9
+      ],
+      "v": 155,
+      "v_coord": [
+        11,
+        9
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 162,
+      "u_coord": [
+        2,
+        10
+      ],
+      "v": 168,
+      "v_coord": [
+        8,
+        10
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 164,
+      "u_coord": [
+        4,
+        10
+      ],
+      "v": 174,
+      "v_coord": [
+        14,
+        10
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 187,
+      "u_coord": [
+        11,
+        11
+      ],
+      "v": 198,
+      "v_coord": [
+        6,
+        12
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 194,
+      "u_coord": [
+        2,
+        12
+      ],
+      "v": 200,
+      "v_coord": [
+        8,
+        12
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 195,
+      "u_coord": [
+        3,
+        12
+      ],
+      "v": 204,
+      "v_coord": [
+        12,
+        12
+      ],
+      "wire_length": 9
+    }
+  ],
+  "latency_model": "ideal",
+  "name": "v6_sa-reheat",
+  "node_count": 256,
+  "search_metadata": {
+    "best_search_result": {
+      "by_traffic": [
+        {
+          "accepted_throughput": 0.174673828125,
+          "latency": 22.3359470218,
+          "normalized_throughput": 0.9981361607142859,
+          "rate": 0.35,
+          "samples": [
+            {
+              "accepted_throughput": 0.174673828125,
+              "average_packet_latency_cycles": 22.3359470218,
+              "max_ni_busy_streak": 0,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 357732,
+              "termination_reason": "simulate_limit"
+            }
+          ],
+          "traffic": "uniform_random"
+        },
+        {
+          "accepted_throughput": 0.199943847656,
+          "latency": 24.0044592598,
+          "normalized_throughput": 0.99971923828,
+          "rate": 0.4,
+          "samples": [
+            {
+              "accepted_throughput": 0.199943847656,
+              "average_packet_latency_cycles": 24.0044592598,
+              "max_ni_busy_streak": 0,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 409485,
+              "termination_reason": "simulate_limit"
+            }
+          ],
+          "traffic": "uniform_random"
+        },
+        {
+          "accepted_throughput": 0.224852050781,
+          "latency": 29.764241678,
+          "normalized_throughput": 0.9993424479155556,
+          "rate": 0.45,
+          "samples": [
+            {
+              "accepted_throughput": 0.224852050781,
+              "average_packet_latency_cycles": 29.764241678,
+              "max_ni_busy_streak": 1012,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 460497,
+              "termination_reason": "simulate_limit"
+            }
+          ],
+          "traffic": "uniform_random"
+        }
+      ],
+      "utility": 1.246420162415551
+    },
+    "evaluated_placements": 61,
+    "mode": "sa-reheat",
+    "rates": [
+      0.35,
+      0.4,
+      0.45
+    ],
+    "search_seed": 42,
+    "selected_result": {
+      "by_traffic": [
+        {
+          "accepted_throughput": 0.17480109375,
+          "latency": 22.127275084,
+          "normalized_throughput": 0.9988633928571429,
+          "rate": 0.35,
+          "samples": [
+            {
+              "accepted_throughput": 0.174793828125,
+              "average_packet_latency_cycles": 22.1342188409,
+              "max_ni_busy_streak": 0,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 2237361,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.174808359375,
+              "average_packet_latency_cycles": 22.1203313271,
+              "max_ni_busy_streak": 0,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 2237547,
+              "termination_reason": "simulate_limit"
+            }
+          ],
+          "traffic": "uniform_random"
+        },
+        {
+          "accepted_throughput": 0.1998490234375,
+          "latency": 23.98401840185,
+          "normalized_throughput": 0.9992451171874999,
+          "rate": 0.4,
+          "samples": [
+            {
+              "accepted_throughput": 0.1998478125,
+              "average_packet_latency_cycles": 23.9835808654,
+              "max_ni_busy_streak": 21,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 2558052,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.199850234375,
+              "average_packet_latency_cycles": 23.9844559383,
+              "max_ni_busy_streak": 10,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 2558083,
+              "termination_reason": "simulate_limit"
+            }
+          ],
+          "traffic": "uniform_random"
+        },
+        {
+          "accepted_throughput": 0.2248123828125,
+          "latency": 31.0160423494,
+          "normalized_throughput": 0.9991661458333334,
+          "rate": 0.45,
+          "samples": [
+            {
+              "accepted_throughput": 0.224789453125,
+              "average_packet_latency_cycles": 32.4400305147,
+              "max_ni_busy_streak": 255,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 2877305,
+              "termination_reason": "simulate_limit"
+            },
+            {
+              "accepted_throughput": 0.2248353125,
+              "average_packet_latency_cycles": 29.5920541841,
+              "max_ni_busy_streak": 579,
+              "ni_watchdog_triggered": false,
+              "no_progress": false,
+              "packets_received": 2877892,
+              "termination_reason": "simulate_limit"
+            }
+          ],
+          "traffic": "uniform_random"
+        }
+      ],
+      "utility": 1.246991195128082
+    },
+    "selection_stage": "independent_validation",
+    "traffics": [
+      "uniform_random",
+      "uniform_random",
+      "uniform_random"
+    ],
+    "validation_archive": [
+      {
+        "origins": [
+          "search_rank_7"
+        ],
+        "pareto_over_incumbent": false,
+        "passes_curve_throughput_guardrail": true,
+        "placement_key": [
+          [
+            21,
+            117,
+            6,
+            1
+          ],
+          [
+            26,
+            122,
+            6,
+            1
+          ],
+          [
+            39,
+            135,
+            6,
+            1
+          ],
+          [
+            40,
+            183,
+            10,
+            1
+          ],
+          [
+            43,
+            203,
+            10,
+            1
+          ],
+          [
+            51,
+            60,
+            9,
+            1
+          ],
+          [
+            55,
+            61,
+            6,
+            1
+          ],
+          [
+            56,
+            216,
+            10,
+            1
+          ],
+          [
+            66,
+            72,
+            6,
+            1
+          ],
+          [
+            67,
+            196,
+            9,
+            1
+          ],
+          [
+            70,
+            166,
+            6,
+            1
+          ],
+          [
+            73,
+            169,
+            6,
+            1
+          ],
+          [
+            75,
+            186,
+            8,
+            1
+          ],
+          [
+            76,
+            188,
+            7,
+            1
+          ],
+          [
+            85,
+            181,
+            6,
+            1
+          ],
+          [
+            88,
+            109,
+            6,
+            1
+          ],
+          [
+            89,
+            185,
+            6,
+            1
+          ],
+          [
+            91,
+            102,
+            6,
+            1
+          ],
+          [
+            92,
+            101,
+            8,
+            1
+          ],
+          [
+            98,
+            108,
+            10,
+            1
+          ],
+          [
+            100,
+            107,
+            7,
+            1
+          ],
+          [
+            106,
+            184,
+            7,
+            1
+          ],
+          [
+            113,
+            119,
+            6,
+            1
+          ],
+          [
+            115,
+            211,
+            6,
+            1
+          ],
+          [
+            116,
+            139,
+            8,
+            1
+          ],
+          [
+            124,
+            147,
+            11,
+            1
+          ],
+          [
+            130,
+            136,
+            6,
+            1
+          ],
+          [
+            133,
+            229,
+            6,
+            1
+          ],
+          [
+            134,
+            142,
+            8,
+            1
+          ],
+          [
+            148,
+            155,
+            7,
+            1
+          ],
+          [
+            162,
+            168,
+            6,
+            1
+          ],
+          [
+            164,
+            174,
+            10,
+            1
+          ],
+          [
+            187,
+            198,
+            6,
+            1
+          ],
+          [
+            194,
+            200,
+            6,
+            1
+          ],
+          [
+            195,
+            204,
+            9,
+            1
+          ]
+        ],
+        "search_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174678710938,
+              "latency": 22.0769437192,
+              "normalized_throughput": 0.9981640625028572,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174678710938,
+                  "average_packet_latency_cycles": 22.0769437192,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 357742,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.199898925781,
+              "latency": 23.9065958627,
+              "normalized_throughput": 0.999494628905,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.199898925781,
+                  "average_packet_latency_cycles": 23.9065958627,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 409393,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.224780761719,
+              "latency": 28.7801959809,
+              "normalized_throughput": 0.9990256076399999,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.224780761719,
+                  "average_packet_latency_cycles": 28.7801959809,
+                  "max_ni_busy_streak": 47,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 460351,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.246266546136928
+        },
+        "selected": true,
+        "validation_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.17480109375,
+              "latency": 22.127275084,
+              "normalized_throughput": 0.9988633928571429,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174793828125,
+                  "average_packet_latency_cycles": 22.1342188409,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237361,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.174808359375,
+                  "average_packet_latency_cycles": 22.1203313271,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237547,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.1998490234375,
+              "latency": 23.98401840185,
+              "normalized_throughput": 0.9992451171874999,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.1998478125,
+                  "average_packet_latency_cycles": 23.9835808654,
+                  "max_ni_busy_streak": 21,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558052,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.199850234375,
+                  "average_packet_latency_cycles": 23.9844559383,
+                  "max_ni_busy_streak": 10,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558083,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.2248123828125,
+              "latency": 31.0160423494,
+              "normalized_throughput": 0.9991661458333334,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.224789453125,
+                  "average_packet_latency_cycles": 32.4400305147,
+                  "max_ni_busy_streak": 255,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2877305,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.2248353125,
+                  "average_packet_latency_cycles": 29.5920541841,
+                  "max_ni_busy_streak": 579,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2877892,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.246991195128082
+        }
+      },
+      {
+        "origins": [
+          "search_rank_8"
+        ],
+        "pareto_over_incumbent": false,
+        "passes_curve_throughput_guardrail": true,
+        "placement_key": [
+          [
+            35,
+            163,
+            8,
+            1
+          ],
+          [
+            39,
+            135,
+            6,
+            1
+          ],
+          [
+            43,
+            203,
+            10,
+            1
+          ],
+          [
+            44,
+            140,
+            6,
+            1
+          ],
+          [
+            50,
+            57,
+            7,
+            1
+          ],
+          [
+            51,
+            60,
+            9,
+            1
+          ],
+          [
+            55,
+            61,
+            6,
+            1
+          ],
+          [
+            66,
+            72,
+            6,
+            1
+          ],
+          [
+            68,
+            149,
+            6,
+            1
+          ],
+          [
+            69,
+            92,
+            8,
+            1
+          ],
+          [
+            71,
+            167,
+            6,
+            1
+          ],
+          [
+            73,
+            154,
+            6,
+            1
+          ],
+          [
+            76,
+            188,
+            7,
+            1
+          ],
+          [
+            84,
+            90,
+            6,
+            1
+          ],
+          [
+            85,
+            91,
+            6,
+            1
+          ],
+          [
+            86,
+            93,
+            7,
+            1
+          ],
+          [
+            88,
+            109,
+            6,
+            1
+          ],
+          [
+            89,
+            201,
+            7,
+            1
+          ],
+          [
+            99,
+            107,
+            8,
+            1
+          ],
+          [
+            100,
+            125,
+            10,
+            1
+          ],
+          [
+            101,
+            197,
+            6,
+            1
+          ],
+          [
+            102,
+            198,
+            6,
+            1
+          ],
+          [
+            104,
+            200,
+            6,
+            1
+          ],
+          [
+            106,
+            184,
+            7,
+            1
+          ],
+          [
+            108,
+            220,
+            7,
+            1
+          ],
+          [
+            113,
+            119,
+            6,
+            1
+          ],
+          [
+            116,
+            139,
+            8,
+            1
+          ],
+          [
+            117,
+            123,
+            6,
+            1
+          ],
+          [
+            118,
+            199,
+            6,
+            1
+          ],
+          [
+            133,
+            229,
+            6,
+            1
+          ],
+          [
+            138,
+            234,
+            6,
+            1
+          ],
+          [
+            147,
+            153,
+            6,
+            1
+          ],
+          [
+            148,
+            155,
+            7,
+            1
+          ],
+          [
+            162,
+            168,
+            6,
+            1
+          ],
+          [
+            164,
+            174,
+            10,
+            1
+          ],
+          [
+            183,
+            189,
+            6,
+            1
+          ],
+          [
+            195,
+            204,
+            9,
+            1
+          ]
+        ],
+        "search_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174688964844,
+              "latency": 22.2074501835,
+              "normalized_throughput": 0.9982226562514287,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174688964844,
+                  "average_packet_latency_cycles": 22.2074501835,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 357763,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.19991015625,
+              "latency": 23.9724094808,
+              "normalized_throughput": 0.99955078125,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.19991015625,
+                  "average_packet_latency_cycles": 23.9724094808,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 409416,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.224744628906,
+              "latency": 31.9607475498,
+              "normalized_throughput": 0.99886501736,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.224744628906,
+                  "average_packet_latency_cycles": 31.9607475498,
+                  "max_ni_busy_streak": 586,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 460277,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.2462414894279807
+        },
+        "selected": false,
+        "validation_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174798203125,
+              "latency": 22.2034105134,
+              "normalized_throughput": 0.998846875,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.1747903125,
+                  "average_packet_latency_cycles": 22.2097531149,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237316,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.17480609375,
+                  "average_packet_latency_cycles": 22.1970679119,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237518,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.1998469140625,
+              "latency": 24.12871562385,
+              "normalized_throughput": 0.9992345703125,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.199849921875,
+                  "average_packet_latency_cycles": 24.1214755291,
+                  "max_ni_busy_streak": 14,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558079,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.19984390625,
+                  "average_packet_latency_cycles": 24.1359557186,
+                  "max_ni_busy_streak": 16,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558002,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.2248155078125,
+              "latency": 34.79370711505,
+              "normalized_throughput": 0.9991800347222222,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.22481,
+                  "average_packet_latency_cycles": 37.4554366743,
+                  "max_ni_busy_streak": 770,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2877568,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.224821015625,
+                  "average_packet_latency_cycles": 32.1319775558,
+                  "max_ni_busy_streak": 890,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2877709,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.246960381896565
+        }
+      },
+      {
+        "origins": [
+          "search_rank_2"
+        ],
+        "pareto_over_incumbent": false,
+        "passes_curve_throughput_guardrail": true,
+        "placement_key": [
+          [
+            21,
+            117,
+            6,
+            1
+          ],
+          [
+            26,
+            122,
+            6,
+            1
+          ],
+          [
+            39,
+            135,
+            6,
+            1
+          ],
+          [
+            43,
+            203,
+            10,
+            1
+          ],
+          [
+            44,
+            140,
+            6,
+            1
+          ],
+          [
+            50,
+            57,
+            7,
+            1
+          ],
+          [
+            51,
+            60,
+            9,
+            1
+          ],
+          [
+            55,
+            61,
+            6,
+            1
+          ],
+          [
+            56,
+            216,
+            10,
+            1
+          ],
+          [
+            58,
+            170,
+            7,
+            1
+          ],
+          [
+            66,
+            72,
+            6,
+            1
+          ],
+          [
+            67,
+            196,
+            9,
+            1
+          ],
+          [
+            70,
+            166,
+            6,
+            1
+          ],
+          [
+            75,
+            186,
+            8,
+            1
+          ],
+          [
+            76,
+            188,
+            7,
+            1
+          ],
+          [
+            88,
+            109,
+            6,
+            1
+          ],
+          [
+            91,
+            102,
+            6,
+            1
+          ],
+          [
+            92,
+            101,
+            8,
+            1
+          ],
+          [
+            100,
+            107,
+            7,
+            1
+          ],
+          [
+            106,
+            184,
+            7,
+            1
+          ],
+          [
+            113,
+            119,
+            6,
+            1
+          ],
+          [
+            115,
+            211,
+            6,
+            1
+          ],
+          [
+            116,
+            139,
+            8,
+            1
+          ],
+          [
+            118,
+            199,
+            6,
+            1
+          ],
+          [
+            124,
+            147,
+            11,
+            1
+          ],
+          [
+            130,
+            136,
+            6,
+            1
+          ],
+          [
+            133,
+            229,
+            6,
+            1
+          ],
+          [
+            134,
+            142,
+            8,
+            1
+          ],
+          [
+            137,
+            165,
+            6,
+            1
+          ],
+          [
+            138,
+            234,
+            6,
+            1
+          ],
+          [
+            148,
+            155,
+            7,
+            1
+          ],
+          [
+            162,
+            168,
+            6,
+            1
+          ],
+          [
+            164,
+            174,
+            10,
+            1
+          ],
+          [
+            187,
+            198,
+            6,
+            1
+          ],
+          [
+            194,
+            200,
+            6,
+            1
+          ],
+          [
+            195,
+            204,
+            9,
+            1
+          ]
+        ],
+        "search_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174672851563,
+              "latency": 22.0234562379,
+              "normalized_throughput": 0.99813058036,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174672851563,
+                  "average_packet_latency_cycles": 22.0234562379,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 357730,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.199895996094,
+              "latency": 23.800553022,
+              "normalized_throughput": 0.99947998047,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.199895996094,
+                  "average_packet_latency_cycles": 23.800553022,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 409387,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.224838867188,
+              "latency": 27.4884921928,
+              "normalized_throughput": 0.9992838541688889,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.224838867188,
+                  "average_packet_latency_cycles": 27.4884921928,
+                  "max_ni_busy_streak": 28,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 460470,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.2463395481228756
+        },
+        "selected": false,
+        "validation_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.1748002734375,
+              "latency": 22.01157149525,
+              "normalized_throughput": 0.9988587053571429,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174792421875,
+                  "average_packet_latency_cycles": 22.0271616824,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237343,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.174808125,
+                  "average_packet_latency_cycles": 21.9959813081,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237544,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.19984773437499997,
+              "latency": 23.849272051649997,
+              "normalized_throughput": 0.9992386718749999,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.1998459375,
+                  "average_packet_latency_cycles": 23.8588756652,
+                  "max_ni_busy_streak": 1,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558028,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.19984953125,
+                  "average_packet_latency_cycles": 23.8396684381,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558074,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.22478210937499998,
+              "latency": 29.1205447557,
+              "normalized_throughput": 0.9990315972222221,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.224765859375,
+                  "average_packet_latency_cycles": 28.0662036154,
+                  "max_ni_busy_streak": 673,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2877003,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.224798359375,
+                  "average_packet_latency_cycles": 30.174885896,
+                  "max_ni_busy_streak": 1937,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2877419,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.2469546705982386
+        }
+      },
+      {
+        "origins": [
+          "search_rank_3"
+        ],
+        "pareto_over_incumbent": false,
+        "passes_curve_throughput_guardrail": true,
+        "placement_key": [
+          [
+            26,
+            122,
+            6,
+            1
+          ],
+          [
+            35,
+            163,
+            8,
+            1
+          ],
+          [
+            39,
+            135,
+            6,
+            1
+          ],
+          [
+            43,
+            203,
+            10,
+            1
+          ],
+          [
+            44,
+            140,
+            6,
+            1
+          ],
+          [
+            50,
+            57,
+            7,
+            1
+          ],
+          [
+            51,
+            60,
+            9,
+            1
+          ],
+          [
+            55,
+            61,
+            6,
+            1
+          ],
+          [
+            66,
+            72,
+            6,
+            1
+          ],
+          [
+            67,
+            196,
+            9,
+            1
+          ],
+          [
+            68,
+            149,
+            6,
+            1
+          ],
+          [
+            71,
+            167,
+            6,
+            1
+          ],
+          [
+            73,
+            154,
+            6,
+            1
+          ],
+          [
+            76,
+            188,
+            7,
+            1
+          ],
+          [
+            85,
+            91,
+            6,
+            1
+          ],
+          [
+            86,
+            93,
+            7,
+            1
+          ],
+          [
+            88,
+            109,
+            6,
+            1
+          ],
+          [
+            89,
+            201,
+            7,
+            1
+          ],
+          [
+            99,
+            107,
+            8,
+            1
+          ],
+          [
+            101,
+            197,
+            6,
+            1
+          ],
+          [
+            106,
+            184,
+            7,
+            1
+          ],
+          [
+            108,
+            220,
+            7,
+            1
+          ],
+          [
+            113,
+            119,
+            6,
+            1
+          ],
+          [
+            116,
+            139,
+            8,
+            1
+          ],
+          [
+            117,
+            123,
+            6,
+            1
+          ],
+          [
+            118,
+            199,
+            6,
+            1
+          ],
+          [
+            124,
+            147,
+            11,
+            1
+          ],
+          [
+            133,
+            229,
+            6,
+            1
+          ],
+          [
+            137,
+            165,
+            6,
+            1
+          ],
+          [
+            138,
+            234,
+            6,
+            1
+          ],
+          [
+            145,
+            151,
+            6,
+            1
+          ],
+          [
+            148,
+            155,
+            7,
+            1
+          ],
+          [
+            162,
+            168,
+            6,
+            1
+          ],
+          [
+            164,
+            174,
+            10,
+            1
+          ],
+          [
+            183,
+            189,
+            6,
+            1
+          ],
+          [
+            195,
+            204,
+            9,
+            1
+          ]
+        ],
+        "search_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174676269531,
+              "latency": 22.182147779,
+              "normalized_throughput": 0.9981501116057143,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174676269531,
+                  "average_packet_latency_cycles": 22.182147779,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 357737,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.199915039062,
+              "latency": 24.1416617411,
+              "normalized_throughput": 0.9995751953099999,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.199915039062,
+                  "average_packet_latency_cycles": 24.1416617411,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 409426,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.22481640625,
+              "latency": 29.0744922072,
+              "normalized_throughput": 0.9991840277777777,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.22481640625,
+                  "average_packet_latency_cycles": 29.0744922072,
+                  "max_ni_busy_streak": 40,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 460424,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.2463327793110046
+        },
+        "selected": false,
+        "validation_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174798671875,
+              "latency": 22.200959194150002,
+              "normalized_throughput": 0.9988495535714287,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174791875,
+                  "average_packet_latency_cycles": 22.2092707577,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237336,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.17480546875,
+                  "average_packet_latency_cycles": 22.1926476306,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237510,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.19984863281249998,
+              "latency": 24.1907367401,
+              "normalized_throughput": 0.9992431640624999,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.19984921875,
+                  "average_packet_latency_cycles": 24.1904486586,
+                  "max_ni_busy_streak": 14,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558070,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.199848046875,
+                  "average_packet_latency_cycles": 24.1910248216,
+                  "max_ni_busy_streak": 11,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558055,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.2247816796875,
+              "latency": 29.51951147605,
+              "normalized_throughput": 0.9990296875,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.2247946875,
+                  "average_packet_latency_cycles": 29.9592937583,
+                  "max_ni_busy_streak": 1111,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2877372,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.224768671875,
+                  "average_packet_latency_cycles": 29.0797291938,
+                  "max_ni_busy_streak": 452,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2877039,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.2469437226996691
+        }
+      },
+      {
+        "origins": [
+          "search_rank_6"
+        ],
+        "pareto_over_incumbent": false,
+        "passes_curve_throughput_guardrail": true,
+        "placement_key": [
+          [
+            21,
+            117,
+            6,
+            1
+          ],
+          [
+            26,
+            122,
+            6,
+            1
+          ],
+          [
+            35,
+            163,
+            8,
+            1
+          ],
+          [
+            39,
+            135,
+            6,
+            1
+          ],
+          [
+            43,
+            203,
+            10,
+            1
+          ],
+          [
+            44,
+            140,
+            6,
+            1
+          ],
+          [
+            50,
+            57,
+            7,
+            1
+          ],
+          [
+            51,
+            60,
+            9,
+            1
+          ],
+          [
+            55,
+            61,
+            6,
+            1
+          ],
+          [
+            56,
+            216,
+            10,
+            1
+          ],
+          [
+            66,
+            72,
+            6,
+            1
+          ],
+          [
+            67,
+            196,
+            9,
+            1
+          ],
+          [
+            70,
+            166,
+            6,
+            1
+          ],
+          [
+            73,
+            154,
+            6,
+            1
+          ],
+          [
+            76,
+            188,
+            7,
+            1
+          ],
+          [
+            88,
+            109,
+            6,
+            1
+          ],
+          [
+            91,
+            102,
+            6,
+            1
+          ],
+          [
+            92,
+            101,
+            8,
+            1
+          ],
+          [
+            99,
+            107,
+            8,
+            1
+          ],
+          [
+            106,
+            184,
+            7,
+            1
+          ],
+          [
+            113,
+            119,
+            6,
+            1
+          ],
+          [
+            115,
+            211,
+            6,
+            1
+          ],
+          [
+            116,
+            139,
+            8,
+            1
+          ],
+          [
+            118,
+            199,
+            6,
+            1
+          ],
+          [
+            124,
+            147,
+            11,
+            1
+          ],
+          [
+            133,
+            229,
+            6,
+            1
+          ],
+          [
+            134,
+            142,
+            8,
+            1
+          ],
+          [
+            137,
+            165,
+            6,
+            1
+          ],
+          [
+            138,
+            234,
+            6,
+            1
+          ],
+          [
+            145,
+            151,
+            6,
+            1
+          ],
+          [
+            162,
+            168,
+            6,
+            1
+          ],
+          [
+            164,
+            174,
+            10,
+            1
+          ],
+          [
+            183,
+            189,
+            6,
+            1
+          ],
+          [
+            187,
+            198,
+            6,
+            1
+          ],
+          [
+            194,
+            200,
+            6,
+            1
+          ],
+          [
+            195,
+            204,
+            9,
+            1
+          ]
+        ],
+        "search_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174682617188,
+              "latency": 21.9561649196,
+              "normalized_throughput": 0.9981863839314286,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174682617188,
+                  "average_packet_latency_cycles": 21.9561649196,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 357750,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.199932617187,
+              "latency": 23.8945836244,
+              "normalized_throughput": 0.999663085935,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.199932617187,
+                  "average_packet_latency_cycles": 23.8945836244,
+                  "max_ni_busy_streak": 10,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 409462,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.224749511719,
+              "latency": 31.7153297834,
+              "normalized_throughput": 0.9988867187511111,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.224749511719,
+                  "average_packet_latency_cycles": 31.7153297834,
+                  "max_ni_busy_streak": 49,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 460287,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.2462697797314988
+        },
+        "selected": false,
+        "validation_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.1747989453125,
+              "latency": 21.9324331659,
+              "normalized_throughput": 0.9988511160714286,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174792578125,
+                  "average_packet_latency_cycles": 21.9284433112,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237345,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.1748053125,
+                  "average_packet_latency_cycles": 21.9364230206,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237508,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.199846484375,
+              "latency": 23.889821961350002,
+              "normalized_throughput": 0.9992324218749999,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.199847265625,
+                  "average_packet_latency_cycles": 23.867726721,
+                  "max_ni_busy_streak": 8,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558045,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.199845703125,
+                  "average_packet_latency_cycles": 23.9119172017,
+                  "max_ni_busy_streak": 11,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558025,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.2247917578125,
+              "latency": 33.8016041316,
+              "normalized_throughput": 0.9990744791666666,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.224779140625,
+                  "average_packet_latency_cycles": 37.2457106333,
+                  "max_ni_busy_streak": 631,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2877173,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.224804375,
+                  "average_packet_latency_cycles": 30.3574976299,
+                  "max_ni_busy_streak": 239,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2877496,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.246936087404674
+        }
+      },
+      {
+        "origins": [
+          "search_rank_4"
+        ],
+        "pareto_over_incumbent": false,
+        "passes_curve_throughput_guardrail": true,
+        "placement_key": [
+          [
+            26,
+            122,
+            6,
+            1
+          ],
+          [
+            35,
+            163,
+            8,
+            1
+          ],
+          [
+            39,
+            135,
+            6,
+            1
+          ],
+          [
+            43,
+            203,
+            10,
+            1
+          ],
+          [
+            44,
+            140,
+            6,
+            1
+          ],
+          [
+            50,
+            57,
+            7,
+            1
+          ],
+          [
+            51,
+            60,
+            9,
+            1
+          ],
+          [
+            55,
+            61,
+            6,
+            1
+          ],
+          [
+            66,
+            72,
+            6,
+            1
+          ],
+          [
+            68,
+            149,
+            6,
+            1
+          ],
+          [
+            69,
+            92,
+            8,
+            1
+          ],
+          [
+            71,
+            167,
+            6,
+            1
+          ],
+          [
+            73,
+            154,
+            6,
+            1
+          ],
+          [
+            76,
+            188,
+            7,
+            1
+          ],
+          [
+            84,
+            90,
+            6,
+            1
+          ],
+          [
+            85,
+            91,
+            6,
+            1
+          ],
+          [
+            86,
+            93,
+            7,
+            1
+          ],
+          [
+            88,
+            109,
+            6,
+            1
+          ],
+          [
+            89,
+            201,
+            7,
+            1
+          ],
+          [
+            99,
+            107,
+            8,
+            1
+          ],
+          [
+            101,
+            197,
+            6,
+            1
+          ],
+          [
+            106,
+            184,
+            7,
+            1
+          ],
+          [
+            108,
+            220,
+            7,
+            1
+          ],
+          [
+            113,
+            119,
+            6,
+            1
+          ],
+          [
+            116,
+            139,
+            8,
+            1
+          ],
+          [
+            117,
+            123,
+            6,
+            1
+          ],
+          [
+            118,
+            199,
+            6,
+            1
+          ],
+          [
+            133,
+            229,
+            6,
+            1
+          ],
+          [
+            137,
+            165,
+            6,
+            1
+          ],
+          [
+            138,
+            234,
+            6,
+            1
+          ],
+          [
+            145,
+            151,
+            6,
+            1
+          ],
+          [
+            147,
+            153,
+            6,
+            1
+          ],
+          [
+            148,
+            155,
+            7,
+            1
+          ],
+          [
+            162,
+            168,
+            6,
+            1
+          ],
+          [
+            164,
+            174,
+            10,
+            1
+          ],
+          [
+            183,
+            189,
+            6,
+            1
+          ],
+          [
+            195,
+            204,
+            9,
+            1
+          ]
+        ],
+        "search_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174680175781,
+              "latency": 22.2373925562,
+              "normalized_throughput": 0.9981724330342858,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174680175781,
+                  "average_packet_latency_cycles": 22.2373925562,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 357745,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.199911621094,
+              "latency": 24.1360611012,
+              "normalized_throughput": 0.99955810547,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.199911621094,
+                  "average_packet_latency_cycles": 24.1360611012,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 409419,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.224784667969,
+              "latency": 28.7455572716,
+              "normalized_throughput": 0.9990429687511111,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.224784667969,
+                  "average_packet_latency_cycles": 28.7455572716,
+                  "max_ni_busy_streak": 49,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 460359,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.2462950511024775
+        },
+        "selected": false,
+        "validation_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.17480015625,
+              "latency": 22.24518619125,
+              "normalized_throughput": 0.9988580357142858,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174792734375,
+                  "average_packet_latency_cycles": 22.2597348556,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237347,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.174807578125,
+                  "average_packet_latency_cycles": 22.2306375269,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237537,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.19985066406250002,
+              "latency": 24.2056637276,
+              "normalized_throughput": 0.9992533203125,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.199850859375,
+                  "average_packet_latency_cycles": 24.1990851772,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558091,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.19985046875,
+                  "average_packet_latency_cycles": 24.212242278,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558086,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.2245048046875,
+              "latency": 76.52305706575001,
+              "normalized_throughput": 0.9977991319444444,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.225061171875,
+                  "average_packet_latency_cycles": 85.7028714068,
+                  "max_ni_busy_streak": 2728,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2880783,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.2239484375,
+                  "average_packet_latency_cycles": 67.3432427247,
+                  "max_ni_busy_streak": 3086,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2866540,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.2461043679266655
+        }
+      },
+      {
+        "origins": [
+          "search_rank_5"
+        ],
+        "pareto_over_incumbent": false,
+        "passes_curve_throughput_guardrail": true,
+        "placement_key": [
+          [
+            21,
+            117,
+            6,
+            1
+          ],
+          [
+            26,
+            122,
+            6,
+            1
+          ],
+          [
+            35,
+            163,
+            8,
+            1
+          ],
+          [
+            39,
+            135,
+            6,
+            1
+          ],
+          [
+            43,
+            203,
+            10,
+            1
+          ],
+          [
+            44,
+            140,
+            6,
+            1
+          ],
+          [
+            50,
+            57,
+            7,
+            1
+          ],
+          [
+            51,
+            60,
+            9,
+            1
+          ],
+          [
+            55,
+            61,
+            6,
+            1
+          ],
+          [
+            56,
+            216,
+            10,
+            1
+          ],
+          [
+            66,
+            72,
+            6,
+            1
+          ],
+          [
+            67,
+            196,
+            9,
+            1
+          ],
+          [
+            70,
+            166,
+            6,
+            1
+          ],
+          [
+            76,
+            188,
+            7,
+            1
+          ],
+          [
+            88,
+            109,
+            6,
+            1
+          ],
+          [
+            91,
+            102,
+            6,
+            1
+          ],
+          [
+            92,
+            101,
+            8,
+            1
+          ],
+          [
+            100,
+            107,
+            7,
+            1
+          ],
+          [
+            106,
+            184,
+            7,
+            1
+          ],
+          [
+            113,
+            119,
+            6,
+            1
+          ],
+          [
+            115,
+            211,
+            6,
+            1
+          ],
+          [
+            116,
+            139,
+            8,
+            1
+          ],
+          [
+            118,
+            199,
+            6,
+            1
+          ],
+          [
+            124,
+            147,
+            11,
+            1
+          ],
+          [
+            133,
+            229,
+            6,
+            1
+          ],
+          [
+            134,
+            142,
+            8,
+            1
+          ],
+          [
+            137,
+            165,
+            6,
+            1
+          ],
+          [
+            138,
+            234,
+            6,
+            1
+          ],
+          [
+            145,
+            151,
+            6,
+            1
+          ],
+          [
+            148,
+            155,
+            7,
+            1
+          ],
+          [
+            162,
+            168,
+            6,
+            1
+          ],
+          [
+            164,
+            174,
+            10,
+            1
+          ],
+          [
+            183,
+            189,
+            6,
+            1
+          ],
+          [
+            187,
+            198,
+            6,
+            1
+          ],
+          [
+            194,
+            200,
+            6,
+            1
+          ],
+          [
+            195,
+            204,
+            9,
+            1
+          ]
+        ],
+        "search_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174696777344,
+              "latency": 22.0303874738,
+              "normalized_throughput": 0.9982672991085715,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174696777344,
+                  "average_packet_latency_cycles": 22.0303874738,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 357779,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.199942871094,
+              "latency": 24.0691017698,
+              "normalized_throughput": 0.99971435547,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.199942871094,
+                  "average_packet_latency_cycles": 24.0691017698,
+                  "max_ni_busy_streak": 14,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 409483,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.22472265625,
+              "latency": 32.2019763945,
+              "normalized_throughput": 0.9987673611111112,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.22472265625,
+                  "average_packet_latency_cycles": 32.2019763945,
+                  "max_ni_busy_streak": 40,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 460232,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.2462887253908848
+        },
+        "selected": false,
+        "validation_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.17479808593750001,
+              "latency": 22.040591699300002,
+              "normalized_throughput": 0.998846205357143,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.1747925,
+                  "average_packet_latency_cycles": 22.0265654276,
+                  "max_ni_busy_streak": 3,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237344,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.174803671875,
+                  "average_packet_latency_cycles": 22.054617971,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237487,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.1998453515625,
+              "latency": 24.00176691585,
+              "normalized_throughput": 0.9992267578125,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.1998465625,
+                  "average_packet_latency_cycles": 24.0142214574,
+                  "max_ni_busy_streak": 23,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558036,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.199844140625,
+                  "average_packet_latency_cycles": 23.9893123743,
+                  "max_ni_busy_streak": 15,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558005,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.2244444921875,
+              "latency": 54.65343887425,
+              "normalized_throughput": 0.9975310763888889,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.224610546875,
+                  "average_packet_latency_cycles": 57.9161155681,
+                  "max_ni_busy_streak": 546,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2875015,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.2242784375,
+                  "average_packet_latency_cycles": 51.3907621804,
+                  "max_ni_busy_streak": 1400,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2870764,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.245999603974798
+        }
+      },
+      {
+        "origins": [
+          "search_best",
+          "search_rank_1"
+        ],
+        "pareto_over_incumbent": false,
+        "passes_curve_throughput_guardrail": true,
+        "placement_key": [
+          [
+            21,
+            117,
+            6,
+            1
+          ],
+          [
+            26,
+            122,
+            6,
+            1
+          ],
+          [
+            39,
+            135,
+            6,
+            1
+          ],
+          [
+            40,
+            183,
+            10,
+            1
+          ],
+          [
+            43,
+            203,
+            10,
+            1
+          ],
+          [
+            51,
+            60,
+            9,
+            1
+          ],
+          [
+            56,
+            216,
+            10,
+            1
+          ],
+          [
+            57,
+            153,
+            6,
+            1
+          ],
+          [
+            67,
+            196,
+            9,
+            1
+          ],
+          [
+            70,
+            166,
+            6,
+            1
+          ],
+          [
+            71,
+            165,
+            8,
+            1
+          ],
+          [
+            73,
+            169,
+            6,
+            1
+          ],
+          [
+            76,
+            188,
+            7,
+            1
+          ],
+          [
+            84,
+            90,
+            6,
+            1
+          ],
+          [
+            85,
+            181,
+            6,
+            1
+          ],
+          [
+            86,
+            93,
+            7,
+            1
+          ],
+          [
+            89,
+            185,
+            6,
+            1
+          ],
+          [
+            91,
+            102,
+            6,
+            1
+          ],
+          [
+            92,
+            101,
+            8,
+            1
+          ],
+          [
+            98,
+            108,
+            10,
+            1
+          ],
+          [
+            103,
+            199,
+            6,
+            1
+          ],
+          [
+            105,
+            115,
+            7,
+            1
+          ],
+          [
+            106,
+            184,
+            7,
+            1
+          ],
+          [
+            113,
+            119,
+            6,
+            1
+          ],
+          [
+            116,
+            139,
+            8,
+            1
+          ],
+          [
+            118,
+            124,
+            6,
+            1
+          ],
+          [
+            130,
+            136,
+            6,
+            1
+          ],
+          [
+            131,
+            152,
+            6,
+            1
+          ],
+          [
+            133,
+            229,
+            6,
+            1
+          ],
+          [
+            134,
+            140,
+            6,
+            1
+          ],
+          [
+            138,
+            147,
+            8,
+            1
+          ],
+          [
+            148,
+            155,
+            7,
+            1
+          ],
+          [
+            163,
+            170,
+            7,
+            1
+          ],
+          [
+            164,
+            174,
+            10,
+            1
+          ],
+          [
+            187,
+            198,
+            6,
+            1
+          ],
+          [
+            194,
+            200,
+            6,
+            1
+          ]
+        ],
+        "search_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174673828125,
+              "latency": 22.3359470218,
+              "normalized_throughput": 0.9981361607142859,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174673828125,
+                  "average_packet_latency_cycles": 22.3359470218,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 357732,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.199943847656,
+              "latency": 24.0044592598,
+              "normalized_throughput": 0.99971923828,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.199943847656,
+                  "average_packet_latency_cycles": 24.0044592598,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 409485,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.224852050781,
+              "latency": 29.764241678,
+              "normalized_throughput": 0.9993424479155556,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.224852050781,
+                  "average_packet_latency_cycles": 29.764241678,
+                  "max_ni_busy_streak": 1012,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 460497,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.246420162415551
+        },
+        "selected": false,
+        "validation_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.17479757812500002,
+              "latency": 22.29759199435,
+              "normalized_throughput": 0.9988433035714286,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174790703125,
+                  "average_packet_latency_cycles": 22.2976653775,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237321,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.174804453125,
+                  "average_packet_latency_cycles": 22.2975186112,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237497,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.1998483203125,
+              "latency": 24.0608723359,
+              "normalized_throughput": 0.9992416015625001,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.19984828125,
+                  "average_packet_latency_cycles": 24.0534335031,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558058,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.199848359375,
+                  "average_packet_latency_cycles": 24.0683111687,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558059,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.223338984375,
+              "latency": 96.09275478925,
+              "normalized_throughput": 0.9926177083333334,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.222512265625,
+                  "average_packet_latency_cycles": 98.3494863521,
+                  "max_ni_busy_streak": 5961,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2848157,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.224165703125,
+                  "average_packet_latency_cycles": 93.8360232264,
+                  "max_ni_busy_streak": 3117,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2869321,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.2430320951746423
+        }
+      },
+      {
+        "origins": [
+          "incumbent"
+        ],
+        "pareto_over_incumbent": false,
+        "passes_curve_throughput_guardrail": true,
+        "placement_key": [
+          [
+            21,
+            117,
+            6,
+            1
+          ],
+          [
+            26,
+            122,
+            6,
+            1
+          ],
+          [
+            35,
+            163,
+            8,
+            1
+          ],
+          [
+            39,
+            135,
+            6,
+            1
+          ],
+          [
+            43,
+            203,
+            10,
+            1
+          ],
+          [
+            44,
+            140,
+            6,
+            1
+          ],
+          [
+            50,
+            57,
+            7,
+            1
+          ],
+          [
+            51,
+            60,
+            9,
+            1
+          ],
+          [
+            55,
+            61,
+            6,
+            1
+          ],
+          [
+            56,
+            216,
+            10,
+            1
+          ],
+          [
+            66,
+            72,
+            6,
+            1
+          ],
+          [
+            67,
+            196,
+            9,
+            1
+          ],
+          [
+            71,
+            167,
+            6,
+            1
+          ],
+          [
+            73,
+            154,
+            6,
+            1
+          ],
+          [
+            76,
+            188,
+            7,
+            1
+          ],
+          [
+            88,
+            109,
+            6,
+            1
+          ],
+          [
+            92,
+            101,
+            8,
+            1
+          ],
+          [
+            99,
+            107,
+            8,
+            1
+          ],
+          [
+            106,
+            184,
+            7,
+            1
+          ],
+          [
+            108,
+            220,
+            7,
+            1
+          ],
+          [
+            113,
+            119,
+            6,
+            1
+          ],
+          [
+            115,
+            211,
+            6,
+            1
+          ],
+          [
+            116,
+            139,
+            8,
+            1
+          ],
+          [
+            118,
+            199,
+            6,
+            1
+          ],
+          [
+            124,
+            147,
+            11,
+            1
+          ],
+          [
+            133,
+            229,
+            6,
+            1
+          ],
+          [
+            134,
+            142,
+            8,
+            1
+          ],
+          [
+            137,
+            165,
+            6,
+            1
+          ],
+          [
+            138,
+            234,
+            6,
+            1
+          ],
+          [
+            145,
+            151,
+            6,
+            1
+          ],
+          [
+            162,
+            168,
+            6,
+            1
+          ],
+          [
+            164,
+            174,
+            10,
+            1
+          ],
+          [
+            183,
+            189,
+            6,
+            1
+          ],
+          [
+            187,
+            198,
+            6,
+            1
+          ],
+          [
+            194,
+            200,
+            6,
+            1
+          ],
+          [
+            195,
+            204,
+            9,
+            1
+          ]
+        ],
+        "search_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174688476563,
+              "latency": 21.9302860561,
+              "normalized_throughput": 0.9982198660742857,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174688476563,
+                  "average_packet_latency_cycles": 21.9302860561,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 357762,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.199936035156,
+              "latency": 24.2786657842,
+              "normalized_throughput": 0.99968017578,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.199936035156,
+                  "average_packet_latency_cycles": 24.2786657842,
+                  "max_ni_busy_streak": 23,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 409469,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.221585449219,
+              "latency": 77.9769064823,
+              "normalized_throughput": 0.9848242187511111,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.221585449219,
+                  "average_packet_latency_cycles": 77.9769064823,
+                  "max_ni_busy_streak": 2852,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 453807,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.238059316309626
+        },
+        "selected": false,
+        "validation_result": {
+          "by_traffic": [
+            {
+              "accepted_throughput": 0.174799921875,
+              "latency": 21.9324626373,
+              "normalized_throughput": 0.9988566964285714,
+              "rate": 0.35,
+              "samples": [
+                {
+                  "accepted_throughput": 0.174792734375,
+                  "average_packet_latency_cycles": 21.9408393066,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237347,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.174807109375,
+                  "average_packet_latency_cycles": 21.924085968,
+                  "max_ni_busy_streak": 0,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2237531,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.19984703125,
+              "latency": 24.40283738115,
+              "normalized_throughput": 0.9992351562499999,
+              "rate": 0.4,
+              "samples": [
+                {
+                  "accepted_throughput": 0.19985,
+                  "average_packet_latency_cycles": 24.4044091662,
+                  "max_ni_busy_streak": 49,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558080,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.1998440625,
+                  "average_packet_latency_cycles": 24.4012655961,
+                  "max_ni_busy_streak": 49,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2558004,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            },
+            {
+              "accepted_throughput": 0.2198449609375,
+              "latency": 389.2090514935,
+              "normalized_throughput": 0.9770887152777777,
+              "rate": 0.45,
+              "samples": [
+                {
+                  "accepted_throughput": 0.220212890625,
+                  "average_packet_latency_cycles": 440.003691385,
+                  "max_ni_busy_streak": 8866,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2818725,
+                  "termination_reason": "simulate_limit"
+                },
+                {
+                  "accepted_throughput": 0.21947703125,
+                  "average_packet_latency_cycles": 338.414411602,
+                  "max_ni_busy_streak": 13782,
+                  "ni_watchdog_triggered": false,
+                  "no_progress": false,
+                  "packets_received": 2809306,
+                  "termination_reason": "simulate_limit"
+                }
+              ],
+              "traffic": "uniform_random"
+            }
+          ],
+          "utility": 1.2337191222472192
+        }
+      }
+    ]
+  }
+}

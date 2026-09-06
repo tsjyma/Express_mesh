@@ -30,15 +30,12 @@
 
 #include "mem/ruby/network/garnet/RoutingUnit.hh"
 
-#include <limits>
-
 #include "base/cast.hh"
 #include "base/compiler.hh"
 #include "base/logging.hh"
 #include "base/random.hh"
 #include "debug/RubyNetwork.hh"
 #include "mem/ruby/network/garnet/InputUnit.hh"
-#include "mem/ruby/network/garnet/OutputUnit.hh"
 #include "mem/ruby/network/garnet/Router.hh"
 #include "mem/ruby/slicc_interface/Message.hh"
 
@@ -272,56 +269,7 @@ RoutingUnit::outportComputeCustom(RouteInfo route,
                                  int inport,
                                  PortDirection inport_dirn)
 {
-    if (route.source_routed)
-        return outportComputeExpressMesh(route);
     return outportComputeExpressMesh(route);
-}
-
-int
-RoutingUnit::outportComputeLocalAdaptive(RouteInfo route, int waypoint,
-                                          int inport, PortDirection inport_dirn)
-{
-    const int current = m_router->get_id();
-    const int cols = m_router->get_net_ptr()->getNumCols();
-    const int cx = current % cols, cy = current / cols;
-    const int wx = waypoint % cols, wy = waypoint / cols;
-    const int dx = wx - cx, dy = wy - cy;
-    if (dx == 0 && dy == 0)
-        return -1;
-    std::vector<int> outputs;
-    auto consider = [&](const char *name, int nx, int ny, bool require_free) {
-        if (nx < 0 || ny < 0 || nx >= cols || ny >= m_router->get_net_ptr()->getNumRows())
-            return;
-        if (std::abs(wx - nx) + std::abs(wy - ny) !=
-            std::abs(dx) + std::abs(dy) - 1)
-            return;
-        auto it = m_outports_dirn2idx.find(PortDirection(name));
-        if (it == m_outports_dirn2idx.end()) return;
-        if (!require_free ||
-            m_router->getOutputUnit(it->second)->has_free_vc(route.vnet, false))
-            outputs.push_back(it->second);
-    };
-    if (dx > 0) consider("East", cx + 1, cy, true);
-    if (dx < 0) consider("West", cx - 1, cy, true);
-    if (dy > 0) consider("North", cx, cy + 1, true);
-    if (dy < 0) consider("South", cx, cy - 1, true);
-    if (outputs.empty()) {
-        if (dx > 0) consider("East", cx + 1, cy, false);
-        if (dx < 0) consider("West", cx - 1, cy, false);
-        if (dy > 0) consider("North", cx, cy + 1, false);
-        if (dy < 0) consider("South", cx, cy - 1, false);
-    }
-    fatal_if(outputs.empty(), "no productive mesh output from %d to %d", current, waypoint);
-    int best = outputs.front();
-    double best_congestion = m_router->getOutputUnit(best)->congestion(route.vnet);
-    std::vector<int> ties{best};
-    for (size_t i = 1; i < outputs.size(); ++i) {
-        const int out = outputs[i];
-        const double c = m_router->getOutputUnit(out)->congestion(route.vnet);
-        if (c < best_congestion) { best_congestion = c; ties = {out}; }
-        else if (c == best_congestion) ties.push_back(out);
-    }
-    return ties[random_mt.random<int>(0, ties.size() - 1)];
 }
 
 int
@@ -388,62 +336,7 @@ RoutingUnit::outportComputeExpressMesh(RouteInfo route)
         return meshXYTo(route.dest_router);
     }
 
-    const int minimal_next =
-        network->getExpressNextHop(current, route.dest_router);
-    int next = minimal_next;
-
-    if (network->isExpressAdaptive()) {
-        const uint32_t minimal_distance =
-            network->getExpressDistance(current, route.dest_router);
-        const int minimal_outport =
-            m_outports_dirn2idx.at(directionFor(minimal_next));
-        const double minimal_congestion =
-            m_router->getOutputUnit(minimal_outport)->congestion(route.vnet);
-
-        if (minimal_congestion >= network->getExpressAdaptiveThreshold()) {
-            double best_score = std::numeric_limits<double>::infinity();
-            std::vector<int> best_neighbors;
-            for (const int neighbor : network->getExpressNeighbors(current)) {
-                const uint32_t remaining =
-                    network->getExpressDistance(neighbor, route.dest_router);
-                if (remaining >= minimal_distance)
-                    continue;
-                const uint32_t path_length =
-                    network->getExpressEdgeLatency(current, neighbor) +
-                    remaining;
-                if (double(path_length) >
-                    network->getExpressDetourRatio() * minimal_distance)
-                    continue;
-                const int outport =
-                    m_outports_dirn2idx.at(directionFor(neighbor));
-                const double congestion =
-                    m_router->getOutputUnit(outport)->congestion(route.vnet);
-                const double score = path_length *
-                    (1.0 + network->getExpressAdaptiveLambda() * congestion);
-                if (score < best_score) {
-                    best_score = score;
-                    best_neighbors.assign(1, neighbor);
-                } else if (score == best_score) {
-                    best_neighbors.push_back(neighbor);
-                }
-            }
-            if (!best_neighbors.empty())
-                next = best_neighbors[random_mt.random<int>(
-                    0, best_neighbors.size() - 1)];
-        }
-        const uint32_t selected_length =
-            network->getExpressEdgeLatency(current, next) +
-            network->getExpressDistance(next, route.dest_router);
-        if (selected_length > minimal_distance)
-            network->incrementNonminimalDecision();
-    }
-
-    const PortDirection direction = directionFor(next);
-    const auto outport = m_outports_dirn2idx.find(direction);
-    fatal_if(outport == m_outports_dirn2idx.end(),
-             "Router %d has no output port %s for next hop %d",
-             current, direction.c_str(), next);
-    return outport->second;
+    fatal("ExpressMesh custom routing requires --express-source-route");
 }
 
 } // namespace garnet

@@ -1,7 +1,7 @@
 """A 2D mesh augmented with budgeted bidirectional express links."""
 
 import json
-from itertools import permutations
+import heapq
 from pathlib import Path
 
 from m5.objects import *
@@ -105,56 +105,138 @@ class ExpressMesh(SimpleTopology):
         return path
 
     @classmethod
-    def _source_route_table(cls, links, num_routers, num_rows):
-        """Choose the lowest-static-cost complete route for every pair.
+    def _source_route_table(
+        cls, links, num_routers, num_rows, candidate_limit
+    ):
+        """Retain the exact K lowest-cost loop-free routes for every pair.
 
-        This is the injection MVP. The offline implementation retains K=8
-        candidates; gem5 initially consumes the deterministic q=r=0 winner.
+        A route contains zero, one, or two directed express links and uses XY
+        mesh segments between them.  The original implementation enumerated
+        every two-link permutation separately for every source/destination
+        pair.  This lazy merge preserves the same ordering while making
+        16x16 configurations practical.
         """
+        if candidate_limit <= 0:
+            raise ValueError("source-route candidate count K must be positive")
         directed = []
         for express_id, (u, v, latency) in enumerate(links):
             directed.append((express_id * 2, u, v, latency))
             directed.append((express_id * 2 + 1, v, u, latency))
 
+        def distance(first, second):
+            fx, fy = first % num_rows, first // num_rows
+            sx, sy = second % num_rows, second // num_rows
+            return abs(fx - sx) + abs(fy - sy)
+
+        def compose(source, destination, sequence):
+            first_target = sequence[0][1] if sequence else destination
+            routers = cls._xy_segment(source, first_target, num_rows)
+            latency = len(routers) - 1
+            express_ids = []
+            for index, (directed_id, entry, exit_node,
+                        edge_latency) in enumerate(sequence):
+                if routers[-1] != entry:
+                    return None
+                routers.append(exit_node)
+                latency += edge_latency
+                express_ids.append(directed_id)
+                target = (destination if index + 1 == len(sequence)
+                          else sequence[index + 1][1])
+                segment = cls._xy_segment(exit_node, target, num_rows)
+                routers.extend(segment[1:])
+                latency += len(segment) - 1
+            if routers[-1] != destination or len(routers) != len(set(routers)):
+                return None
+            return latency, len(sequence), tuple(express_ids)
+
         counts = [0] * (num_routers * num_routers)
         ids = [0] * (num_routers * num_routers * 2)
         candidate_counts = [0] * (num_routers * num_routers)
-        candidate_latencies = [0] * (num_routers * num_routers * 8)
-        candidate_express_counts = [0] * (num_routers * num_routers * 8)
-        candidate_express_ids = [0] * (num_routers * num_routers * 8 * 2)
-        for source in range(num_routers):
-            for destination in range(num_routers):
+        candidate_latencies = [0] * (
+            num_routers * num_routers * candidate_limit
+        )
+        candidate_express_counts = [0] * (
+            num_routers * num_routers * candidate_limit
+        )
+        candidate_express_ids = [0] * (
+            num_routers * num_routers * candidate_limit * 2
+        )
+        for destination in range(num_routers):
+            # For a fixed destination and first express edge, sort all legal
+            # second-edge tails once.  Adding the source-to-first-entry cost
+            # is a constant, so each list remains sorted for every source.
+            second_edges = []
+            for first_index, first in enumerate(directed):
+                choices = []
+                for second_index, second in enumerate(directed):
+                    if second_index == first_index:
+                        continue
+                    tail_latency = (
+                        distance(first[2], second[1]) + second[3] +
+                        distance(second[2], destination)
+                    )
+                    choices.append((tail_latency, second[0], second_index))
+                choices.sort()
+                second_edges.append(choices)
+
+            for source in range(num_routers):
                 if source == destination:
                     continue
-                candidates = []
-                for count in range(3):
-                    for sequence in permutations(directed, count):
-                        first_target = sequence[0][1] if sequence else destination
-                        routers = cls._xy_segment(source, first_target, num_rows)
-                        latency = len(routers) - 1
-                        valid = True
-                        express_ids = []
-                        for index, (directed_id, entry, exit_node, edge_latency) in enumerate(sequence):
-                            if routers[-1] != entry:
-                                valid = False
-                                break
-                            routers.append(exit_node)
-                            latency += edge_latency
-                            express_ids.append(directed_id)
-                            target = destination if index + 1 == len(sequence) else sequence[index + 1][1]
-                            segment = cls._xy_segment(exit_node, target, num_rows)
-                            routers.extend(segment[1:])
-                            latency += len(segment) - 1
-                        if valid and routers[-1] == destination and len(routers) == len(set(routers)):
-                            candidates.append((latency, count, tuple(express_ids)))
-                candidates.sort(key=lambda item: (item[0], item[1], item[2]))
-                if not candidates:
-                    raise ValueError(f"no source route for pair {(source, destination)}")
-                selected = candidates[:8]
+                queue = []
+                mesh_latency = distance(source, destination)
+                heapq.heappush(queue, (mesh_latency, 0, (), -1, -1))
+                for edge_index, edge in enumerate(directed):
+                    one_latency = (distance(source, edge[1]) + edge[3] +
+                                   distance(edge[2], destination))
+                    heapq.heappush(
+                        queue, (one_latency, 1, (edge[0],), -1, edge_index)
+                    )
+                    if second_edges[edge_index]:
+                        tail_latency, second_id, _ = second_edges[edge_index][0]
+                        two_latency = (distance(source, edge[1]) + edge[3] +
+                                       tail_latency)
+                        heapq.heappush(
+                            queue,
+                            (two_latency, 2, (edge[0], second_id),
+                             edge_index, 0),
+                        )
+
+                selected = []
+                while queue and len(selected) < candidate_limit:
+                    _, count, _, first_index, choice_index = heapq.heappop(queue)
+                    if count == 0:
+                        sequence = ()
+                    elif count == 1:
+                        sequence = (directed[choice_index],)
+                    else:
+                        choices = second_edges[first_index]
+                        _, _, second_index = choices[choice_index]
+                        sequence = (directed[first_index], directed[second_index])
+                        next_choice = choice_index + 1
+                        if next_choice < len(choices):
+                            tail_latency, second_id, _ = choices[next_choice]
+                            first = directed[first_index]
+                            next_latency = (
+                                distance(source, first[1]) + first[3] +
+                                tail_latency
+                            )
+                            heapq.heappush(
+                                queue,
+                                (next_latency, 2, (first[0], second_id),
+                                 first_index, next_choice),
+                            )
+                    candidate = compose(source, destination, sequence)
+                    if candidate is not None:
+                        selected.append(candidate)
+
+                if not selected:
+                    raise ValueError(
+                        f"no source route for pair {(source, destination)}"
+                    )
                 pair_index = source * num_routers + destination
                 candidate_counts[pair_index] = len(selected)
                 for c, (latency, ec, eids) in enumerate(selected):
-                    base = pair_index * 8 + c
+                    base = pair_index * candidate_limit + c
                     candidate_latencies[base] = latency
                     candidate_express_counts[base] = ec
                     for i, eid in enumerate(eids):
@@ -187,7 +269,6 @@ class ExpressMesh(SimpleTopology):
             for router_id in range(num_routers)
         ]
         network.routers = routers
-        network.express_mesh_link_latency = link_latency
         network.express_link_endpoints = [
             endpoint for u, v, _ in express_links for endpoint in (u, v)
         ]
@@ -196,8 +277,10 @@ class ExpressMesh(SimpleTopology):
         ]
         (counts, route_ids, candidate_counts, candidate_latencies,
          candidate_express_counts, candidate_express_ids) = self._source_route_table(
-            express_links, num_routers, num_rows
+            express_links, num_routers, num_rows,
+            options.express_source_route_candidates,
         )
+        network.source_route_candidates = options.express_source_route_candidates
         network.source_route_express_counts = counts
         network.source_route_express_ids = route_ids
         network.source_route_candidate_counts = candidate_counts

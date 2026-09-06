@@ -1,0 +1,282 @@
+{
+  "constraints": {
+    "max_degree": 1,
+    "wire_cost": 256
+  },
+  "dimension": 16,
+  "express_links": [
+    {
+      "latency": 1,
+      "u": 1,
+      "u_coord": [
+        1,
+        0
+      ],
+      "v": 154,
+      "v_coord": [
+        10,
+        9
+      ],
+      "wire_length": 18
+    },
+    {
+      "latency": 1,
+      "u": 3,
+      "u_coord": [
+        3,
+        0
+      ],
+      "v": 126,
+      "v_coord": [
+        14,
+        7
+      ],
+      "wire_length": 18
+    },
+    {
+      "latency": 1,
+      "u": 13,
+      "u_coord": [
+        13,
+        0
+      ],
+      "v": 213,
+      "v_coord": [
+        5,
+        13
+      ],
+      "wire_length": 21
+    },
+    {
+      "latency": 1,
+      "u": 14,
+      "u_coord": [
+        14,
+        0
+      ],
+      "v": 101,
+      "v_coord": [
+        5,
+        6
+      ],
+      "wire_length": 15
+    },
+    {
+      "latency": 1,
+      "u": 20,
+      "u_coord": [
+        4,
+        1
+      ],
+      "v": 223,
+      "v_coord": [
+        15,
+        13
+      ],
+      "wire_length": 23
+    },
+    {
+      "latency": 1,
+      "u": 27,
+      "u_coord": [
+        11,
+        1
+      ],
+      "v": 230,
+      "v_coord": [
+        6,
+        14
+      ],
+      "wire_length": 18
+    },
+    {
+      "latency": 1,
+      "u": 42,
+      "u_coord": [
+        10,
+        2
+      ],
+      "v": 134,
+      "v_coord": [
+        6,
+        8
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 52,
+      "u_coord": [
+        4,
+        3
+      ],
+      "v": 196,
+      "v_coord": [
+        4,
+        12
+      ],
+      "wire_length": 9
+    },
+    {
+      "latency": 1,
+      "u": 54,
+      "u_coord": [
+        6,
+        3
+      ],
+      "v": 255,
+      "v_coord": [
+        15,
+        15
+      ],
+      "wire_length": 21
+    },
+    {
+      "latency": 1,
+      "u": 61,
+      "u_coord": [
+        13,
+        3
+      ],
+      "v": 120,
+      "v_coord": [
+        8,
+        7
+      ],
+      "wire_length": 9
+    },
+    {
+      "latency": 1,
+      "u": 80,
+      "u_coord": [
+        0,
+        5
+      ],
+      "v": 142,
+      "v_coord": [
+        14,
+        8
+      ],
+      "wire_length": 17
+    },
+    {
+      "latency": 1,
+      "u": 86,
+      "u_coord": [
+        6,
+        5
+      ],
+      "v": 202,
+      "v_coord": [
+        10,
+        12
+      ],
+      "wire_length": 11
+    },
+    {
+      "latency": 1,
+      "u": 97,
+      "u_coord": [
+        1,
+        6
+      ],
+      "v": 163,
+      "v_coord": [
+        3,
+        10
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 110,
+      "u_coord": [
+        14,
+        6
+      ],
+      "v": 246,
+      "v_coord": [
+        6,
+        15
+      ],
+      "wire_length": 17
+    },
+    {
+      "latency": 1,
+      "u": 127,
+      "u_coord": [
+        15,
+        7
+      ],
+      "v": 189,
+      "v_coord": [
+        13,
+        11
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 136,
+      "u_coord": [
+        8,
+        8
+      ],
+      "v": 231,
+      "v_coord": [
+        7,
+        14
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 153,
+      "u_coord": [
+        9,
+        9
+      ],
+      "v": 194,
+      "v_coord": [
+        2,
+        12
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 156,
+      "u_coord": [
+        12,
+        9
+      ],
+      "v": 248,
+      "v_coord": [
+        8,
+        15
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 183,
+      "u_coord": [
+        7,
+        11
+      ],
+      "v": 238,
+      "v_coord": [
+        14,
+        14
+      ],
+      "wire_length": 10
+    }
+  ],
+  "latency_model": "ideal",
+  "name": "random_16_256_160261",
+  "node_count": 256,
+  "search_metadata": {
+    "algorithm": "random",
+    "seed": 160261
+  }
+}

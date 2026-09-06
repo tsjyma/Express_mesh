@@ -110,6 +110,16 @@ def cutstress_demand(n: int) -> Demand:
     return {pair: weight for pair in pairs}
 
 
+def cutstress_bidirectional_demand(n: int) -> Demand:
+    """Symmetric row-mirror traffic with every router active."""
+    pairs = [
+        (source, (source // n) * n + (n - 1 - source % n))
+        for source in range(n * n)
+    ]
+    weight = 1.0 / len(pairs)
+    return {pair: weight for pair in pairs}
+
+
 def permutation_demand(n: int, mapping) -> Demand:
     """Balanced one-to-one traffic: every router injects to one router.
 
@@ -164,6 +174,69 @@ def hotspot_demand(n: int, hotspot_probability: float = 0.5) -> Demand:
                 demand[(source, dest)] += hotspot_probability / node_count / len(hot)
         for dest in regular:
             demand[(source, dest)] += (1.0 - hotspot_probability) / node_count / len(regular)
+    return dict(demand)
+
+
+def soc_heterogeneous_demand(n: int) -> Demand:
+    """Probabilistic clustered traffic for a tiled heterogeneous SoC.
+
+    The distribution matches ``express_noc --traffic soc_heterogeneous``:
+    30% stays within a compute tile, 15% accesses that tile's shared bank, 5%
+    reaches eight edge memory controllers, 5% reaches eight shared
+    accelerators, and 45% is diffuse global background/coherence traffic.
+    For n=16 this gives an exact inter-tile share of about 51.7% (some global
+    and shared-service requests land in the source tile), while shared-service
+    traffic is important without making a tiny service set the unavoidable
+    system bottleneck.  It is intentionally a
+    distribution rather than a source-to-destination permutation.
+    """
+    if n < 8 or n % 4:
+        raise ValueError("heterogeneous SoC traffic requires n divisible by 4")
+    node_count = n * n
+    tile = max(2, n // 4)
+    memory = [
+        (x, y)
+        for x in (0, n - 1)
+        for y in (n // 8, 3 * n // 8, 5 * n // 8, 7 * n // 8)
+    ]
+    accelerators = [
+        (x, y)
+        for x, y in (
+            (n // 4, n // 4), (n // 2, n // 4),
+            (3 * n // 4, n // 4), (n // 4, n // 2),
+            (3 * n // 4, n // 2), (n // 4, 3 * n // 4),
+            (n // 2, 3 * n // 4), (3 * n // 4, 3 * n // 4),
+        )
+    ]
+    demand: defaultdict[tuple[int, int], float] = defaultdict(float)
+    for source in range(node_count):
+        x, y = source % n, source // n
+        x0, y0 = (x // tile) * tile, (y // tile) * tile
+        local = [
+            dy * n + dx
+            for dy in range(y0, min(n, y0 + tile))
+            for dx in range(x0, min(n, x0 + tile))
+            if dy * n + dx != source
+        ]
+        for dest in local:
+            demand[(source, dest)] += 0.30 / node_count / len(local)
+        bank = min(n - 1, y0 + tile // 2) * n + min(n - 1, x0 + tile // 2)
+        if bank == source:
+            bank = (source + 1) % node_count
+        demand[(source, bank)] += 0.15 / node_count
+        for dx, dy in memory:
+            dest = min(n - 1, dy) * n + dx
+            if dest == source:
+                dest = (source + 1) % node_count
+            demand[(source, dest)] += 0.05 / node_count / len(memory)
+        for dx, dy in accelerators:
+            dest = min(n - 1, dy) * n + min(n - 1, dx)
+            if dest == source:
+                dest = (source + 1) % node_count
+            demand[(source, dest)] += 0.05 / node_count / len(accelerators)
+        for dest in range(node_count):
+            if dest != source:
+                demand[(source, dest)] += 0.45 / node_count / (node_count - 1)
     return dict(demand)
 
 

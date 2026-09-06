@@ -60,6 +60,7 @@ parser.add_argument(
         "shuffle",
         "transpose",
         "cutstress",
+        "cutstress_bidirectional",
         "hotspot",
     ],
 )

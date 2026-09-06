@@ -1,0 +1,520 @@
+{
+  "constraints": {
+    "max_degree": 1,
+    "wire_cost": 256
+  },
+  "dimension": 16,
+  "express_links": [
+    {
+      "latency": 1,
+      "u": 6,
+      "u_coord": [
+        6,
+        0
+      ],
+      "v": 72,
+      "v_coord": [
+        8,
+        4
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 15,
+      "u_coord": [
+        15,
+        0
+      ],
+      "v": 26,
+      "v_coord": [
+        10,
+        1
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 19,
+      "u_coord": [
+        3,
+        1
+      ],
+      "v": 40,
+      "v_coord": [
+        8,
+        2
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 22,
+      "u_coord": [
+        6,
+        1
+      ],
+      "v": 149,
+      "v_coord": [
+        5,
+        9
+      ],
+      "wire_length": 9
+    },
+    {
+      "latency": 1,
+      "u": 23,
+      "u_coord": [
+        7,
+        1
+      ],
+      "v": 34,
+      "v_coord": [
+        2,
+        2
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 28,
+      "u_coord": [
+        12,
+        1
+      ],
+      "v": 71,
+      "v_coord": [
+        7,
+        4
+      ],
+      "wire_length": 8
+    },
+    {
+      "latency": 1,
+      "u": 33,
+      "u_coord": [
+        1,
+        2
+      ],
+      "v": 129,
+      "v_coord": [
+        1,
+        8
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 36,
+      "u_coord": [
+        4,
+        2
+      ],
+      "v": 102,
+      "v_coord": [
+        6,
+        6
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 37,
+      "u_coord": [
+        5,
+        2
+      ],
+      "v": 119,
+      "v_coord": [
+        7,
+        7
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 39,
+      "u_coord": [
+        7,
+        2
+      ],
+      "v": 92,
+      "v_coord": [
+        12,
+        5
+      ],
+      "wire_length": 8
+    },
+    {
+      "latency": 1,
+      "u": 41,
+      "u_coord": [
+        9,
+        2
+      ],
+      "v": 124,
+      "v_coord": [
+        12,
+        7
+      ],
+      "wire_length": 8
+    },
+    {
+      "latency": 1,
+      "u": 44,
+      "u_coord": [
+        12,
+        2
+      ],
+      "v": 190,
+      "v_coord": [
+        14,
+        11
+      ],
+      "wire_length": 11
+    },
+    {
+      "latency": 1,
+      "u": 50,
+      "u_coord": [
+        2,
+        3
+      ],
+      "v": 179,
+      "v_coord": [
+        3,
+        11
+      ],
+      "wire_length": 9
+    },
+    {
+      "latency": 1,
+      "u": 53,
+      "u_coord": [
+        5,
+        3
+      ],
+      "v": 115,
+      "v_coord": [
+        3,
+        7
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 60,
+      "u_coord": [
+        12,
+        3
+      ],
+      "v": 169,
+      "v_coord": [
+        9,
+        10
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 69,
+      "u_coord": [
+        5,
+        4
+      ],
+      "v": 80,
+      "v_coord": [
+        0,
+        5
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 74,
+      "u_coord": [
+        10,
+        4
+      ],
+      "v": 81,
+      "v_coord": [
+        1,
+        5
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 85,
+      "u_coord": [
+        5,
+        5
+      ],
+      "v": 166,
+      "v_coord": [
+        6,
+        10
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 96,
+      "u_coord": [
+        0,
+        6
+      ],
+      "v": 162,
+      "v_coord": [
+        2,
+        10
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 104,
+      "u_coord": [
+        8,
+        6
+      ],
+      "v": 171,
+      "v_coord": [
+        11,
+        10
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 105,
+      "u_coord": [
+        9,
+        6
+      ],
+      "v": 111,
+      "v_coord": [
+        15,
+        6
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 116,
+      "u_coord": [
+        4,
+        7
+      ],
+      "v": 246,
+      "v_coord": [
+        6,
+        15
+      ],
+      "wire_length": 10
+    },
+    {
+      "latency": 1,
+      "u": 118,
+      "u_coord": [
+        6,
+        7
+      ],
+      "v": 126,
+      "v_coord": [
+        14,
+        7
+      ],
+      "wire_length": 8
+    },
+    {
+      "latency": 1,
+      "u": 121,
+      "u_coord": [
+        9,
+        7
+      ],
+      "v": 187,
+      "v_coord": [
+        11,
+        11
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 131,
+      "u_coord": [
+        3,
+        8
+      ],
+      "v": 138,
+      "v_coord": [
+        10,
+        8
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 140,
+      "u_coord": [
+        12,
+        8
+      ],
+      "v": 206,
+      "v_coord": [
+        14,
+        12
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 141,
+      "u_coord": [
+        13,
+        8
+      ],
+      "v": 220,
+      "v_coord": [
+        12,
+        13
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 142,
+      "u_coord": [
+        14,
+        8
+      ],
+      "v": 202,
+      "v_coord": [
+        10,
+        12
+      ],
+      "wire_length": 8
+    },
+    {
+      "latency": 1,
+      "u": 151,
+      "u_coord": [
+        7,
+        9
+      ],
+      "v": 196,
+      "v_coord": [
+        4,
+        12
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 156,
+      "u_coord": [
+        12,
+        9
+      ],
+      "v": 238,
+      "v_coord": [
+        14,
+        14
+      ],
+      "wire_length": 7
+    },
+    {
+      "latency": 1,
+      "u": 157,
+      "u_coord": [
+        13,
+        9
+      ],
+      "v": 223,
+      "v_coord": [
+        15,
+        13
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 170,
+      "u_coord": [
+        10,
+        10
+      ],
+      "v": 181,
+      "v_coord": [
+        5,
+        11
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 172,
+      "u_coord": [
+        12,
+        10
+      ],
+      "v": 183,
+      "v_coord": [
+        7,
+        11
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 182,
+      "u_coord": [
+        6,
+        11
+      ],
+      "v": 233,
+      "v_coord": [
+        9,
+        14
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 189,
+      "u_coord": [
+        13,
+        11
+      ],
+      "v": 255,
+      "v_coord": [
+        15,
+        15
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 197,
+      "u_coord": [
+        5,
+        12
+      ],
+      "v": 236,
+      "v_coord": [
+        12,
+        14
+      ],
+      "wire_length": 9
+    }
+  ],
+  "latency_model": "ideal",
+  "name": "random_length_matched_2",
+  "node_count": 256,
+  "search_metadata": {
+    "algorithm": "random_length_matched",
+    "seed": 170002
+  }
+}

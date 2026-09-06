@@ -33,9 +33,7 @@
 
 #include <algorithm>
 #include <cstdlib>
-#include <functional>
 #include <limits>
-#include <queue>
 #include <utility>
 
 #include <cassert>
@@ -82,7 +80,6 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     m_buffers_per_data_vc = p.buffers_per_data_vc;
     m_buffers_per_ctrl_vc = p.buffers_per_ctrl_vc;
     m_routing_algorithm = p.routing_algorithm;
-    m_express_mesh_link_latency = p.express_mesh_link_latency;
     m_express_link_endpoints = p.express_link_endpoints;
     m_express_link_latencies = p.express_link_latencies;
     m_source_route_enabled = p.source_route_enabled;
@@ -92,6 +89,7 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     m_source_route_candidate_latencies = p.source_route_candidate_latencies;
     m_source_route_candidate_express_counts = p.source_route_candidate_express_counts;
     m_source_route_candidate_express_ids = p.source_route_candidate_express_ids;
+    m_source_route_candidates = p.source_route_candidates;
     m_source_route_policy = p.source_route_policy;
     m_source_route_reservation_weight = p.source_route_reservation_weight;
     m_source_route_vc_weight = p.source_route_vc_weight;
@@ -102,21 +100,21 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     m_source_route_info_bits = p.source_route_info_bits;
     m_source_route_admission_fraction = p.source_route_admission_fraction;
     m_reservation_current.assign(2 * m_express_link_latencies.size(), 0);
-    m_express_adaptive = p.express_adaptive;
-    m_express_adaptive_threshold = p.express_adaptive_threshold;
-    m_express_adaptive_lambda = p.express_adaptive_lambda;
-    m_express_detour_ratio = p.express_detour_ratio;
     m_express_escape_timeout = p.express_escape_timeout;
     m_express_escape_enabled = p.express_escape_enabled;
     m_next_packet_id = 0;
 
-    fatal_if(m_source_route_policy > 4,
-             "source-route policy %u is invalid", m_source_route_policy);
+    fatal_if(m_source_route_policy != 0 && m_source_route_policy != 3 &&
+             m_source_route_policy != 4,
+             "source-route policy %u is invalid; supported policies are "
+             "0 (static), 3 (random top-K), and 4 (q/r pressure-aware)",
+             m_source_route_policy);
+    fatal_if(m_source_route_candidates == 0,
+             "source-route candidate count K must be positive");
     fatal_if(m_source_route_reservation_weight < 0.0 ||
              m_source_route_vc_weight < 0.0,
              "source-route pressure weights must be non-negative");
     fatal_if(m_source_route_info_mode != "instant" &&
-             m_source_route_info_mode != "delayed-global" &&
              m_source_route_info_mode != "distance-gossip",
              "invalid express information mode %s",
              m_source_route_info_mode.c_str());
@@ -168,6 +166,8 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     m_local_unacknowledged.assign(
         m_routers.size(),
         std::vector<uint32_t>(m_reservation_current.size(), 0));
+    m_router_last_wakeup_cycle.assign(
+        m_routers.size(), std::numeric_limits<uint64_t>::max());
 
     // record the network interfaces
     for (std::vector<ClockedObject*>::const_iterator i = p.netifs.begin();
@@ -192,6 +192,7 @@ GarnetNetwork::startup()
 void
 GarnetNetwork::processExpressInfoEvent()
 {
+    m_express_info_event_last_cycle = curCycle();
     processReservationControl();
     captureExpressInformation();
     schedule(m_express_info_event, clockEdge(Cycles(1)));
@@ -225,88 +226,13 @@ GarnetNetwork::init()
         fatal_if(m_express_link_endpoints.size() !=
                      2 * m_express_link_latencies.size(),
                  "Express-link endpoint and latency vectors disagree");
-        std::vector<std::vector<std::pair<int, uint32_t>>> adjacency(
-            router_count);
-        auto add_edge = [&adjacency](int u, int v, uint32_t latency) {
-            adjacency[u].emplace_back(v, latency);
-            adjacency[v].emplace_back(u, latency);
-        };
-        for (int row = 0; row < m_num_rows; ++row) {
-            for (int col = 0; col < m_num_cols; ++col) {
-                const int router = row * m_num_cols + col;
-                if (col + 1 < m_num_cols) {
-                    add_edge(router, router + 1,
-                             m_express_mesh_link_latency);
-                }
-                if (row + 1 < m_num_rows) {
-                    add_edge(router, router + m_num_cols,
-                             m_express_mesh_link_latency);
-                }
-            }
-        }
-        for (int index = 0; index < m_express_link_latencies.size(); ++index) {
+        for (size_t index = 0; index < m_express_link_latencies.size();
+             ++index) {
             const int u = m_express_link_endpoints[2 * index];
             const int v = m_express_link_endpoints[2 * index + 1];
-            fatal_if(u < 0 || u >= router_count || v < 0 || v >= router_count,
+            fatal_if(u < 0 || u >= router_count || v < 0 ||
+                         v >= router_count,
                      "Express-link endpoint outside router range");
-            add_edge(u, v, m_express_link_latencies[index]);
-        }
-
-        const uint32_t infinity = std::numeric_limits<uint32_t>::max();
-        m_express_neighbors.assign(router_count, {});
-        m_express_edge_latency.assign(
-            router_count, std::vector<uint32_t>(router_count, infinity));
-        for (int router = 0; router < router_count; ++router) {
-            for (const auto &[neighbor, latency] : adjacency[router]) {
-                m_express_neighbors[router].push_back(neighbor);
-                m_express_edge_latency[router][neighbor] = latency;
-            }
-            std::sort(m_express_neighbors[router].begin(),
-                      m_express_neighbors[router].end());
-        }
-        m_express_next_hop.assign(
-            router_count, std::vector<int>(router_count, -1));
-        m_express_distance.assign(
-            router_count, std::vector<uint32_t>(router_count, infinity));
-        for (int destination = 0; destination < router_count; ++destination) {
-            std::vector<uint32_t> distance(router_count, infinity);
-            using QueueEntry = std::pair<uint32_t, int>;
-            std::priority_queue<QueueEntry, std::vector<QueueEntry>,
-                                std::greater<QueueEntry>> queue;
-            distance[destination] = 0;
-            queue.emplace(0, destination);
-            while (!queue.empty()) {
-                const auto [current_distance, router] = queue.top();
-                queue.pop();
-                if (current_distance != distance[router]) {
-                    continue;
-                }
-                for (const auto &[neighbor, latency] : adjacency[router]) {
-                    const uint32_t candidate = current_distance + latency;
-                    if (candidate < distance[neighbor]) {
-                        distance[neighbor] = candidate;
-                        queue.emplace(candidate, neighbor);
-                    }
-                }
-            }
-            for (int source = 0; source < router_count; ++source) {
-                m_express_distance[source][destination] = distance[source];
-                if (source == destination) {
-                    continue;
-                }
-                int next_hop = -1;
-                for (const auto &[neighbor, latency] : adjacency[source]) {
-                    if (distance[neighbor] != infinity &&
-                        latency + distance[neighbor] == distance[source] &&
-                        (next_hop == -1 || neighbor < next_hop)) {
-                        next_hop = neighbor;
-                    }
-                }
-                fatal_if(next_hop == -1,
-                         "No route from router %d to router %d",
-                         source, destination);
-                m_express_next_hop[source][destination] = next_hop;
-            }
         }
     } else {
         m_num_rows = -1;
@@ -332,36 +258,6 @@ GarnetNetwork::init()
 }
 
 int
-GarnetNetwork::getExpressNextHop(int source, int destination) const
-{
-    assert(source >= 0 && source < m_express_next_hop.size());
-    assert(destination >= 0 && destination < m_express_next_hop.size());
-    assert(source != destination);
-    const int next_hop = m_express_next_hop[source][destination];
-    assert(next_hop >= 0);
-    return next_hop;
-}
-
-const std::vector<int>&
-GarnetNetwork::getExpressNeighbors(int router) const
-{
-    assert(router >= 0 && router < m_express_neighbors.size());
-    return m_express_neighbors[router];
-}
-
-uint32_t
-GarnetNetwork::getExpressDistance(int source, int destination) const
-{
-    return m_express_distance.at(source).at(destination);
-}
-
-uint32_t
-GarnetNetwork::getExpressEdgeLatency(int source, int destination) const
-{
-    return m_express_edge_latency.at(source).at(destination);
-}
-
-int
 GarnetNetwork::getExpressRouteSource(int directed_id) const
 {
     fatal_if(directed_id < 0 || directed_id >= 2 * m_express_link_latencies.size(),
@@ -379,14 +275,6 @@ GarnetNetwork::getExpressRouteDestination(int directed_id) const
     const int edge = directed_id / 2;
     return (directed_id % 2 == 0) ? m_express_link_endpoints[2 * edge + 1]
                                   : m_express_link_endpoints[2 * edge];
-}
-
-double
-GarnetNetwork::expressQueue(int directed_id) const
-{
-    const int src = getExpressRouteSource(directed_id);
-    const int dst = getExpressRouteDestination(directed_id);
-    return m_routers.at(src)->expressOutputQueue(dst);
 }
 
 double
@@ -429,6 +317,13 @@ GarnetNetwork::captureExpressInformation()
     m_express_info_last_cycle = now;
     if (now % m_source_route_info_period != 0)
         return;
+    if (m_express_info_event_last_cycle != now) {
+        ++m_express_info_snapshots_before_periodic_event;
+        ++m_express_info_snapshots_before_periodic_by_parity[now % 2];
+    }
+    m_express_info_snapshot_router_wakeups_sum += std::count(
+        m_router_last_wakeup_cycle.begin(), m_router_last_wakeup_cycle.end(),
+        now);
 
     const size_t directed_count = m_reservation_current.size();
     ExpressInfoSnapshot snapshot;
@@ -457,38 +352,57 @@ std::pair<double, double>
 GarnetNetwork::observedExpressPressure(
     int source, int directed_id, int vnet)
 {
-    if (m_source_route_info_mode == "instant") {
-        return {expressVcOccupancy(directed_id, vnet),
-                static_cast<double>(m_reservation_current[directed_id])};
-    }
-    captureExpressInformation();
-    uint64_t delay = m_source_route_info_delay;
-    if (m_source_route_info_mode == "distance-gossip") {
-        const int entry = getExpressRouteSource(directed_id);
-        delay += std::abs(source % m_num_cols - entry % m_num_cols) +
-                 std::abs(source / m_num_cols - entry / m_num_cols);
-    }
     const uint64_t now = curCycle();
+    if (m_express_info_event_last_cycle != now)
+        ++m_express_info_queries_before_periodic_event;
+    const int entry = getExpressRouteSource(directed_id);
+    if (m_router_last_wakeup_cycle.at(entry) == now)
+        ++m_express_info_queries_after_entry_router_wakeup;
+    const double true_q = expressVcOccupancy(directed_id, vnet);
+    const double true_r = static_cast<double>(
+        m_reservation_current[directed_id]);
     const double local_pending =
         m_source_route_reservation_mode == "registered" ?
         m_local_unacknowledged.at(source).at(directed_id) : 0.0;
-    if (delay > now)
-        return {0.0, local_pending};
-    const uint64_t target = now - delay;
-    const size_t directed_count = m_reservation_current.size();
-    for (auto item = m_express_info_history.rbegin();
-         item != m_express_info_history.rend(); ++item) {
-        if (item->cycle <= target) {
-            double observed_r = static_cast<double>(item->r[directed_id]);
-            observed_r += local_pending;
-            return {
-                static_cast<double>(
-                    item->q[vnet * directed_count + directed_id]),
-                observed_r
-            };
+    std::pair<double, double> result;
+    if (m_source_route_info_mode == "instant") {
+        result = {true_q, true_r};
+    } else {
+        captureExpressInformation();
+        uint64_t delay = m_source_route_info_delay;
+        if (m_source_route_info_mode == "distance-gossip") {
+            delay += std::abs(source % m_num_cols - entry % m_num_cols) +
+                     std::abs(source / m_num_cols - entry / m_num_cols);
+        }
+        result = {0.0, local_pending};
+        if (delay <= now) {
+            const uint64_t target = now - delay;
+            const size_t directed_count = m_reservation_current.size();
+            for (auto item = m_express_info_history.rbegin();
+                 item != m_express_info_history.rend(); ++item) {
+                if (item->cycle <= target) {
+                    result.first = static_cast<double>(
+                        item->q[vnet * directed_count + directed_id]);
+                    result.second = static_cast<double>(
+                        item->r[directed_id]) + local_pending;
+                    break;
+                }
+            }
         }
     }
-    return {0.0, local_pending};
+    ++m_express_info_queries;
+    m_express_info_true_q_sum += true_q;
+    m_express_info_observed_q_sum += result.first;
+    m_express_info_true_r_sum += true_r;
+    m_express_info_observed_r_sum += result.second;
+    m_express_info_local_pending_sum += local_pending;
+    return result;
+}
+
+void
+GarnetNetwork::recordRouterWakeup(int router_id)
+{
+    m_router_last_wakeup_cycle.at(router_id) = curCycle();
 }
 
 bool
@@ -542,22 +456,31 @@ GarnetNetwork::initializeSourceRoute(RouteInfo &route)
              "source-route table has invalid dimensions");
 
     uint32_t count = m_source_route_express_counts[pair_index];
-    if (m_source_route_policy != 0 &&
-        m_source_route_candidate_counts.size() == router_count * router_count) {
+    if (m_source_route_policy != 0) {
+        const size_t pair_count = static_cast<size_t>(router_count) *
+            router_count;
+        fatal_if(m_source_route_candidate_counts.size() != pair_count ||
+                 m_source_route_candidate_latencies.size() !=
+                     pair_count * m_source_route_candidates ||
+                 m_source_route_candidate_express_counts.size() !=
+                     pair_count * m_source_route_candidates ||
+                 m_source_route_candidate_express_ids.size() !=
+                     pair_count * m_source_route_candidates * 2,
+                 "source-route candidate table has invalid dimensions for "
+                 "K=%u", m_source_route_candidates);
         const uint32_t n = m_source_route_candidate_counts[pair_index];
+        fatal_if(n == 0 || n > m_source_route_candidates,
+                 "source-route candidate count %u is invalid for K=%u",
+                 n, m_source_route_candidates);
         uint32_t best = m_source_route_policy == 3 ?
             random_mt.random<uint32_t>(0, n - 1) : 0;
         double best_cost = std::numeric_limits<double>::infinity();
         for (uint32_t c = 0; c < n && m_source_route_policy != 3; ++c) {
-            const size_t base = pair_index * 8 + c;
+            const size_t base = pair_index * m_source_route_candidates + c;
             const uint32_t ec = m_source_route_candidate_express_counts[base];
             double cost = m_source_route_candidate_latencies[base];
             for (uint32_t i = 0; i < ec; ++i) {
                 const uint32_t id = m_source_route_candidate_express_ids[base * 2 + i];
-                if (m_source_route_policy == 1 || m_source_route_policy == 2)
-                    cost += expressQueue(id);
-                if (m_source_route_policy == 2)
-                    cost += m_reservation_current[id];
                 if (m_source_route_policy == 4) {
                     const auto [observed_q, observed_r] =
                         observedExpressPressure(
@@ -571,7 +494,8 @@ GarnetNetwork::initializeSourceRoute(RouteInfo &route)
             if (cost < best_cost) { best_cost = cost; best = c; }
         }
         const bool force_mesh = m_source_route_policy == 4 &&
-            m_source_route_candidate_express_counts[pair_index * 8 + best] > 0 &&
+            m_source_route_candidate_express_counts[
+                pair_index * m_source_route_candidates + best] > 0 &&
             !admitExpressRoute(route.src_router, route.dest_router);
         if (force_mesh) {
             // An empty express sequence is the canonical XY-only source
@@ -580,7 +504,7 @@ GarnetNetwork::initializeSourceRoute(RouteInfo &route)
             count = 0;
             route.express_ids.clear();
         } else {
-            const size_t base = pair_index * 8 + best;
+            const size_t base = pair_index * m_source_route_candidates + best;
             count = m_source_route_candidate_express_counts[base];
             route.express_ids.clear();
             for (uint32_t i = 0; i < count; ++i) {
@@ -768,7 +692,14 @@ GarnetNetwork::sampleExpressState()
         m_r_sample_sum.assign(n, 0); m_r_sample_max.assign(n, 0);
     }
     for (size_t i = 0; i < n; ++i) {
-        const uint64_t q = static_cast<uint64_t>(expressQueue(i));
+        // The advertised q signal is occupied express-output VCs, not the
+        // transient link traversal buffer used by the retired per-hop router.
+        // Statistics are not indexed by vnet, so retain the busiest vnet.
+        uint64_t q = 0;
+        for (int vnet = 0; vnet < m_virtual_networks; ++vnet) {
+            q = std::max<uint64_t>(q, static_cast<uint64_t>(
+                expressVcOccupancy(i, vnet)));
+        }
         const uint64_t r = static_cast<uint64_t>(m_reservation_current[i]);
         m_q_sample_sum[i] += q; m_q_sample_max[i] = std::max(m_q_sample_max[i], q);
         m_r_sample_sum[i] += r; m_r_sample_max[i] = std::max(m_r_sample_max[i], r);
@@ -1207,7 +1138,6 @@ GarnetNetwork::regStats()
     m_escape_vc_transitions.name(name() + ".escape_vc_transitions");
     m_escape_transition_delay_ticks.name(name() + ".escape_transition_delay_ticks");
     m_delivered_escape_packets.name(name() + ".delivered_escape_packets");
-    m_nonminimal_route_decisions.name(name() + ".nonminimal_route_decisions");
     const size_t reservation_stat_size =
         std::max<size_t>(1, m_reservation_current.size());
     m_express_reservation_current
@@ -1249,6 +1179,27 @@ GarnetNetwork::regStats()
         .name(name() + ".reservation_registration_cancels");
     m_reservation_late_registrations
         .name(name() + ".reservation_late_registrations");
+    m_express_info_queries.name(name() + ".express_info_queries");
+    m_express_info_true_q_sum.name(name() + ".express_info_true_q_sum");
+    m_express_info_observed_q_sum
+        .name(name() + ".express_info_observed_q_sum");
+    m_express_info_true_r_sum.name(name() + ".express_info_true_r_sum");
+    m_express_info_observed_r_sum
+        .name(name() + ".express_info_observed_r_sum");
+    m_express_info_local_pending_sum
+        .name(name() + ".express_info_local_pending_sum");
+    m_express_info_queries_before_periodic_event
+        .name(name() + ".express_info_queries_before_periodic_event");
+    m_express_info_queries_after_entry_router_wakeup
+        .name(name() + ".express_info_queries_after_entry_router_wakeup");
+    m_express_info_snapshots_before_periodic_event
+        .name(name() + ".express_info_snapshots_before_periodic_event");
+    m_express_info_snapshots_before_periodic_by_parity
+        .init(2)
+        .name(name() + ".express_info_snapshots_before_periodic_by_parity")
+        .flags(statistics::oneline);
+    m_express_info_snapshot_router_wakeups_sum
+        .name(name() + ".express_info_snapshot_router_wakeups_sum");
 
     int int_links = 0;
     for (auto *link : m_networklinks) {

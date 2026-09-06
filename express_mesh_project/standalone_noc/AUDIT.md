@@ -10,6 +10,40 @@ This audit compares the latest project-only commit (`fe6468185d`) with its
 gem5 parent and with the intended experiment described in `gpt_chat.md` and
 the project documents.  Findings are ordered by impact.
 
+## 0a. V8 micro-event ordering calibration
+
+Garnet schedules the periodic express-information event at default event
+priority, while synthetic testers run at CPU-tick priority.  Instrumentation
+shows that, with the report's 1 GHz tester / 2 GHz Ruby clocks, a lazy NI query
+captures q/r before the periodic registration-control event on exactly the
+even half of Ruby cycles; on intervening cycles the periodic event applies
+control first.  Standalone previously applied control before every snapshot.
+It now reproduces the measured alternating order.  Three neighboring timing
+hypotheses were tested and rejected.  Forcing every snapshot before control
+improved one Tornado point but made Uniform Greedy throughput 4.7% too low and
+latency 37.5% too high.  Advancing free-credit availability by
+one cycle made standalone throughput 7--29% too high and latency 38--99% too
+low.  Allowing a tester request to enter the NI in the generation tick instead
+of after the modeled protocol cycle made Tornado Greedy/SA throughput 5--6%
+too low and latency 51--77% too high.  Thus the original two-cycle effective
+credit return and one-cycle tester-to-NI boundary are both required; the
+measured discrepancy was specifically the q/r snapshot/control order.
+
+After the snapshot-order correction, every archived V8 high-load calibration
+group is within 1.7% Garnet throughput.  Remaining latency disagreement is
+concentrated at the highly sensitive Tornado Greedy knee (12.8%); other groups
+are within 3.14%, with four of seven within 3%.  This residual is reported,
+not removed with a traffic-dependent tuning constant.
+
+The instrumented 200-cycle warmup + 2k-cycle Tornado Greedy probe also gives a
+direct like-for-like micro-timing check before the long-run saturated
+trajectories diverge: standalone differs from Garnet by -0.41% in throughput
+and -0.88% in latency; mean observed q differs by -1.03%, mean observed r by
++2.68%, express traversals by +0.10%, and the total live reservations by one
+(33 versus 32).  This makes a remaining deterministic one-cycle pipeline error
+unlikely.  At the long saturation knee, a sub-percent service-rate difference
+instead accumulates into a much larger queueing-latency difference.
+
 ## 0. Critical follow-up: deterministic traffic was destroyed by directory hashing
 
 The V4 Garnet commands omitted `--xor-low-bit=0`.  The tester embeds a

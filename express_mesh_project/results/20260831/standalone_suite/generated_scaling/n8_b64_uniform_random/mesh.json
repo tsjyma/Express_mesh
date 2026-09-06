@@ -1,0 +1,11 @@
+{
+  "name": "mesh_8x8",
+  "dimension": 8,
+  "node_count": 64,
+  "latency_model": "ideal",
+  "constraints": {
+    "wire_cost": 0,
+    "max_degree": 0
+  },
+  "express_links": []
+}

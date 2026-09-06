@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run arbitrary placement JSON files through the fixed Garnet V6 protocol."""
+"""Run arbitrary placement JSON files through configurable Garnet ExpressMesh."""
 
 from __future__ import annotations
 
@@ -33,22 +33,38 @@ def main():
     parser.add_argument("--warmup-cycles", type=int, default=20_000)
     parser.add_argument("--measurement-cycles", type=int, default=100_000)
     parser.add_argument("--deadlock-threshold", type=int, default=50_000)
-    parser.add_argument("--reservation-weight", type=float, default=0.375)
-    parser.add_argument("--vc-pressure-weight", type=float, default=0.625)
+    parser.add_argument("--dimension", type=int, default=8)
+    parser.add_argument("--express-budget", type=int, default=32)
+    parser.add_argument("--express-max-degree", type=int, default=1)
+    parser.add_argument("--express-min-wire-length", type=int, default=3)
+    parser.add_argument("--source-route-candidates", type=int, default=8)
+    parser.add_argument("--source-route-policy", type=int,
+                        choices=[0, 3, 4], default=4)
+    parser.add_argument("--r-weight", "--reservation-weight",
+                        dest="reservation_weight", type=float, default=0.6)
+    parser.add_argument("--q-weight", "--vc-pressure-weight",
+                        dest="vc_pressure_weight", type=float, default=1.0)
     parser.add_argument(
         "--express-info-mode",
-        choices=["instant", "delayed-global", "distance-gossip"],
-        default="instant",
+        choices=["instant", "distance-gossip"],
+        default="distance-gossip",
     )
     parser.add_argument("--express-info-period", type=int, default=1)
-    parser.add_argument("--express-info-delay", type=int, default=0)
-    parser.add_argument("--express-info-bits", type=int, default=0)
+    parser.add_argument("--express-info-delay", type=int, default=1)
+    parser.add_argument("--express-info-bits", type=int, default=4)
     parser.add_argument("--express-admission-fraction", type=float, default=1.0)
     parser.add_argument(
         "--express-reservation-mode",
         choices=["instant", "registered"],
-        default="instant",
+        default="registered",
     )
+    parser.add_argument("--router-latency", type=int, default=1)
+    parser.add_argument("--mesh-link-latency", type=int, default=1)
+    parser.add_argument("--vcs-per-vnet", type=int, default=4)
+    parser.add_argument("--buffers-per-data-vc", type=int, default=4)
+    parser.add_argument("--buffers-per-ctrl-vc", type=int, default=1)
+    parser.add_argument("--inj-vnet", type=int, choices=[0, 1, 2], default=0)
+    parser.add_argument("--escape-timeout", type=int, default=32)
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument(
@@ -65,8 +81,15 @@ def main():
         parser.error("--labels must match --topologies")
     if len(set(args.labels)) != len(args.labels):
         parser.error("labels must be unique")
+    if args.dimension <= 1:
+        parser.error("--dimension must be greater than one")
+    if args.source_route_candidates <= 0:
+        parser.error("--source-route-candidates must be positive")
     for path in args.topologies:
-        validate_placement(8, load_placement(path), 64, 1, 3)
+        validate_placement(
+            args.dimension, load_placement(path), args.express_budget,
+            args.express_max_degree, args.express_min_wire_length,
+        )
     args.output_dir.mkdir(parents=True, exist_ok=True)
     garnet_runner.RESULTS = args.output_dir.resolve()
     for label, path in zip(args.labels, args.topologies):
@@ -75,7 +98,7 @@ def main():
         garnet_runner.TOPOLOGIES[label] = path.resolve()
 
     specs = [
-        (label, "adaptive", traffic, args.rate, seed)
+        (label, "committed", traffic, args.rate, seed)
         for label in args.labels for traffic in args.traffics
         for seed in args.seeds
     ]
@@ -87,20 +110,29 @@ def main():
             args.measurement_cycles,
             args.deadlock_threshold,
             source_route=True,
-            source_route_policy=4,
+            source_route_policy=args.source_route_policy,
             no_escape=False,
             topology_dir=Path("."),
             reservation_weight=args.reservation_weight,
             vc_pressure_weight=args.vc_pressure_weight,
-            express_budget=64,
-            express_max_degree=1,
-            express_min_wire_length=3,
+            express_budget=args.express_budget,
+            express_max_degree=args.express_max_degree,
+            express_min_wire_length=args.express_min_wire_length,
             express_info_mode=args.express_info_mode,
             express_info_period=args.express_info_period,
             express_info_delay=args.express_info_delay,
             express_info_bits=args.express_info_bits,
             express_admission_fraction=args.express_admission_fraction,
             express_reservation_mode=args.express_reservation_mode,
+            dimension=args.dimension,
+            source_route_candidates=args.source_route_candidates,
+            router_latency=args.router_latency,
+            mesh_link_latency=args.mesh_link_latency,
+            vcs_per_vnet=args.vcs_per_vnet,
+            buffers_per_data_vc=args.buffers_per_data_vc,
+            buffers_per_ctrl_vc=args.buffers_per_ctrl_vc,
+            inj_vnet=args.inj_vnet,
+            escape_timeout=args.escape_timeout,
         )
 
     rows, failures = [], []

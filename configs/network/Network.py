@@ -66,41 +66,44 @@ def define_options(parser):
         help="maximum incident express-link degree per router",
     )
     parser.add_argument(
-        "--express-adaptive", action="store_true",
-        help="enable congestion-aware ExpressMesh routing",
-    )
-    parser.add_argument(
         "--express-source-route", action="store_true",
         help="commit the precomputed static ExpressMesh route at injection",
     )
     parser.add_argument(
-        "--express-source-route-policy", type=int, choices=[0, 1, 2, 3, 4], default=0,
-        help=("source-route policy: 0 static, 1 staging-q, 2 staging-q+r, "
-              "3 random, 4 reservation+express-VC pressure"),
+        "--express-source-route-policy", type=int, choices=[0, 3, 4], default=4,
+        help=("source-route policy: 0 static top-K winner, 3 random top-K "
+              "candidate, 4 q/r pressure-aware (the proposed policy)"),
     )
-    parser.add_argument("--express-reservation-weight", type=float, default=0.5)
-    parser.add_argument("--express-vc-pressure-weight", type=float, default=1.0)
+    parser.add_argument(
+        "--express-source-route-candidates", type=int, default=8,
+        help="number K of committed source-route candidates retained per pair",
+    )
+    parser.add_argument(
+        "--express-r-weight", "--express-reservation-weight",
+        dest="express_reservation_weight", type=float, default=0.6,
+        help="coefficient multiplying advertised reservation pressure r",
+    )
+    parser.add_argument(
+        "--express-q-weight", "--express-vc-pressure-weight",
+        dest="express_vc_pressure_weight", type=float, default=1.0,
+        help="coefficient multiplying advertised express-VC pressure q",
+    )
     parser.add_argument(
         "--express-info-mode",
-        choices=["instant", "delayed-global", "distance-gossip"],
-        default="instant",
+        choices=["instant", "distance-gossip"],
+        default="distance-gossip",
     )
     parser.add_argument("--express-info-period", type=int, default=1)
-    parser.add_argument("--express-info-delay", type=int, default=0)
-    parser.add_argument("--express-info-bits", type=int, default=0)
+    parser.add_argument("--express-info-delay", type=int, default=1)
+    parser.add_argument("--express-info-bits", type=int, default=4)
     parser.add_argument("--express-admission-fraction", type=float, default=1.0)
     parser.add_argument(
         "--express-reservation-mode",
         choices=["instant", "registered"],
-        default="instant",
+        default="registered",
         help=("instant keeps the legacy global counter; registered uses a "
               "propagating route-setup/ACK protocol"),
     )
-    parser.add_argument(
-        "--express-adaptive-threshold", type=float, default=0.25,
-    )
-    parser.add_argument("--express-adaptive-lambda", type=float, default=1.0)
-    parser.add_argument("--express-detour-ratio", type=float, default=1.5)
     parser.add_argument("--express-escape-timeout", type=int, default=32)
     parser.add_argument("--express-no-escape", action="store_true",
                         help="use all four VCs as adaptive VCs")
@@ -143,6 +146,14 @@ def define_options(parser):
         default=4,
         help="""number of virtual channels per virtual network
             inside garnet network.""",
+    )
+    parser.add_argument(
+        "--buffers-per-data-vc", type=int, default=4,
+        help="input-buffer depth (flits) for each Garnet data VC",
+    )
+    parser.add_argument(
+        "--buffers-per-ctrl-vc", type=int, default=1,
+        help="input-buffer depth (flits) for each Garnet control VC",
     )
     parser.add_argument(
         "--routing-algorithm",
@@ -223,16 +234,15 @@ def init_network(options, network, InterfaceClass):
     if options.network == "garnet":
         network.num_rows = options.mesh_rows
         network.vcs_per_vnet = options.vcs_per_vnet
+        network.buffers_per_data_vc = options.buffers_per_data_vc
+        network.buffers_per_ctrl_vc = options.buffers_per_ctrl_vc
         network.ni_flit_size = options.link_width_bits / 8
         network.routing_algorithm = options.routing_algorithm
-        network.express_adaptive = options.express_adaptive
-        network.express_adaptive_threshold = options.express_adaptive_threshold
-        network.express_adaptive_lambda = options.express_adaptive_lambda
-        network.express_detour_ratio = options.express_detour_ratio
         network.express_escape_timeout = options.express_escape_timeout
         network.express_escape_enabled = not options.express_no_escape
         network.source_route_enabled = options.express_source_route
         network.source_route_policy = options.express_source_route_policy
+        network.source_route_candidates = options.express_source_route_candidates
         network.source_route_reservation_weight = options.express_reservation_weight
         network.source_route_vc_weight = options.express_vc_pressure_weight
         network.source_route_info_mode = options.express_info_mode

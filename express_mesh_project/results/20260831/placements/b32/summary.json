@@ -1,0 +1,1572 @@
+{
+  "config": {
+    "alpha": 0.5,
+    "dimension": 8,
+    "latency_model": "ideal",
+    "max_degree": 1,
+    "min_wire_length": 3,
+    "objectives": [
+      "aspl",
+      "bottleneck",
+      "hybrid"
+    ],
+    "output_dir": "express_mesh_project/results/20260831/placements/b32",
+    "traffics": [
+      "uniform_random",
+      "tornado",
+      "bit_complement",
+      "cutstress_bidirectional"
+    ],
+    "wire_budget": 32
+  },
+  "placements": {
+    "bit_complement_aspl": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 31
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 3,
+          "u_coord": [
+            3,
+            0
+          ],
+          "v": 59,
+          "v_coord": [
+            3,
+            7
+          ],
+          "wire_length": 7
+        },
+        {
+          "latency": 1,
+          "u": 9,
+          "u_coord": [
+            1,
+            1
+          ],
+          "v": 54,
+          "v_coord": [
+            6,
+            6
+          ],
+          "wire_length": 10
+        },
+        {
+          "latency": 1,
+          "u": 19,
+          "u_coord": [
+            3,
+            2
+          ],
+          "v": 43,
+          "v_coord": [
+            3,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 21,
+          "u_coord": [
+            5,
+            2
+          ],
+          "v": 42,
+          "v_coord": [
+            2,
+            5
+          ],
+          "wire_length": 6
+        },
+        {
+          "latency": 1,
+          "u": 25,
+          "u_coord": [
+            1,
+            3
+          ],
+          "v": 30,
+          "v_coord": [
+            6,
+            3
+          ],
+          "wire_length": 5
+        }
+      ],
+      "latency_model": "ideal",
+      "name": "bit_complement_aspl",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 19.69230769230771,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 5.957682291666652,
+          "network_max_load": 0.05078124999999995,
+          "overall_max_load": 0.05078124999999995,
+          "p95_link_load": 0.04492187499999997,
+          "route_count": 503
+        },
+        "objective": "aspl",
+        "offline_metrics": {
+          "aspl": 3.5,
+          "diameter": 9,
+          "equal_cost_path_count": 2.0,
+          "l_max": 0.21875,
+          "load_cv": 1.413473510919617,
+          "near_shortest_diversity": 2.71875,
+          "p95_load": 0.125
+        },
+        "traffic": "bit_complement"
+      }
+    },
+    "bit_complement_bottleneck": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 30
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 2,
+          "u_coord": [
+            2,
+            0
+          ],
+          "v": 5,
+          "v_coord": [
+            5,
+            0
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 11,
+          "u_coord": [
+            3,
+            1
+          ],
+          "v": 21,
+          "v_coord": [
+            5,
+            2
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 12,
+          "u_coord": [
+            4,
+            1
+          ],
+          "v": 30,
+          "v_coord": [
+            6,
+            3
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 16,
+          "u_coord": [
+            0,
+            2
+          ],
+          "v": 40,
+          "v_coord": [
+            0,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 17,
+          "u_coord": [
+            1,
+            2
+          ],
+          "v": 32,
+          "v_coord": [
+            0,
+            4
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 25,
+          "u_coord": [
+            1,
+            3
+          ],
+          "v": 42,
+          "v_coord": [
+            2,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 33,
+          "u_coord": [
+            1,
+            4
+          ],
+          "v": 43,
+          "v_coord": [
+            3,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 34,
+          "u_coord": [
+            2,
+            4
+          ],
+          "v": 51,
+          "v_coord": [
+            3,
+            6
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 55,
+          "u_coord": [
+            7,
+            6
+          ],
+          "v": 59,
+          "v_coord": [
+            3,
+            7
+          ],
+          "wire_length": 5
+        }
+      ],
+      "latency_model": "ideal",
+      "name": "bit_complement_bottleneck",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 17.86046511627909,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 7.751302083333317,
+          "network_max_load": 0.055989583333333266,
+          "overall_max_load": 0.055989583333333266,
+          "p95_link_load": 0.04947916666666662,
+          "route_count": 512
+        },
+        "objective": "bottleneck",
+        "offline_metrics": {
+          "aspl": 6.875,
+          "diameter": 10,
+          "equal_cost_path_count": 42.4375,
+          "l_max": 0.1440209334866205,
+          "load_cv": 0.6767683357062309,
+          "near_shortest_diversity": 9.6875,
+          "p95_load": 0.13363093645786114
+        },
+        "traffic": "bit_complement"
+      }
+    },
+    "bit_complement_hybrid": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 30
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 2,
+          "u_coord": [
+            2,
+            0
+          ],
+          "v": 5,
+          "v_coord": [
+            5,
+            0
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 12,
+          "u_coord": [
+            4,
+            1
+          ],
+          "v": 30,
+          "v_coord": [
+            6,
+            3
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 16,
+          "u_coord": [
+            0,
+            2
+          ],
+          "v": 40,
+          "v_coord": [
+            0,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 17,
+          "u_coord": [
+            1,
+            2
+          ],
+          "v": 32,
+          "v_coord": [
+            0,
+            4
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 25,
+          "u_coord": [
+            1,
+            3
+          ],
+          "v": 57,
+          "v_coord": [
+            1,
+            7
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 42,
+          "u_coord": [
+            2,
+            5
+          ],
+          "v": 52,
+          "v_coord": [
+            4,
+            6
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 45,
+          "u_coord": [
+            5,
+            5
+          ],
+          "v": 60,
+          "v_coord": [
+            4,
+            7
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 50,
+          "u_coord": [
+            2,
+            6
+          ],
+          "v": 53,
+          "v_coord": [
+            5,
+            6
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 51,
+          "u_coord": [
+            3,
+            6
+          ],
+          "v": 55,
+          "v_coord": [
+            7,
+            6
+          ],
+          "wire_length": 4
+        }
+      ],
+      "latency_model": "ideal",
+      "name": "bit_complement_hybrid",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 18.73170731707319,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 7.759114583333295,
+          "network_max_load": 0.05338541666666661,
+          "overall_max_load": 0.05338541666666661,
+          "p95_link_load": 0.04882812499999996,
+          "route_count": 512
+        },
+        "objective": "hybrid",
+        "offline_metrics": {
+          "aspl": 6.46875,
+          "diameter": 10,
+          "equal_cost_path_count": 8.84375,
+          "l_max": 0.15467171717171715,
+          "load_cv": 0.7832299141786414,
+          "near_shortest_diversity": 7.4375,
+          "p95_load": 0.13398042929292933
+        },
+        "traffic": "bit_complement"
+      }
+    },
+    "cutstress_bidirectional_aspl": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 32
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 2,
+          "u_coord": [
+            2,
+            0
+          ],
+          "v": 5,
+          "v_coord": [
+            5,
+            0
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 8,
+          "u_coord": [
+            0,
+            1
+          ],
+          "v": 15,
+          "v_coord": [
+            7,
+            1
+          ],
+          "wire_length": 7
+        },
+        {
+          "latency": 1,
+          "u": 9,
+          "u_coord": [
+            1,
+            1
+          ],
+          "v": 14,
+          "v_coord": [
+            6,
+            1
+          ],
+          "wire_length": 5
+        },
+        {
+          "latency": 1,
+          "u": 32,
+          "u_coord": [
+            0,
+            4
+          ],
+          "v": 39,
+          "v_coord": [
+            7,
+            4
+          ],
+          "wire_length": 7
+        },
+        {
+          "latency": 1,
+          "u": 33,
+          "u_coord": [
+            1,
+            4
+          ],
+          "v": 38,
+          "v_coord": [
+            6,
+            4
+          ],
+          "wire_length": 5
+        },
+        {
+          "latency": 1,
+          "u": 49,
+          "u_coord": [
+            1,
+            6
+          ],
+          "v": 54,
+          "v_coord": [
+            6,
+            6
+          ],
+          "wire_length": 5
+        }
+      ],
+      "latency_model": "ideal",
+      "name": "cutstress_bidirectional_aspl",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 26.94736842105263,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 3.628906249999969,
+          "network_max_load": 0.037109375,
+          "overall_max_load": 0.037109375,
+          "p95_link_load": 0.03580729166666667,
+          "route_count": 448
+        },
+        "objective": "aspl",
+        "offline_metrics": {
+          "aspl": 2.1875,
+          "diameter": 11,
+          "equal_cost_path_count": 1.28125,
+          "l_max": 0.15625,
+          "load_cv": 1.386327797421938,
+          "near_shortest_diversity": 1.75,
+          "p95_load": 0.0625
+        },
+        "traffic": "cutstress_bidirectional"
+      }
+    },
+    "cutstress_bidirectional_bottleneck": {
+      "constraints": {
+        "max_degree": 0,
+        "wire_cost": 0
+      },
+      "dimension": 8,
+      "express_links": [],
+      "latency_model": "ideal",
+      "name": "cutstress_bidirectional_bottleneck",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 16.000000000000025,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 3.999999999999977,
+          "network_max_load": 0.06249999999999991,
+          "overall_max_load": 0.06249999999999991,
+          "p95_link_load": 0.06249999999999991,
+          "route_count": 64
+        },
+        "objective": "bottleneck",
+        "offline_metrics": {
+          "aspl": 4.0,
+          "diameter": 14,
+          "equal_cost_path_count": 1.0,
+          "l_max": 0.125,
+          "load_cv": 1.1858541225631425,
+          "near_shortest_diversity": 1.0,
+          "p95_load": 0.125
+        },
+        "traffic": "cutstress_bidirectional"
+      }
+    },
+    "cutstress_bidirectional_hybrid": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 32
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 0,
+          "u_coord": [
+            0,
+            0
+          ],
+          "v": 4,
+          "v_coord": [
+            4,
+            0
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 2,
+          "u_coord": [
+            2,
+            0
+          ],
+          "v": 5,
+          "v_coord": [
+            5,
+            0
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 8,
+          "u_coord": [
+            0,
+            1
+          ],
+          "v": 12,
+          "v_coord": [
+            4,
+            1
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 24,
+          "u_coord": [
+            0,
+            3
+          ],
+          "v": 53,
+          "v_coord": [
+            5,
+            6
+          ],
+          "wire_length": 8
+        },
+        {
+          "latency": 1,
+          "u": 39,
+          "u_coord": [
+            7,
+            4
+          ],
+          "v": 45,
+          "v_coord": [
+            5,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 52,
+          "u_coord": [
+            4,
+            6
+          ],
+          "v": 55,
+          "v_coord": [
+            7,
+            6
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 56,
+          "u_coord": [
+            0,
+            7
+          ],
+          "v": 60,
+          "v_coord": [
+            4,
+            7
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 59,
+          "u_coord": [
+            3,
+            7
+          ],
+          "v": 62,
+          "v_coord": [
+            6,
+            7
+          ],
+          "wire_length": 3
+        }
+      ],
+      "latency_model": "ideal",
+      "name": "cutstress_bidirectional_hybrid",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 25.180327868852466,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 4.885416666666668,
+          "network_max_load": 0.03971354166666666,
+          "overall_max_load": 0.03971354166666666,
+          "p95_link_load": 0.037109375,
+          "route_count": 504
+        },
+        "objective": "hybrid",
+        "offline_metrics": {
+          "aspl": 3.15625,
+          "diameter": 10,
+          "equal_cost_path_count": 1.53125,
+          "l_max": 0.09687499999999999,
+          "load_cv": 1.1239927941613626,
+          "near_shortest_diversity": 2.4375,
+          "p95_load": 0.0875
+        },
+        "traffic": "cutstress_bidirectional"
+      }
+    },
+    "tornado_aspl": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 30
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 2,
+          "u_coord": [
+            2,
+            0
+          ],
+          "v": 5,
+          "v_coord": [
+            5,
+            0
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 9,
+          "u_coord": [
+            1,
+            1
+          ],
+          "v": 13,
+          "v_coord": [
+            5,
+            1
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 11,
+          "u_coord": [
+            3,
+            1
+          ],
+          "v": 14,
+          "v_coord": [
+            6,
+            1
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 18,
+          "u_coord": [
+            2,
+            2
+          ],
+          "v": 21,
+          "v_coord": [
+            5,
+            2
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 26,
+          "u_coord": [
+            2,
+            3
+          ],
+          "v": 29,
+          "v_coord": [
+            5,
+            3
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 33,
+          "u_coord": [
+            1,
+            4
+          ],
+          "v": 37,
+          "v_coord": [
+            5,
+            4
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 42,
+          "u_coord": [
+            2,
+            5
+          ],
+          "v": 45,
+          "v_coord": [
+            5,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 50,
+          "u_coord": [
+            2,
+            6
+          ],
+          "v": 54,
+          "v_coord": [
+            6,
+            6
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 58,
+          "u_coord": [
+            2,
+            7
+          ],
+          "v": 61,
+          "v_coord": [
+            5,
+            7
+          ],
+          "wire_length": 3
+        }
+      ],
+      "latency_model": "ideal",
+      "name": "tornado_aspl",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 33.391304347826065,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 3.691406250000012,
+          "network_max_load": 0.029947916666666685,
+          "overall_max_load": 0.029947916666666685,
+          "p95_link_load": 0.026692708333333346,
+          "route_count": 512
+        },
+        "objective": "aspl",
+        "offline_metrics": {
+          "aspl": 2.65625,
+          "diameter": 11,
+          "equal_cost_path_count": 1.203125,
+          "l_max": 0.078125,
+          "load_cv": 1.1297129908756347,
+          "near_shortest_diversity": 2.359375,
+          "p95_load": 0.07552083333333333
+        },
+        "traffic": "tornado"
+      }
+    },
+    "tornado_bottleneck": {
+      "constraints": {
+        "max_degree": 0,
+        "wire_cost": 0
+      },
+      "dimension": 8,
+      "express_links": [],
+      "latency_model": "ideal",
+      "name": "tornado_bottleneck",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 21.33333333333335,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 3.750000000000031,
+          "network_max_load": 0.046874999999999965,
+          "overall_max_load": 0.046874999999999965,
+          "p95_link_load": 0.046874999999999965,
+          "route_count": 64
+        },
+        "objective": "bottleneck",
+        "offline_metrics": {
+          "aspl": 3.75,
+          "diameter": 14,
+          "equal_cost_path_count": 1.0,
+          "l_max": 0.09375,
+          "load_cv": 1.141149517908246,
+          "near_shortest_diversity": 1.0,
+          "p95_load": 0.09375
+        },
+        "traffic": "tornado"
+      }
+    },
+    "tornado_hybrid": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 32
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 2,
+          "u_coord": [
+            2,
+            0
+          ],
+          "v": 6,
+          "v_coord": [
+            6,
+            0
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 8,
+          "u_coord": [
+            0,
+            1
+          ],
+          "v": 21,
+          "v_coord": [
+            5,
+            2
+          ],
+          "wire_length": 6
+        },
+        {
+          "latency": 1,
+          "u": 10,
+          "u_coord": [
+            2,
+            1
+          ],
+          "v": 13,
+          "v_coord": [
+            5,
+            1
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 27,
+          "u_coord": [
+            3,
+            3
+          ],
+          "v": 31,
+          "v_coord": [
+            7,
+            3
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 32,
+          "u_coord": [
+            0,
+            4
+          ],
+          "v": 36,
+          "v_coord": [
+            4,
+            4
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 43,
+          "u_coord": [
+            3,
+            5
+          ],
+          "v": 47,
+          "v_coord": [
+            7,
+            5
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 48,
+          "u_coord": [
+            0,
+            6
+          ],
+          "v": 52,
+          "v_coord": [
+            4,
+            6
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 58,
+          "u_coord": [
+            2,
+            7
+          ],
+          "v": 61,
+          "v_coord": [
+            5,
+            7
+          ],
+          "wire_length": 3
+        }
+      ],
+      "latency_model": "ideal",
+      "name": "tornado_hybrid",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 64,
+          "concurrent_flow_proxy": 31.99999999999998,
+          "endpoint_max_load": 0.015625,
+          "mean_latency": 4.048177083333345,
+          "network_max_load": 0.03125000000000002,
+          "overall_max_load": 0.03125000000000002,
+          "p95_link_load": 0.02864583333333335,
+          "route_count": 504
+        },
+        "objective": "hybrid",
+        "offline_metrics": {
+          "aspl": 2.828125,
+          "diameter": 10,
+          "equal_cost_path_count": 1.28125,
+          "l_max": 0.08984375,
+          "load_cv": 1.0712012396773862,
+          "near_shortest_diversity": 2.5625,
+          "p95_load": 0.08072916666666666
+        },
+        "traffic": "tornado"
+      }
+    },
+    "uniform_random_aspl": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 31
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 9,
+          "u_coord": [
+            1,
+            1
+          ],
+          "v": 13,
+          "v_coord": [
+            5,
+            1
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 10,
+          "u_coord": [
+            2,
+            1
+          ],
+          "v": 42,
+          "v_coord": [
+            2,
+            5
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 14,
+          "u_coord": [
+            6,
+            1
+          ],
+          "v": 46,
+          "v_coord": [
+            6,
+            5
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 18,
+          "u_coord": [
+            2,
+            2
+          ],
+          "v": 22,
+          "v_coord": [
+            6,
+            2
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 19,
+          "u_coord": [
+            3,
+            2
+          ],
+          "v": 51,
+          "v_coord": [
+            3,
+            6
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 25,
+          "u_coord": [
+            1,
+            3
+          ],
+          "v": 49,
+          "v_coord": [
+            1,
+            6
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 33,
+          "u_coord": [
+            1,
+            4
+          ],
+          "v": 37,
+          "v_coord": [
+            5,
+            4
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 50,
+          "u_coord": [
+            2,
+            6
+          ],
+          "v": 54,
+          "v_coord": [
+            6,
+            6
+          ],
+          "wire_length": 4
+        }
+      ],
+      "latency_model": "ideal",
+      "name": "uniform_random_aspl",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 4032,
+          "concurrent_flow_proxy": 39.69155045119074,
+          "endpoint_max_load": 0.015624999999999972,
+          "mean_latency": 4.360842427248742,
+          "network_max_load": 0.02519427910052831,
+          "overall_max_load": 0.02519427910052831,
+          "p95_link_load": 0.02357184193121633,
+          "route_count": 31340
+        },
+        "objective": "aspl",
+        "offline_metrics": {
+          "aspl": 3.8368055555556846,
+          "diameter": 8,
+          "equal_cost_path_count": 3.4687499999999747,
+          "l_max": 0.11821316770822886,
+          "load_cv": 0.6290736227362155,
+          "near_shortest_diversity": 2.873511904761922,
+          "p95_load": 0.07891442069661057
+        },
+        "traffic": "uniform_random"
+      }
+    },
+    "uniform_random_bottleneck": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 25
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 0,
+          "u_coord": [
+            0,
+            0
+          ],
+          "v": 3,
+          "v_coord": [
+            3,
+            0
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 2,
+          "u_coord": [
+            2,
+            0
+          ],
+          "v": 16,
+          "v_coord": [
+            0,
+            2
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 4,
+          "u_coord": [
+            4,
+            0
+          ],
+          "v": 10,
+          "v_coord": [
+            2,
+            1
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 31,
+          "u_coord": [
+            7,
+            3
+          ],
+          "v": 46,
+          "v_coord": [
+            6,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 38,
+          "u_coord": [
+            6,
+            4
+          ],
+          "v": 55,
+          "v_coord": [
+            7,
+            6
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 39,
+          "u_coord": [
+            7,
+            4
+          ],
+          "v": 54,
+          "v_coord": [
+            6,
+            6
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 47,
+          "u_coord": [
+            7,
+            5
+          ],
+          "v": 53,
+          "v_coord": [
+            5,
+            6
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 49,
+          "u_coord": [
+            1,
+            6
+          ],
+          "v": 59,
+          "v_coord": [
+            3,
+            7
+          ],
+          "wire_length": 3
+        }
+      ],
+      "latency_model": "ideal",
+      "name": "uniform_random_bottleneck",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 4032,
+          "concurrent_flow_proxy": 30.76883942766411,
+          "endpoint_max_load": 0.015624999999999972,
+          "mean_latency": 5.127697172619678,
+          "network_max_load": 0.03250041335978714,
+          "overall_max_load": 0.03250041335978714,
+          "p95_link_load": 0.030175264550263186,
+          "route_count": 30759
+        },
+        "objective": "bottleneck",
+        "offline_metrics": {
+          "aspl": 4.926587301587319,
+          "diameter": 11,
+          "equal_cost_path_count": 22.2480158730153,
+          "l_max": 0.06925191303582684,
+          "load_cv": 0.4158628373839926,
+          "near_shortest_diversity": 4.014384920634926,
+          "p95_load": 0.06705219105662644
+        },
+        "traffic": "uniform_random"
+      }
+    },
+    "uniform_random_hybrid": {
+      "constraints": {
+        "max_degree": 1,
+        "wire_cost": 29
+      },
+      "dimension": 8,
+      "express_links": [
+        {
+          "latency": 1,
+          "u": 0,
+          "u_coord": [
+            0,
+            0
+          ],
+          "v": 3,
+          "v_coord": [
+            3,
+            0
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 1,
+          "u_coord": [
+            1,
+            0
+          ],
+          "v": 24,
+          "v_coord": [
+            0,
+            3
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 2,
+          "u_coord": [
+            2,
+            0
+          ],
+          "v": 16,
+          "v_coord": [
+            0,
+            2
+          ],
+          "wire_length": 4
+        },
+        {
+          "latency": 1,
+          "u": 4,
+          "u_coord": [
+            4,
+            0
+          ],
+          "v": 10,
+          "v_coord": [
+            2,
+            1
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 7,
+          "u_coord": [
+            7,
+            0
+          ],
+          "v": 13,
+          "v_coord": [
+            5,
+            1
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 23,
+          "u_coord": [
+            7,
+            2
+          ],
+          "v": 47,
+          "v_coord": [
+            7,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 31,
+          "u_coord": [
+            7,
+            3
+          ],
+          "v": 46,
+          "v_coord": [
+            6,
+            5
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 39,
+          "u_coord": [
+            7,
+            4
+          ],
+          "v": 54,
+          "v_coord": [
+            6,
+            6
+          ],
+          "wire_length": 3
+        },
+        {
+          "latency": 1,
+          "u": 49,
+          "u_coord": [
+            1,
+            6
+          ],
+          "v": 59,
+          "v_coord": [
+            3,
+            7
+          ],
+          "wire_length": 3
+        }
+      ],
+      "latency_model": "ideal",
+      "name": "uniform_random_hybrid",
+      "node_count": 64,
+      "search_metadata": {
+        "algorithm": "traffic_aware_greedy",
+        "alpha": 0.5,
+        "flow_proxy": {
+          "commodity_count": 4032,
+          "concurrent_flow_proxy": 30.857142857144034,
+          "endpoint_max_load": 0.015624999999999972,
+          "mean_latency": 5.092551256614305,
+          "network_max_load": 0.03240740740740617,
+          "overall_max_load": 0.03240740740740617,
+          "p95_link_load": 0.02938988095237968,
+          "route_count": 31401
+        },
+        "objective": "hybrid",
+        "offline_metrics": {
+          "aspl": 4.887400793650823,
+          "diameter": 11,
+          "equal_cost_path_count": 18.909226190475728,
+          "l_max": 0.06666915479914175,
+          "load_cv": 0.40867224469889607,
+          "near_shortest_diversity": 4.074404761904747,
+          "p95_load": 0.06557334894383275
+        },
+        "traffic": "uniform_random"
+      }
+    }
+  }
+}

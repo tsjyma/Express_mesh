@@ -2,17 +2,22 @@
 
 This directory is a small, dependency-free C++17 reproduction of the part of
 Garnet exercised by `run_phase3_measurement_v2.py`.  It deliberately models the
-script's actual setting rather than general gem5:
+script's actual setting rather than general gem5.  The original 8x8 defaults
+remain regression-compatible, while the 20260831 experiment driver also
+supports parameterized square meshes:
 
-- 8x8 ExpressMesh and the same topology JSON files;
-- vnet 0, one-flit control packets, four VCs;
+- square ExpressMesh topologies (including 8x8 and 16x16) from the same JSON
+  schema;
+- vnet 0, configurable packet serialization, VC count, nominal input-buffer
+  depth, router latency, and mesh/express link latency;
 - infinite protocol/source queues, NI VC backpressure, one-flit input buffers,
   downstream VC credits, two-stage separable switch arbitration, one-cycle
   routers and pipelined links;
 - deterministic/custom adaptive routing, committed 0/1/2-express source
   routes, pressure-aware/q/q+r/random candidate policies, and the
   timeout-based XY escape VC;
-- uniform-random, CutStress, hotspot, bit-complement, and tornado traffic;
+- uniform-random, one-way and bidirectional CutStress, hotspot,
+  bit-complement, tornado, and probabilistic heterogeneous-SoC traffic;
 - warmup-without-drain and measurement-only statistics matching schema 5.
 
 It is not a replacement for full-system gem5 or for Garnet data packets.  That
@@ -23,6 +28,19 @@ directory XOR hash disabled so that deterministic destinations are preserved,
 the V5 100k-cycle Bit-complement/Tornado audit matches this standalone model
 within 1% throughput and 2% latency for all six matched configurations.  See
 `ADAPTIVE_ROUTING_V5_GARNET_AUDIT_ZH.md`.
+
+That V5 result must not be generalized blindly to every later mechanism.  A
+same-cycle ordering probe found that Garnet lazily snapshots q/r before its
+periodic control event on alternating Ruby cycles.  Reproducing that event
+order in standalone, without changing routing or reservation decisions, puts
+all seven archived V8 high-load calibration groups within 1.7% in throughput.
+Four latency groups are within 3%; two are only 3.04% and 3.13% away, while the
+Tornado Greedy knee remains 12.8% high.  The raw comparison is retained under
+`results/20260905/garnet_calibration_event_order_fix`; no traffic-specific
+coefficient was fitted to hide the remaining saturation sensitivity.
+Always-before-control snapshots, one-cycle-earlier credit return, and same-tick
+tester-to-NI admission were also tested; each substantially worsened the
+multi-case calibration and was therefore rejected.
 
 ## Build and smoke test
 
@@ -78,9 +96,9 @@ information can be tested without replacing it, for example:
   --express-info-bits 4 --express-admission-fraction 0.75
 ```
 
-`distance-gossip` delays each express-entry advertisement by the base delay
-plus its Manhattan distance to the source router; unchanged q/r values are
-suppressed as event-driven updates.  The matched standalone and Garnet study,
+`distance-gossip` reads a periodic q/r snapshot after the base delay plus the
+express entry's Manhattan distance to the source router.  The matched
+standalone and Garnet study,
 including failed coarse/local variants and the Random-expectation caveat, is
 documented in `PARTIAL_EXPRESS_INFO_V7_RESULTS_ZH.md`.
 
@@ -113,6 +131,43 @@ Policies 5 and 6 are intentionally kept as standalone upper-bound experiments:
 
 Candidate counts up to 512 are accepted.  This makes it possible to separate
 "too few precomputed candidates" from "too little congestion information".
+`--retain-mesh-candidate` optionally reserves one of those slots for the pure
+mesh route, i.e. K=8 becomes top-7 express-assisted candidates plus mesh.  It
+is off by default so historical top-8 experiments remain bit-for-bit
+comparable.
+
+The additional scaling switches are:
+
+```text
+--vcs-per-vnet N --buffer-depth N --packet-flits N
+--router-latency N --mesh-link-latency N
+--express-latency-mode topology|fixed|length-aware
+--express-latency N --express-wire-per-cycle N --injection-period N
+```
+
+`--packet-flits > 1` is a packet-granular serialization approximation, not a
+fully flit-accurate wormhole model.  `--buffer-depth` is recorded for matrix
+compatibility; with the validated single-flit model, increasing it does not
+create extra queue slots.  These two exploratory scaling rows therefore need
+Garnet confirmation before being used as architectural claims.
+
+`run_20260831_standalone_suite.py` is the resumable driver for the complete
+matrix in `docs/20260831.md`; `summarize_20260831_standalone_suite.py` creates
+the compact tables, SVGs, and informal Chinese data report.  Its event queues
+use bounded circular calendars, so long saturated runs do not retain all past
+events in memory.
+
+The report-facing placement search is `run_unified_sa_curve_search.py`.  It
+uses one SA-reheat configuration for every traffic and scores the full
+0.05--0.80 injection-rate curve; only the known traffic demand changes.  The
+current main experiment is reproducible with:
+
+```bash
+python3 express_mesh_project/run_unified_sa_curve_search.py --workers 4
+python3 express_mesh_project/run_20260831_standalone_suite.py \
+  --sections main --workers 4 --resume
+python3 express_mesh_project/summarize_20260831_standalone_suite.py
+```
 
 `search_placement_sa.py` performs reversible simulation-guided placement
 search without axis/stride restrictions.  `run_feasibility.py` additionally

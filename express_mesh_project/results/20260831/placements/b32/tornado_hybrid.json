@@ -1,0 +1,149 @@
+{
+  "constraints": {
+    "max_degree": 1,
+    "wire_cost": 32
+  },
+  "dimension": 8,
+  "express_links": [
+    {
+      "latency": 1,
+      "u": 2,
+      "u_coord": [
+        2,
+        0
+      ],
+      "v": 6,
+      "v_coord": [
+        6,
+        0
+      ],
+      "wire_length": 4
+    },
+    {
+      "latency": 1,
+      "u": 8,
+      "u_coord": [
+        0,
+        1
+      ],
+      "v": 21,
+      "v_coord": [
+        5,
+        2
+      ],
+      "wire_length": 6
+    },
+    {
+      "latency": 1,
+      "u": 10,
+      "u_coord": [
+        2,
+        1
+      ],
+      "v": 13,
+      "v_coord": [
+        5,
+        1
+      ],
+      "wire_length": 3
+    },
+    {
+      "latency": 1,
+      "u": 27,
+      "u_coord": [
+        3,
+        3
+      ],
+      "v": 31,
+      "v_coord": [
+        7,
+        3
+      ],
+      "wire_length": 4
+    },
+    {
+      "latency": 1,
+      "u": 32,
+      "u_coord": [
+        0,
+        4
+      ],
+      "v": 36,
+      "v_coord": [
+        4,
+        4
+      ],
+      "wire_length": 4
+    },
+    {
+      "latency": 1,
+      "u": 43,
+      "u_coord": [
+        3,
+        5
+      ],
+      "v": 47,
+      "v_coord": [
+        7,
+        5
+      ],
+      "wire_length": 4
+    },
+    {
+      "latency": 1,
+      "u": 48,
+      "u_coord": [
+        0,
+        6
+      ],
+      "v": 52,
+      "v_coord": [
+        4,
+        6
+      ],
+      "wire_length": 4
+    },
+    {
+      "latency": 1,
+      "u": 58,
+      "u_coord": [
+        2,
+        7
+      ],
+      "v": 61,
+      "v_coord": [
+        5,
+        7
+      ],
+      "wire_length": 3
+    }
+  ],
+  "latency_model": "ideal",
+  "name": "tornado_hybrid",
+  "node_count": 64,
+  "search_metadata": {
+    "algorithm": "traffic_aware_greedy",
+    "alpha": 0.5,
+    "flow_proxy": {
+      "commodity_count": 64,
+      "concurrent_flow_proxy": 31.99999999999998,
+      "endpoint_max_load": 0.015625,
+      "mean_latency": 4.048177083333345,
+      "network_max_load": 0.03125000000000002,
+      "overall_max_load": 0.03125000000000002,
+      "p95_link_load": 0.02864583333333335,
+      "route_count": 504
+    },
+    "objective": "hybrid",
+    "offline_metrics": {
+      "aspl": 2.828125,
+      "diameter": 10,
+      "equal_cost_path_count": 1.28125,
+      "l_max": 0.08984375,
+      "load_cv": 1.0712012396773862,
+      "near_shortest_diversity": 2.5625,
+      "p95_load": 0.08072916666666666
+    },
+    "traffic": "tornado"
+  }
+}

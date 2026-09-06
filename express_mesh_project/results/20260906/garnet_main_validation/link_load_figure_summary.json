@@ -1,0 +1,30 @@
+{
+  "greedy": {
+    "physical_link_maximum": 0.56301,
+    "rate": 0.8,
+    "seed": 5,
+    "topology": "uniform_random_greedy",
+    "traffic": "uniform_random"
+  },
+  "mesh": {
+    "physical_link_maximum": 0.56248,
+    "rate": 0.8,
+    "seed": 5,
+    "topology": "mesh",
+    "traffic": "uniform_random"
+  },
+  "random": {
+    "physical_link_maximum": 0.603685,
+    "rate": 0.8,
+    "seed": 5,
+    "topology": "random_p1",
+    "traffic": "uniform_random"
+  },
+  "sa": {
+    "physical_link_maximum": 0.515845,
+    "rate": 0.8,
+    "seed": 5,
+    "topology": "uniform_random_sa",
+    "traffic": "uniform_random"
+  }
+}

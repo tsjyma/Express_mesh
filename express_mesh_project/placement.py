@@ -8,15 +8,26 @@ import random
 from .model import ExpressEdge, GridGraph, core_metrics
 
 
-def edge_latency(wire_length: int, latency_model: str) -> int:
+def edge_latency(
+    wire_length: int,
+    latency_model: str,
+    express_wire_per_cycle: int = 4,
+) -> int:
     if latency_model == "ideal":
         return 1
     if latency_model == "length-aware":
-        return math.ceil(wire_length / 4)
+        if express_wire_per_cycle < 1:
+            raise ValueError("express_wire_per_cycle must be positive")
+        return math.ceil(wire_length / express_wire_per_cycle)
     raise ValueError(f"unknown latency model: {latency_model}")
 
 
-def candidate_edges(n: int, d_min: int, latency_model: str) -> list[ExpressEdge]:
+def candidate_edges(
+    n: int,
+    d_min: int,
+    latency_model: str,
+    express_wire_per_cycle: int = 4,
+) -> list[ExpressEdge]:
     graph = GridGraph(n)
     result = []
     for u in range(graph.node_count):
@@ -24,7 +35,13 @@ def candidate_edges(n: int, d_min: int, latency_model: str) -> list[ExpressEdge]
             wire_length = graph.manhattan(u, v)
             if wire_length >= d_min:
                 result.append(
-                    ExpressEdge(u, v, wire_length, edge_latency(wire_length, latency_model))
+                    ExpressEdge(
+                        u, v, wire_length,
+                        edge_latency(
+                            wire_length, latency_model,
+                            express_wire_per_cycle,
+                        ),
+                    )
                 )
     return result
 
@@ -179,14 +196,31 @@ def greedy_placement(
     objective: str,
     alpha: float = 0.5,
     candidate_mode: str = "all",
+    candidate_limit: int = 0,
+    express_wire_per_cycle: int = 4,
 ) -> list[ExpressEdge]:
     if objective not in {"aspl", "bottleneck", "hybrid"}:
         raise ValueError(f"unknown objective: {objective}")
     if not 0.0 <= alpha <= 1.0:
         raise ValueError("alpha must be in [0, 1]")
     candidates = _filter_candidates(
-        candidate_edges(n, d_min, latency_model), n, candidate_mode
+        candidate_edges(
+            n, d_min, latency_model, express_wire_per_cycle,
+        ), n, candidate_mode
     )
+    if objective == "aspl" and n >= 12:
+        if candidate_limit:
+            from .flow_placement import direct_benefit_scores
+            scores = direct_benefit_scores(n, candidates, [demand])
+            candidates = sorted(
+                candidates,
+                key=lambda edge: (
+                    -scores[edge.key], edge.wire_length, edge.key,
+                ),
+            )[:candidate_limit]
+        return _greedy_aspl_placement(
+            n, demand, candidates, budget, max_degree,
+        )
     selected: list[ExpressEdge] = []
     selected_keys = set()
     degree = [0] * (n * n)
@@ -223,6 +257,89 @@ def greedy_placement(
                 best, best_value, best_score = edge, value, score
         if best is None or best_score <= 0.0:
             break
+        selected.append(best)
+        selected_keys.add(best.key)
+        degree[best.u] += 1
+        degree[best.v] += 1
+        remaining -= best.wire_length
+        current_value = best_value
+    return sorted(selected, key=lambda edge: edge.key)
+
+
+def _greedy_aspl_placement(
+    n: int,
+    demand,
+    candidates: list[ExpressEdge],
+    budget: int,
+    max_degree: int,
+) -> list[ExpressEdge]:
+    """Exact ASPL Greedy using an incrementally updated distance matrix.
+
+    Adding one positive-weight undirected edge ``(u, v)`` changes every
+    shortest path to the minimum of its old distance, a path using ``u->v``,
+    and a path using ``v->u``.  Evaluating that identity with NumPy preserves
+    the original Greedy objective and deterministic tie handling while avoiding a fresh
+    all-pairs shortest-path/betweenness computation for every candidate.  The
+    distinction is important for 16x16 scaling: this is an implementation
+    acceleration, not a restricted candidate set or a proxy objective.
+    """
+    try:
+        import numpy as np
+    except ImportError as error:  # pragma: no cover - experiment dependency
+        raise RuntimeError(
+            "exact scalable ASPL Greedy requires NumPy"
+        ) from error
+
+    node_count = n * n
+    nodes = np.arange(node_count, dtype=np.int32)
+    x = nodes % n
+    y = nodes // n
+    distance = (np.abs(x[:, None] - x[None, :])
+                + np.abs(y[:, None] - y[None, :])).astype(np.int16)
+    source = np.fromiter((pair[0] for pair in demand), dtype=np.int32)
+    dest = np.fromiter((pair[1] for pair in demand), dtype=np.int32)
+    weight = np.fromiter(demand.values(), dtype=np.float64)
+    base_value = float(np.dot(weight, distance[source, dest]))
+    current_value = base_value
+
+    selected: list[ExpressEdge] = []
+    selected_keys = set()
+    degree = [0] * node_count
+    remaining = budget
+    while True:
+        best = None
+        best_value = current_value
+        best_score = 0.0
+        for edge in candidates:
+            if not _legal(edge, selected_keys, degree, remaining, max_degree):
+                continue
+            old = distance[source, dest]
+            via_forward = (distance[source, edge.u] + edge.latency
+                           + distance[edge.v, dest])
+            via_reverse = (distance[source, edge.v] + edge.latency
+                           + distance[edge.u, dest])
+            value = float(np.dot(
+                weight, np.minimum(old, np.minimum(via_forward, via_reverse))
+            ))
+            # Algebraically identical to the normalized objective used by the
+            # original implementation.
+            score = ((current_value - value) / base_value
+                     / edge.wire_length)
+            if score > best_score + 1e-15 or (
+                abs(score - best_score) <= 1e-15
+                and best is not None and edge.key < best.key
+            ):
+                best, best_value, best_score = edge, value, score
+        if best is None or best_score <= 0.0:
+            break
+
+        via_forward = (distance[:, best.u, None] + best.latency
+                       + distance[best.v, None, :])
+        via_reverse = (distance[:, best.v, None] + best.latency
+                       + distance[best.u, None, :])
+        distance = np.minimum(
+            distance, np.minimum(via_forward, via_reverse)
+        ).astype(np.int16, copy=False)
         selected.append(best)
         selected_keys.add(best.key)
         degree[best.u] += 1

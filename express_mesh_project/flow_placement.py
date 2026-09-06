@@ -14,6 +14,7 @@ link capacity and permits a commodity to split across several routes.
 
 from __future__ import annotations
 
+from collections import defaultdict
 from dataclasses import dataclass
 import math
 from statistics import fmean
@@ -312,6 +313,39 @@ def direct_benefit_scores(
     demands: Sequence[Demand],
 ) -> dict[tuple[int, int], float]:
     """Cheap demand-aware ranking used only to propose search mutations."""
+    candidates = list(candidates)
+    if n >= 12:
+        # Same score as the scalar loop below, vectorized over demand pairs so
+        # the unchanged proposal rule remains usable for 16x16 searches.
+        import numpy as np
+
+        combined: defaultdict[tuple[int, int], float] = defaultdict(float)
+        demands = list(demands)
+        for demand in demands:
+            for pair, value in demand.items():
+                combined[pair] += value / len(demands)
+        source = np.fromiter((pair[0] for pair in combined), dtype=np.int32)
+        dest = np.fromiter((pair[1] for pair in combined), dtype=np.int32)
+        weight = np.fromiter(combined.values(), dtype=np.float64)
+        sx, sy = source % n, source // n
+        dx, dy = dest % n, dest // n
+        direct = np.abs(sx - dx) + np.abs(sy - dy)
+        scores = {}
+        for edge in candidates:
+            ux, uy = edge.u % n, edge.u // n
+            vx, vy = edge.v % n, edge.v // n
+            via_uv = (np.abs(sx - ux) + np.abs(sy - uy) + edge.latency
+                      + np.abs(dx - vx) + np.abs(dy - vy))
+            via_vu = (np.abs(sx - vx) + np.abs(sy - vy) + edge.latency
+                      + np.abs(dx - ux) + np.abs(dy - uy))
+            saved = float(np.sum(
+                weight * np.maximum(
+                    0, direct - np.minimum(via_uv, via_vu)
+                )
+            ))
+            scores[edge.key] = saved / max(1, edge.wire_length)
+        return scores
+
     graph = GridGraph(n)
     scores: dict[tuple[int, int], float] = {}
     for edge in candidates:

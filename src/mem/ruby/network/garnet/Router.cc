@@ -73,6 +73,7 @@ Router::wakeup()
 {
     DPRINTF(RubyNetwork, "Router %d woke up\n", m_id);
     assert(clockEdge() == curTick());
+    m_network_ptr->recordRouterWakeup(m_id);
 
     // check for incoming flits
     for (int inport = 0; inport < m_input_unit.size(); inport++) {
@@ -185,18 +186,6 @@ Router::getPortDirectionName(PortDirection direction)
     // statement to convert direction to a string
     // that can be printed out
     return direction;
-}
-
-uint32_t
-Router::expressOutputQueue(int destination) const
-{
-    const PortDirection expected =
-        "ExpressTo" + std::to_string(destination);
-    for (const auto &unit : m_output_unit) {
-        if (unit->get_direction() == expected)
-            return unit->getOutQueue()->getSize();
-    }
-    fatal("Router %d has no express output to %d", m_id, destination);
 }
 
 double

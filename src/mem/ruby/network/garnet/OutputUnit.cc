@@ -180,12 +180,6 @@ OutputUnit::getOutQueue()
     return &outBuffer;
 }
 
-const flitBuffer*
-OutputUnit::getOutQueue() const
-{
-    return &outBuffer;
-}
-
 void
 OutputUnit::set_out_link(NetworkLink *link)
 {
