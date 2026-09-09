@@ -155,6 +155,11 @@ InputUnit::rerouteToEscape(int vc)
     if (route.escape_vc)
         return;
     if (route.source_routed) {
+        if (route.dynamic_route_stage < route.dynamic_route_routers.size()) {
+            m_router->get_net_ptr()->releaseDynamicRoute(
+                route, route.dynamic_route_stage, m_router->get_id(), true);
+            route.dynamic_route_stage = route.dynamic_route_routers.size();
+        }
         for (uint8_t stage = route.express_stage;
              stage < route.express_count; ++stage)
             m_router->get_net_ptr()->releaseSourceRouteExpress(
@@ -175,12 +180,32 @@ InputUnit::advanceSourceRouteStage(int vc)
 {
     flit *head = peekTopFlit(vc);
     RouteInfo route = head->get_route();
-    if (!route.source_routed || route.express_stage >= route.express_count)
+    if (!route.source_routed)
         return;
-    m_router->get_net_ptr()->releaseSourceRouteExpress(
-        route, route.express_stage, m_router->get_id(), false);
-    route.express_stage++;
-    route.express_traversed++;
+    if (route.dynamic_route_stage < route.dynamic_route_routers.size()) {
+        const int current = m_router->get_id();
+        const int next = route.dynamic_route_routers[route.dynamic_route_stage];
+        m_router->get_net_ptr()->releaseDynamicRoute(
+            route, route.dynamic_route_stage, current, false);
+        route.dynamic_route_stage++;
+        if (route.express_stage < route.express_count &&
+            m_router->get_net_ptr()->getExpressRouteSource(
+                route.express_ids[route.express_stage]) == current &&
+            m_router->get_net_ptr()->getExpressRouteDestination(
+                route.express_ids[route.express_stage]) == next) {
+            m_router->get_net_ptr()->releaseSourceRouteExpress(
+                route, route.express_stage, current, false);
+            route.express_stage++;
+            route.express_traversed++;
+        }
+    } else if (route.express_stage < route.express_count) {
+        m_router->get_net_ptr()->releaseSourceRouteExpress(
+            route, route.express_stage, m_router->get_id(), false);
+        route.express_stage++;
+        route.express_traversed++;
+    } else {
+        return;
+    }
     virtualChannels[vc].updateRoute(route);
 }
 

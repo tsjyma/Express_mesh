@@ -95,6 +95,10 @@ class GarnetNetwork : public Network
     void releaseSourceRouteExpress(
         const RouteInfo &route, uint8_t stage, int current_router,
         bool cancellation);
+    void releaseDynamicRoute(
+        const RouteInfo &route, uint16_t begin_stage, int current_router,
+        bool cancellation);
+    void dumpDeadlockState(std::ostream &out);
     double expressVcOccupancy(int directed_id, int vnet);
     uint32_t getExpressEscapeTimeout() const
     { return m_express_escape_timeout; }
@@ -183,6 +187,8 @@ class GarnetNetwork : public Network
 
     void update_traffic_distribution(RouteInfo route);
     int getNextPacketID() { return m_next_packet_id++; }
+    const std::string &getSourceRouteMeshRouting() const
+    { return m_source_route_mesh_routing; }
 
   protected:
     // Configuration
@@ -204,6 +210,8 @@ class GarnetNetwork : public Network
     std::vector<uint32_t> m_source_route_candidate_express_ids;
     uint32_t m_source_route_candidates;
     uint32_t m_source_route_policy;
+    std::string m_source_route_mesh_routing;
+    uint32_t m_source_route_mesh_link_latency;
     double m_source_route_reservation_weight;
     double m_source_route_vc_weight;
     std::string m_source_route_info_mode;
@@ -335,6 +343,9 @@ class GarnetNetwork : public Network
     std::pair<double, double> observedExpressPressure(
         int source, int directed_id, int vnet);
     bool admitExpressRoute(int source, int destination) const;
+    std::vector<uint16_t> dynamicDijkstraRoute(
+        int source, int destination, int vnet, bool all_link_pressure) const;
+    int directedExpressId(int source, int destination) const;
 
     GarnetNetwork(const GarnetNetwork& obj);
     GarnetNetwork& operator=(const GarnetNetwork& obj);
@@ -347,6 +358,9 @@ class GarnetNetwork : public Network
     std::vector<NetworkInterface *> m_nis;   // All NI's in Network
     int m_next_packet_id; // static vairable for packet id allocation
     std::vector<int64_t> m_reservation_current;
+    // Policy-6 oracle reservations, indexed by source*router_count+dest.
+    std::vector<int64_t> m_directed_link_reservations;
+    bool m_deadlock_state_dumped;
     std::deque<ExpressInfoSnapshot> m_express_info_history;
     uint64_t m_express_info_last_cycle;
     uint64_t m_express_info_event_last_cycle =

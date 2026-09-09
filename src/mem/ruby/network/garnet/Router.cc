@@ -191,8 +191,25 @@ Router::getPortDirectionName(PortDirection direction)
 double
 Router::expressOutputVcOccupancy(int destination, int vnet)
 {
-    const PortDirection expected =
-        "ExpressTo" + std::to_string(destination);
+    return outputVcOccupancyTo(destination, vnet);
+}
+
+double
+Router::outputVcOccupancyTo(int destination, int vnet)
+{
+    const int columns = m_network_ptr->getNumCols();
+    PortDirection expected;
+    if (destination == m_id + 1 && destination / columns == m_id / columns)
+        expected = "East";
+    else if (destination == m_id - 1 &&
+             destination / columns == m_id / columns)
+        expected = "West";
+    else if (destination == m_id + columns)
+        expected = "North";
+    else if (destination == m_id - columns)
+        expected = "South";
+    else
+        expected = "ExpressTo" + std::to_string(destination);
     for (const auto &unit : m_output_unit) {
         if (unit->get_direction() == expected) {
             const int ordinary_vcs = unit->getVcsPerVnet() -
@@ -200,7 +217,7 @@ Router::expressOutputVcOccupancy(int destination, int vnet)
             return ordinary_vcs * unit->congestion(vnet, false);
         }
     }
-    fatal("Router %d has no express output to %d", m_id, destination);
+    fatal("Router %d has no output to %d", m_id, destination);
 }
 
 void

@@ -498,9 +498,11 @@ NetworkInterface::calculateVC(int vnet)
         }
         vc_busy_last_tick[vnet] = curTick();
     }
-    panic_if(vc_busy_counter[vnet] > m_deadlock_threshold,
-        "%s: Possible network deadlock in vnet: %d at time: %llu \n",
-        name(), vnet, curTick());
+    if (vc_busy_counter[vnet] > m_deadlock_threshold) {
+        m_net_ptr->dumpDeadlockState(std::cerr);
+        panic("%s: Possible network deadlock in vnet: %d at time: %llu \n",
+              name(), vnet, curTick());
+    }
 
     return -1;
 }

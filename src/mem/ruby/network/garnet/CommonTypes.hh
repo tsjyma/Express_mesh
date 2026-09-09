@@ -62,7 +62,8 @@ struct RouteInfo
         : vnet(0), src_ni(0), src_router(0), dest_ni(0), dest_router(0),
           hops_traversed(0), escape_vc(false), source_routed(false),
           source_route_packet_id(0), express_count(0), express_stage(0),
-          express_traversed(0), express_ids()
+          express_traversed(0), express_ids(), dynamic_route_stage(0),
+          dynamic_route_routers()
     {}
 
     // destination format for table-based routing
@@ -86,6 +87,9 @@ struct RouteInfo
     uint8_t express_stage;
     uint8_t express_traversed;
     std::vector<uint16_t> express_ids;
+    uint16_t dynamic_route_stage;
+    // Router reached by each successive hop of a policy-5/6 Dijkstra route.
+    std::vector<uint16_t> dynamic_route_routers;
 };
 
 #define INFINITE_ 10000

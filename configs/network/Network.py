@@ -70,13 +70,30 @@ def define_options(parser):
         help="commit the precomputed static ExpressMesh route at injection",
     )
     parser.add_argument(
-        "--express-source-route-policy", type=int, choices=[0, 3, 4], default=4,
+        "--express-source-route-policy", type=int,
+        choices=[0, 3, 4, 5, 6], default=4,
         help=("source-route policy: 0 static top-K winner, 3 random top-K "
-              "candidate, 4 q/r pressure-aware (the proposed policy)"),
+              "candidate, 4 q/r pressure-aware (the proposed policy), "
+              "5 express-pressure Dijkstra, 6 global-pressure Dijkstra"),
     )
     parser.add_argument(
         "--express-source-route-candidates", type=int, default=8,
         help="number K of committed source-route candidates retained per pair",
+    )
+    parser.add_argument(
+        "--express-source-mesh-routing", choices=["xy", "adaptive"],
+        default="xy",
+        help=("routing inside committed mesh segments: deterministic XY or "
+              "local productive adaptive routing"),
+    )
+    parser.add_argument(
+        "--express-retain-mesh-candidate", action="store_true",
+        help="reserve one top-K candidate slot for the pure XY mesh route",
+    )
+    parser.add_argument(
+        "--express-route-cache-dir", default="",
+        help=("optional directory for reusable precomputed top-K route tables; "
+              "this changes startup cost, not routing behavior"),
     )
     parser.add_argument(
         "--express-r-weight", "--express-reservation-weight",
@@ -243,6 +260,8 @@ def init_network(options, network, InterfaceClass):
         network.source_route_enabled = options.express_source_route
         network.source_route_policy = options.express_source_route_policy
         network.source_route_candidates = options.express_source_route_candidates
+        network.source_route_mesh_routing = options.express_source_mesh_routing
+        network.source_route_mesh_link_latency = options.link_latency
         network.source_route_reservation_weight = options.express_reservation_weight
         network.source_route_vc_weight = options.express_vc_pressure_weight
         network.source_route_info_mode = options.express_info_mode

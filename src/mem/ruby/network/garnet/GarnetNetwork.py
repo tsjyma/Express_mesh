@@ -73,7 +73,13 @@ class GarnetNetwork(RubyNetwork):
         8, "number K of committed source-route candidates retained per pair"
     )
     source_route_policy = Param.UInt32(
-        4, "0 static, 3 random top-K, 4 q/r pressure-aware"
+        4, "0 static, 3 random top-K, 4 q/r, 5 express Dijkstra, 6 global Dijkstra"
+    )
+    source_route_mesh_routing = Param.String(
+        "xy", "mesh segments inside committed routes: xy or adaptive"
+    )
+    source_route_mesh_link_latency = Param.UInt32(
+        1, "static mesh-link cost used by source-route Dijkstra ablations"
     )
     source_route_reservation_weight = Param.Float(
         0.6, "in-flight express reservation weight r for policy 4"

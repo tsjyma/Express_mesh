@@ -56,6 +56,9 @@ class GarnetSyntheticTraffic(ClockedObject):
                                  Default depends on traffic_type",
     )
     traffic_type = Param.String("uniform_random", "Traffic type")
+    injection_stop_cycles = Param.Int(
+        -1, "Stop injecting at this tester cycle; -1 means never"
+    )
     inj_rate = Param.Float(0.1, "Packet injection rate")
     inj_vnet = Param.Int(
         -1,

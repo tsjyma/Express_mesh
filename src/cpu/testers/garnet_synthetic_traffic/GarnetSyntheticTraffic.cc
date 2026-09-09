@@ -28,6 +28,8 @@
 
 #include "cpu/testers/garnet_synthetic_traffic/GarnetSyntheticTraffic.hh"
 
+#include <algorithm>
+#include <array>
 #include <cmath>
 #include <iomanip>
 #include <set>
@@ -86,6 +88,7 @@ GarnetSyntheticTraffic::GarnetSyntheticTraffic(const Params &p)
       numDestinations(p.num_dest),
       simCycles(p.sim_cycles),
       numPacketsMax(p.num_packets_max),
+      injectionStopCycles(p.injection_stop_cycles),
       numPacketsSent(0),
       singleSender(p.single_sender),
       singleDest(p.single_dest),
@@ -162,7 +165,9 @@ GarnetSyntheticTraffic::tick()
         sendAllowedThisCycle = false;
 
     // always generatePkt unless fixedPkts or singleSender is enabled
-    if (sendAllowedThisCycle) {
+    if (sendAllowedThisCycle &&
+        (injectionStopCycles < 0 ||
+         curCycle() < Cycles(injectionStopCycles))) {
         stats.injectionAttempts++;
         bool senderEnable = true;
 
@@ -273,6 +278,57 @@ GarnetSyntheticTraffic::generatePkt()
                     0, num_destinations - 1);
             } while (destination == unsigned(source));
         }
+    } else if (traffic == SOC_HETEROGENEOUS_) {
+        fatal_if(radix < 8 || radix % 4 != 0,
+                 "soc_heterogeneous requires a square dimension divisible by 4");
+        const int tile = std::max(2, radix / 4);
+        const int tile_x = std::min(radix - 1,
+            (src_x / tile) * tile + tile / 2);
+        const int tile_y = std::min(radix - 1,
+            (src_y / tile) * tile + tile / 2);
+        const unsigned category = random_mt.random<unsigned>(0, 9999);
+        if (category < 3000) {
+            const int x0 = (src_x / tile) * tile;
+            const int y0 = (src_y / tile) * tile;
+            do {
+                dest_x = random_mt.random<int>(
+                    x0, std::min(radix - 1, x0 + tile - 1));
+                dest_y = random_mt.random<int>(
+                    y0, std::min(radix - 1, y0 + tile - 1));
+                destination = dest_y * radix + dest_x;
+            } while (destination == unsigned(source));
+        } else if (category < 4500) {
+            destination = tile_y * radix + tile_x;
+        } else if (category < 5000) {
+            const std::array<std::pair<int, int>, 8> memory{{
+                {0, radix / 8}, {0, 3 * radix / 8},
+                {0, 5 * radix / 8}, {0, 7 * radix / 8},
+                {radix - 1, radix / 8}, {radix - 1, 3 * radix / 8},
+                {radix - 1, 5 * radix / 8},
+                {radix - 1, 7 * radix / 8}}};
+            const auto [dx, dy] = memory[
+                random_mt.random<size_t>(0, memory.size() - 1)];
+            destination = std::min(radix - 1, dy) * radix + dx;
+        } else if (category < 5500) {
+            const std::array<std::pair<int, int>, 8> accelerators{{
+                {radix / 4, radix / 4}, {radix / 2, radix / 4},
+                {3 * radix / 4, radix / 4}, {radix / 4, radix / 2},
+                {3 * radix / 4, radix / 2},
+                {radix / 4, 3 * radix / 4},
+                {radix / 2, 3 * radix / 4},
+                {3 * radix / 4, 3 * radix / 4}}};
+            const auto [dx, dy] = accelerators[
+                random_mt.random<size_t>(0, accelerators.size() - 1)];
+            destination = std::min(radix - 1, dy) * radix +
+                          std::min(radix - 1, dx);
+        } else {
+            do {
+                destination = random_mt.random<unsigned>(
+                    0, num_destinations - 1);
+            } while (destination == unsigned(source));
+        }
+        if (destination == unsigned(source))
+            destination = (source + 1) % num_destinations;
     }
     else {
         fatal("Unknown Traffic Type: %s!\n", traffic);
@@ -380,6 +436,7 @@ GarnetSyntheticTraffic::initTrafficType()
     trafficStringToEnum["cutstress_bidirectional"] =
         CUTSTRESS_BIDIRECTIONAL_;
     trafficStringToEnum["hotspot"] = HOTSPOT_;
+    trafficStringToEnum["soc_heterogeneous"] = SOC_HETEROGENEOUS_;
 }
 
 void

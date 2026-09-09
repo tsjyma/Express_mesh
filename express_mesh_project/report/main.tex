@@ -45,7 +45,18 @@
 \floatname{algorithm}{Algorithm}
 \crefname{algorithm}{Algorithm}{Algorithms}
 
-\title{\vspace{-1.4em}\textbf{Budgeted Express Mesh: Traffic-Aware Link Placement\\and Deadlock-Free Adaptive Routing}}
+\title{\vspace{-1.4em}\textbf{Budgeted Express-Mesh: Traffic-Aware Link Placement\\and Deadlock-Free Adaptive Routing}}
+\ifdefined\ARXIVVERSION
+\author{%
+\begin{tabular}{c@{\hspace{5em}}c}
+Li Cao & Jingyuan Ma\\
+\texttt{caol24@mails.tsinghua.edu.cn} &
+\texttt{majy24@mails.tsinghua.edu.cn}\\[0.35em]
+\multicolumn{2}{c}{Institute for Interdisciplinary Information Sciences (IIIS)}\\
+\multicolumn{2}{c}{Tsinghua University, Beijing, China}
+\end{tabular}
+}
+\else
 \author{%
 \begin{tabular}{cc}
 Li Cao, 2024010759 & Jingyuan Ma, 2024010698\\
@@ -55,11 +66,32 @@ Li Cao, 2024010759 & Jingyuan Ma, 2024010698\\
 \multicolumn{2}{c}{\small Project repository: \url{https://github.com/tsjyma/Express_mesh}}
 \end{tabular}
 }
+\fi
 \date{}
 
 \begin{document}
 \maketitle
+\ifdefined\ARXIVVERSION
+\vspace{-2.0em}
+\begin{center}
+\small Code and artifacts: \href{https://github.com/tsjyma/Express_mesh}{\texttt{github.com/tsjyma/Express\_mesh}}
+\end{center}
+\vspace{-0.8em}
+\else
 \vspace{-2.2em}
+\fi
+
+\begin{abstract}
+We present Budgeted Express-Mesh, a topology--routing co-design that adds a
+small number of traffic-aware express links under a fixed wire budget.
+An ASPL-based greedy placement is refined by simulation-guided annealing, while
+packets use committed top-$K$ routes selected from delayed express-link
+congestion and reservation signals. Across four synthetic workloads, optimized
+placements consistently improve high-load throughput over Mesh and random
+placement, and annealing further improves Greedy. The gains persist under
+delayed quantized congestion information, longer express-link latency,
+multi-flit packets, and a 16-by-16 heterogeneous workload.
+\end{abstract}
 
 \section{Introduction}
 
@@ -1034,10 +1066,13 @@ networks, model express-wire latency and cost more realistically, account for
 route-metadata and control overhead, and redesign path planning for true
 multi-flit wormhole traffic.
 
+\ifdefined\ARXIVVERSION
+\else
 \section{Division of Labor}
 Li Cao: topic selection, implementation (50\%), evaluation, report.
 
 Jingyuan Ma: topic proposal, implementation (50\%), slides.
+\fi
 
 {\small
 \begin{thebibliography}{9}

@@ -30,12 +30,15 @@
 
 #include "mem/ruby/network/garnet/RoutingUnit.hh"
 
+#include <limits>
+
 #include "base/cast.hh"
 #include "base/compiler.hh"
 #include "base/logging.hh"
 #include "base/random.hh"
 #include "debug/RubyNetwork.hh"
 #include "mem/ruby/network/garnet/InputUnit.hh"
+#include "mem/ruby/network/garnet/OutputUnit.hh"
 #include "mem/ruby/network/garnet/Router.hh"
 #include "mem/ruby/slicc_interface/Message.hh"
 
@@ -298,6 +301,54 @@ RoutingUnit::outportComputeExpressMesh(RouteInfo route)
         return outport->second;
     };
 
+    auto meshAdaptiveTo = [&](int waypoint) {
+        const int cx = current % num_cols;
+        const int cy = current / num_cols;
+        const int wx = waypoint % num_cols;
+        const int wy = waypoint / num_cols;
+        std::vector<int> candidates;
+        auto add = [&](const PortDirection &direction) {
+            const auto found = m_outports_dirn2idx.find(direction);
+            fatal_if(found == m_outports_dirn2idx.end(),
+                     "Router %d has no productive output %s toward %d",
+                     current, direction, waypoint);
+            candidates.push_back(found->second);
+        };
+        if (cx < wx) add("East");
+        if (cx > wx) add("West");
+        if (cy < wy) add("North");
+        if (cy > wy) add("South");
+        fatal_if(candidates.empty(),
+                 "adaptive mesh waypoint equals current router %d", current);
+
+        std::vector<int> usable;
+        for (const int outport : candidates) {
+            if (m_router->getOutputUnit(outport)->has_free_vc(
+                    route.vnet, false))
+                usable.push_back(outport);
+        }
+        if (!usable.empty())
+            candidates = std::move(usable);
+        double best = std::numeric_limits<double>::infinity();
+        std::vector<int> ties;
+        for (const int outport : candidates) {
+            const double pressure =
+                m_router->getOutputUnit(outport)->congestion(route.vnet, false);
+            if (pressure < best) {
+                best = pressure;
+                ties = {outport};
+            } else if (pressure == best) {
+                ties.push_back(outport);
+            }
+        }
+        return ties[random_mt.random<size_t>(0, ties.size() - 1)];
+    };
+
+    auto meshTo = [&](int waypoint) {
+        return network->getSourceRouteMeshRouting() == "adaptive" ?
+            meshAdaptiveTo(waypoint) : meshXYTo(waypoint);
+    };
+
     // Escape never uses an express link and never transitions back.  Its
     // channel-dependency graph is therefore the ordinary acyclic mesh-XY CDG.
     if (route.escape_vc)
@@ -317,6 +368,17 @@ RoutingUnit::outportComputeExpressMesh(RouteInfo route)
         return PortDirection("ExpressTo" + std::to_string(neighbor));
     };
 
+    if (!route.dynamic_route_routers.empty()) {
+        fatal_if(route.dynamic_route_stage >= route.dynamic_route_routers.size(),
+                 "dynamic route ended at router %d before destination %d",
+                 current, route.dest_router);
+        const int next = route.dynamic_route_routers[route.dynamic_route_stage];
+        const auto outport = m_outports_dirn2idx.find(directionFor(next));
+        fatal_if(outport == m_outports_dirn2idx.end(),
+                 "Router %d has no dynamic-route output to %d", current, next);
+        return outport->second;
+    }
+
     if (route.source_routed) {
         fatal_if(route.express_stage > route.express_count,
                  "invalid source-route stage %d/%d", route.express_stage,
@@ -326,14 +388,14 @@ RoutingUnit::outportComputeExpressMesh(RouteInfo route)
             const int entry = network->getExpressRouteSource(directed_id);
             const int exit = network->getExpressRouteDestination(directed_id);
             if (current != entry)
-                return meshXYTo(entry);
+                return meshTo(entry);
             const auto outport = m_outports_dirn2idx.find(directionFor(exit));
             fatal_if(outport == m_outports_dirn2idx.end(),
                      "Router %d has no source-route express output to %d",
                      current, exit);
             return outport->second;
         }
-        return meshXYTo(route.dest_router);
+        return meshTo(route.dest_router);
     }
 
     fatal("ExpressMesh custom routing requires --express-source-route");

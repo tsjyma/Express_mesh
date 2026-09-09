@@ -62,6 +62,7 @@ parser.add_argument(
         "cutstress",
         "cutstress_bidirectional",
         "hotspot",
+        "soc_heterogeneous",
     ],
 )
 
@@ -101,6 +102,10 @@ parser.add_argument(
     default=0,
     help="Network cycles to measure after warmup (0 keeps legacy behavior)",
 )
+parser.add_argument(
+    "--drain-cycles", type=int, default=0,
+    help="Additional no-injection network cycles after the measurement window",
+)
 
 parser.add_argument(
     "--num-packets-max",
@@ -136,6 +141,11 @@ parser.add_argument(
                         Set to -1 to inject randomly in all vnets.",
 )
 parser.add_argument("--traffic-seed", type=int, default=1)
+parser.add_argument(
+    "--injection-stop-cycles", type=int, default=-1,
+    help=("Stop generating new requests after this many tester cycles while "
+          "continuing to clock the network; -1 keeps injection enabled."),
+)
 
 #
 # Add the ruby specific and protocol specific options
@@ -143,8 +153,8 @@ parser.add_argument("--traffic-seed", type=int, default=1)
 Ruby.define_options(parser)
 
 args = parser.parse_args()
-if args.warmup_cycles < 0 or args.measurement_cycles < 0:
-    parser.error("warmup and measurement cycles must be non-negative")
+if args.warmup_cycles < 0 or args.measurement_cycles < 0 or args.drain_cycles < 0:
+    parser.error("warmup, measurement, and drain cycles must be non-negative")
 if args.warmup_cycles and not args.measurement_cycles:
     parser.error("--warmup-cycles requires --measurement-cycles")
 m5_core.seedRandom(args.traffic_seed)
@@ -157,6 +167,7 @@ cpus = [
         sim_cycles=(2_000_000_000 if args.measurement_cycles else
                     args.sim_cycles),
         traffic_type=args.synthetic,
+        injection_stop_cycles=args.injection_stop_cycles,
         inj_rate=args.injectionrate,
         inj_vnet=args.inj_vnet,
         precision=args.precision,
@@ -211,7 +222,8 @@ m5.instantiate()
 if args.measurement_cycles:
     ruby_clock_period = m5.ticks.fromSeconds(1.0 / toFrequency(args.ruby_clock))
     warmup_ticks = args.warmup_cycles * ruby_clock_period
-    measurement_ticks = args.measurement_cycles * ruby_clock_period
+    measurement_ticks = ((args.measurement_cycles + args.drain_cycles) *
+                         ruby_clock_period)
     if warmup_ticks:
         warmup_event = m5.simulate(warmup_ticks)
         if warmup_event.getCause() != "simulate() limit reached":

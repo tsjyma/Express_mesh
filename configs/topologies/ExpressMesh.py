@@ -1,7 +1,9 @@
 """A 2D mesh augmented with budgeted bidirectional express links."""
 
+import hashlib
 import json
 import heapq
+import os
 from pathlib import Path
 
 from m5.objects import *
@@ -106,7 +108,8 @@ class ExpressMesh(SimpleTopology):
 
     @classmethod
     def _source_route_table(
-        cls, links, num_routers, num_rows, candidate_limit
+        cls, links, num_routers, num_rows, candidate_limit,
+        retain_mesh_candidate=False,
     ):
         """Retain the exact K lowest-cost loop-free routes for every pair.
 
@@ -229,6 +232,16 @@ class ExpressMesh(SimpleTopology):
                     if candidate is not None:
                         selected.append(candidate)
 
+                if (retain_mesh_candidate and
+                        not any(express_count == 0
+                                for _, express_count, _ in selected)):
+                    mesh = (distance(source, destination), 0, ())
+                    if len(selected) >= candidate_limit:
+                        selected[-1] = mesh
+                    else:
+                        selected.append(mesh)
+                    selected.sort()
+
                 if not selected:
                     raise ValueError(
                         f"no source route for pair {(source, destination)}"
@@ -247,6 +260,45 @@ class ExpressMesh(SimpleTopology):
                     ids[pair_index * 2 + index] = directed_id
         return (counts, ids, candidate_counts, candidate_latencies,
                 candidate_express_counts, candidate_express_ids)
+
+    @classmethod
+    def _cached_source_route_table(
+        cls, options, links, num_routers, num_rows, candidate_limit,
+        retain_mesh_candidate,
+    ):
+        cache_dir = getattr(options, "express_route_cache_dir", "")
+        if not cache_dir:
+            return cls._source_route_table(
+                links, num_routers, num_rows, candidate_limit,
+                retain_mesh_candidate,
+            )
+        payload = {
+            "version": 1,
+            "links": links,
+            "num_routers": num_routers,
+            "num_rows": num_rows,
+            "candidate_limit": candidate_limit,
+            "retain_mesh_candidate": retain_mesh_candidate,
+        }
+        key = hashlib.sha256(json.dumps(
+            payload, sort_keys=True, separators=(",", ":")
+        ).encode()).hexdigest()
+        directory = Path(cache_dir)
+        directory.mkdir(parents=True, exist_ok=True)
+        path = directory / (key + ".json")
+        if path.exists():
+            record = json.loads(path.read_text(encoding="utf-8"))
+            if record.get("key") == key:
+                return tuple(record["arrays"])
+        arrays = cls._source_route_table(
+            links, num_routers, num_rows, candidate_limit,
+            retain_mesh_candidate,
+        )
+        temporary = directory / f".{key}.{os.getpid()}.tmp"
+        temporary.write_text(json.dumps({"key": key, "arrays": arrays}),
+                             encoding="utf-8")
+        os.replace(temporary, path)
+        return arrays
 
     def makeTopology(self, options, network, IntLink, ExtLink, Router):
         nodes = self.nodes
@@ -276,9 +328,10 @@ class ExpressMesh(SimpleTopology):
             latency for _, _, latency in express_links
         ]
         (counts, route_ids, candidate_counts, candidate_latencies,
-         candidate_express_counts, candidate_express_ids) = self._source_route_table(
-            express_links, num_routers, num_rows,
+         candidate_express_counts, candidate_express_ids) = self._cached_source_route_table(
+            options, express_links, num_routers, num_rows,
             options.express_source_route_candidates,
+            options.express_retain_mesh_candidate,
         )
         network.source_route_candidates = options.express_source_route_candidates
         network.source_route_express_counts = counts

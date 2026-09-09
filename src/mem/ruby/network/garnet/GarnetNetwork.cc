@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <limits>
+#include <queue>
 #include <utility>
 
 #include <cassert>
@@ -47,6 +48,7 @@
 #include "mem/ruby/network/garnet/CommonTypes.hh"
 #include "mem/ruby/network/garnet/CreditLink.hh"
 #include "mem/ruby/network/garnet/GarnetLink.hh"
+#include "mem/ruby/network/garnet/InputUnit.hh"
 #include "mem/ruby/network/garnet/NetworkInterface.hh"
 #include "mem/ruby/network/garnet/NetworkLink.hh"
 #include "mem/ruby/network/garnet/Router.hh"
@@ -91,6 +93,8 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     m_source_route_candidate_express_ids = p.source_route_candidate_express_ids;
     m_source_route_candidates = p.source_route_candidates;
     m_source_route_policy = p.source_route_policy;
+    m_source_route_mesh_routing = p.source_route_mesh_routing;
+    m_source_route_mesh_link_latency = p.source_route_mesh_link_latency;
     m_source_route_reservation_weight = p.source_route_reservation_weight;
     m_source_route_vc_weight = p.source_route_vc_weight;
     m_source_route_info_mode = p.source_route_info_mode;
@@ -100,15 +104,26 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     m_source_route_info_bits = p.source_route_info_bits;
     m_source_route_admission_fraction = p.source_route_admission_fraction;
     m_reservation_current.assign(2 * m_express_link_latencies.size(), 0);
+    const size_t configured_router_count =
+        static_cast<size_t>(p.num_rows) * p.num_rows;
+    m_directed_link_reservations.assign(
+        configured_router_count * configured_router_count, 0);
+    m_deadlock_state_dumped = false;
     m_express_escape_timeout = p.express_escape_timeout;
     m_express_escape_enabled = p.express_escape_enabled;
     m_next_packet_id = 0;
 
     fatal_if(m_source_route_policy != 0 && m_source_route_policy != 3 &&
-             m_source_route_policy != 4,
+             m_source_route_policy != 4 && m_source_route_policy != 5 &&
+             m_source_route_policy != 6,
              "source-route policy %u is invalid; supported policies are "
-             "0 (static), 3 (random top-K), and 4 (q/r pressure-aware)",
+             "0 (static), 3 (random top-K), 4 (q/r pressure-aware), "
+             "5 (express Dijkstra), and 6 (global Dijkstra)",
              m_source_route_policy);
+    fatal_if(m_source_route_mesh_routing != "xy" &&
+             m_source_route_mesh_routing != "adaptive",
+             "source-route mesh routing %s is invalid",
+             m_source_route_mesh_routing.c_str());
     fatal_if(m_source_route_candidates == 0,
              "source-route candidate count K must be positive");
     fatal_if(m_source_route_reservation_weight < 0.0 ||
@@ -424,6 +439,93 @@ GarnetNetwork::admitExpressRoute(int source, int destination) const
     return sample < m_source_route_admission_fraction;
 }
 
+int
+GarnetNetwork::directedExpressId(int source, int destination) const
+{
+    for (size_t edge = 0; edge < m_express_link_latencies.size(); ++edge) {
+        const int first = m_express_link_endpoints[edge * 2];
+        const int second = m_express_link_endpoints[edge * 2 + 1];
+        if (source == first && destination == second)
+            return static_cast<int>(edge * 2);
+        if (source == second && destination == first)
+            return static_cast<int>(edge * 2 + 1);
+    }
+    return -1;
+}
+
+std::vector<uint16_t>
+GarnetNetwork::dynamicDijkstraRoute(
+    int source, int destination, int vnet, bool all_link_pressure) const
+{
+    const int router_count = m_routers.size();
+    const double infinity = std::numeric_limits<double>::infinity();
+    std::vector<double> distance(router_count, infinity);
+    std::vector<int> previous(router_count, -1);
+    using Item = std::pair<double, int>;
+    std::priority_queue<Item, std::vector<Item>, std::greater<Item>> ready;
+    distance[source] = 0.0;
+    ready.push({0.0, source});
+
+    auto relax = [&](int node, int next, uint32_t static_latency,
+                     auto &queue) {
+        const int express_id = directedExpressId(node, next);
+        double weight = static_latency;
+        if (express_id >= 0 || all_link_pressure) {
+            const int64_t reserved = all_link_pressure ?
+                m_directed_link_reservations[
+                    static_cast<size_t>(node) * router_count + next] :
+                m_reservation_current[express_id];
+            weight += m_source_route_reservation_weight *
+                std::max<int64_t>(reserved, 0);
+            weight += m_source_route_vc_weight *
+                m_routers[node]->outputVcOccupancyTo(next, vnet);
+        }
+        const double candidate = distance[node] + weight;
+        if (candidate < distance[next]) {
+            distance[next] = candidate;
+            previous[next] = node;
+            queue.push({candidate, next});
+        }
+    };
+
+    while (!ready.empty()) {
+        const auto [cost, node] = ready.top();
+        ready.pop();
+        if (cost != distance[node])
+            continue;
+        if (node == destination)
+            break;
+        const int x = node % m_num_cols;
+        const int y = node / m_num_cols;
+        if (x > 0)
+            relax(node, node - 1, m_source_route_mesh_link_latency, ready);
+        if (x + 1 < m_num_cols)
+            relax(node, node + 1, m_source_route_mesh_link_latency, ready);
+        if (y > 0)
+            relax(node, node - m_num_cols,
+                  m_source_route_mesh_link_latency, ready);
+        if (y + 1 < m_num_rows)
+            relax(node, node + m_num_cols,
+                  m_source_route_mesh_link_latency, ready);
+        for (size_t edge = 0; edge < m_express_link_latencies.size(); ++edge) {
+            const int first = m_express_link_endpoints[edge * 2];
+            const int second = m_express_link_endpoints[edge * 2 + 1];
+            if (node == first)
+                relax(node, second, m_express_link_latencies[edge], ready);
+            else if (node == second)
+                relax(node, first, m_express_link_latencies[edge], ready);
+        }
+    }
+    fatal_if(previous[destination] < 0,
+             "dynamic Dijkstra could not route %d to %d", source,
+             destination);
+    std::vector<uint16_t> reversed;
+    for (int node = destination; node != source; node = previous[node])
+        reversed.push_back(static_cast<uint16_t>(node));
+    std::reverse(reversed.begin(), reversed.end());
+    return reversed;
+}
+
 void
 GarnetNetwork::initializeSourceRoute(RouteInfo &route)
 {
@@ -456,7 +558,27 @@ GarnetNetwork::initializeSourceRoute(RouteInfo &route)
              "source-route table has invalid dimensions");
 
     uint32_t count = m_source_route_express_counts[pair_index];
-    if (m_source_route_policy != 0) {
+    if (m_source_route_policy == 5 || m_source_route_policy == 6) {
+        route.dynamic_route_routers = dynamicDijkstraRoute(
+            route.src_router, route.dest_router, route.vnet,
+            m_source_route_policy == 6);
+        route.dynamic_route_stage = 0;
+        route.express_ids.clear();
+        int current = route.src_router;
+        for (const uint16_t next : route.dynamic_route_routers) {
+            const int express_id = directedExpressId(current, next);
+            if (express_id >= 0)
+                route.express_ids.push_back(express_id);
+            if (m_source_route_policy == 6) {
+                ++m_directed_link_reservations[
+                    static_cast<size_t>(current) * router_count + next];
+            }
+            current = next;
+        }
+        count = route.express_ids.size();
+    }
+    if (m_source_route_policy != 0 && m_source_route_policy != 5 &&
+        m_source_route_policy != 6) {
         const size_t pair_count = static_cast<size_t>(router_count) *
             router_count;
         fatal_if(m_source_route_candidate_counts.size() != pair_count ||
@@ -513,7 +635,8 @@ GarnetNetwork::initializeSourceRoute(RouteInfo &route)
             }
         }
     }
-    fatal_if(count > 2, "source-route express count %u exceeds limit", count);
+    fatal_if(count > std::numeric_limits<uint8_t>::max(),
+             "source-route express count %u exceeds metadata limit", count);
     route.source_routed = true;
     route.express_count = count;
     route.express_stage = 0;
@@ -547,6 +670,68 @@ GarnetNetwork::reserveSourceRoute(const RouteInfo &route)
         ++m_reservation_current[id];
         m_express_reservation_increments[id]++;
     }
+}
+
+void
+GarnetNetwork::releaseDynamicRoute(
+    const RouteInfo &route, uint16_t begin_stage, int current_router,
+    bool cancellation)
+{
+    if (m_source_route_policy != 6 || route.dynamic_route_routers.empty())
+        return;
+    const int router_count = m_routers.size();
+    int current = current_router;
+    const uint16_t end = cancellation ? route.dynamic_route_routers.size() :
+                                        begin_stage + 1;
+    fatal_if(begin_stage >= route.dynamic_route_routers.size() ||
+             end > route.dynamic_route_routers.size(),
+             "invalid dynamic-route release stage %u/%zu", begin_stage,
+             route.dynamic_route_routers.size());
+    for (uint16_t stage = begin_stage; stage < end; ++stage) {
+        const int next = route.dynamic_route_routers[stage];
+        const size_t key = static_cast<size_t>(current) * router_count + next;
+        fatal_if(key >= m_directed_link_reservations.size() ||
+                 m_directed_link_reservations[key] <= 0,
+                 "dynamic-route reservation underflow on %d->%d", current,
+                 next);
+        --m_directed_link_reservations[key];
+        current = next;
+    }
+}
+
+void
+GarnetNetwork::dumpDeadlockState(std::ostream &out)
+{
+    if (m_deadlock_state_dumped)
+        return;
+    m_deadlock_state_dumped = true;
+    out << "EXPRESS_DEADLOCK_STATE_BEGIN tick=" << curTick() << "\n";
+    for (Router *router : m_routers) {
+        for (int inport = 0; inport < router->get_num_inports(); ++inport) {
+            InputUnit *input = router->getInputUnit(inport);
+            for (uint32_t vc = 0; vc < router->get_num_vcs(); ++vc) {
+                if (!input->isReady(vc, curTick()))
+                    continue;
+                flit *head = input->peekTopFlit(vc);
+                const RouteInfo route = head->get_route();
+                const int outport = input->get_outport(vc);
+                out << "EXPRESS_DEADLOCK_VC router=" << router->get_id()
+                    << " inport=" << inport
+                    << " in_dir=" << input->get_direction()
+                    << " vc=" << vc << " outport=" << outport
+                    << " out_dir=";
+                if (outport >= 0)
+                    out << router->getOutportDirection(outport);
+                else
+                    out << "Unassigned";
+                out << " outvc=" << input->get_outvc(vc)
+                    << " src=" << route.src_router
+                    << " dest=" << route.dest_router
+                    << " escape=" << route.escape_vc << "\n";
+            }
+        }
+    }
+    out << "EXPRESS_DEADLOCK_STATE_END\n";
 }
 
 int

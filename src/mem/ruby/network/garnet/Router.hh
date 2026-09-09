@@ -122,6 +122,7 @@ class Router : public BasicRouter, public Consumer
 
     std::string getPortDirectionName(PortDirection direction);
     double expressOutputVcOccupancy(int destination, int vnet);
+    double outputVcOccupancyTo(int destination, int vnet);
     void printFaultVector(std::ostream& out);
     void printAggregateFaultProbability(std::ostream& out);
 

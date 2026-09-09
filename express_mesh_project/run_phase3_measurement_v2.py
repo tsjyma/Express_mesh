@@ -24,7 +24,7 @@ TOPOLOGIES = {
     "tornado_aspl": "tornado_aspl.json",
 }
 TRAFFICS = ("uniform_random", "cutstress", "cutstress_bidirectional",
-            "hotspot", "bit_complement", "tornado")
+            "hotspot", "bit_complement", "tornado", "soc_heterogeneous")
 ROUTINGS = ("committed",)
 
 # Garnet runs at the default 2 GHz Ruby clock while gem5 ticks are 1 ps.
@@ -109,18 +109,29 @@ def run_tag(spec, source_route=False, source_route_policy=0, no_escape=False,
             source_route_candidates=8, router_latency=1,
             mesh_link_latency=1, vcs_per_vnet=4,
             buffers_per_data_vc=4, buffers_per_ctrl_vc=1,
-            inj_vnet=0, escape_timeout=32):
+            inj_vnet=0, escape_timeout=32, source_mesh_routing="xy",
+            retain_mesh_candidate=False, packet_flits=1, drain_cycles=0):
     topology, routing, traffic, rate, seed = spec
     mode = "_source_route" if source_route else ""
     if source_route and source_route_policy:
         mode += {3: "_random_candidate",
-                 4: "_pressure"}[source_route_policy]
+                 4: "_pressure",
+                 5: "_express_dijkstra",
+                 6: "_global_dijkstra"}[source_route_policy]
     if no_escape:
         mode += "_no_escape"
     if dimension != 8:
         mode += f"_n{dimension}"
     if source_route_candidates != 8:
         mode += f"_k{source_route_candidates}"
+    if source_mesh_routing != "xy":
+        mode += f"_mesh{source_mesh_routing}"
+    if retain_mesh_candidate:
+        mode += "_keepmesh"
+    if packet_flits != 1:
+        mode += f"_pf{packet_flits}"
+    if drain_cycles:
+        mode += f"_drain{drain_cycles}"
     hardware = (
         router_latency, mesh_link_latency, vcs_per_vnet,
         buffers_per_data_vc, buffers_per_ctrl_vc, inj_vnet, escape_timeout,
@@ -153,12 +164,12 @@ def configurable_suffix(
 
 
 def stat_values(text, name):
-    match = re.search(rf"^{re.escape(name)}\s+(.+?)\s+#?\s*\(", text, re.M)
-    if not match:
-        match = re.search(rf"^{re.escape(name)}\s+(.+)$", text, re.M)
+    match = re.search(rf"^{re.escape(name)}\s+(.+)$", text, re.M)
     if not match:
         raise ValueError(f"missing statistic {name}")
-    return [float(value) for value in match.group(1).replace("|", " ").split()]
+    payload = match.group(1).split("#", 1)[0]
+    payload = payload.rsplit("(", 1)[0]
+    return [float(value) for value in payload.replace("|", " ").split()]
 
 
 def stat_scalar_or_zero(text, name):
@@ -199,13 +210,19 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
             source_route_candidates=8, router_latency=1,
             mesh_link_latency=1, vcs_per_vnet=4,
             buffers_per_data_vc=4, buffers_per_ctrl_vc=1,
-            inj_vnet=0, escape_timeout=32):
+            inj_vnet=0, escape_timeout=32, source_mesh_routing="xy",
+            retain_mesh_candidate=False, packet_flits=1,
+            drain_cycles=0, route_cache_dir=None):
+    if packet_flits < 1 or 64 % packet_flits:
+        raise ValueError("packet_flits must be a positive divisor of 64")
     topology, routing, traffic, rate, seed = spec
     tag = run_tag(spec, source_route, source_route_policy, no_escape,
                   random_placement_seed, dimension,
                   source_route_candidates, router_latency,
                   mesh_link_latency, vcs_per_vnet, buffers_per_data_vc,
-                  buffers_per_ctrl_vc, inj_vnet, escape_timeout)
+                  buffers_per_ctrl_vc, inj_vnet, escape_timeout,
+                  source_mesh_routing, retain_mesh_candidate, packet_flits,
+                  drain_cycles)
     tag += configurable_suffix(
         reservation_weight, vc_pressure_weight, express_budget,
         express_max_degree, express_min_wire_length, express_info_mode,
@@ -235,18 +252,21 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         "--routing-algorithm=2", f"--router-latency={router_latency}",
         f"--link-latency={mesh_link_latency}",
         f"--vcs-per-vnet={vcs_per_vnet}",
+        f"--link-width-bits={128 if packet_flits == 1 else 64 // packet_flits}",
         f"--buffers-per-data-vc={buffers_per_data_vc}",
         f"--buffers-per-ctrl-vc={buffers_per_ctrl_vc}",
         f"--inj-vnet={inj_vnet}",
         f"--garnet-deadlock-threshold={deadlock_threshold}",
         f"--warmup-cycles={warmup_cycles}",
         f"--measurement-cycles={measurement_cycles}",
+        f"--drain-cycles={drain_cycles}",
         f"--synthetic={traffic}", f"--injectionrate={rate}",
         f"--traffic-seed={seed}", f"--express-links-file={topology_file}",
         f"--express-budget={express_budget}",
         f"--express-max-degree={express_max_degree}",
         f"--express-min-wire-length={express_min_wire_length}",
         f"--express-source-route-candidates={source_route_candidates}",
+        f"--express-source-mesh-routing={source_mesh_routing}",
         f"--express-escape-timeout={escape_timeout}",
         f"--express-reservation-weight={reservation_weight}",
         f"--express-vc-pressure-weight={vc_pressure_weight}",
@@ -262,6 +282,15 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         command.extend(["--express-source-route-policy", str(source_route_policy)])
     if no_escape:
         command.append("--express-no-escape")
+    if retain_mesh_candidate:
+        command.append("--express-retain-mesh-candidate")
+    if route_cache_dir is not None:
+        command.append(f"--express-route-cache-dir={Path(route_cache_dir).resolve()}")
+    if drain_cycles:
+        # Tester and Ruby clocks are 1 GHz and 2 GHz respectively.
+        command.append(
+            f"--injection-stop-cycles={(warmup_cycles + measurement_cycles) // 2}"
+        )
     with (outdir / "run.log").open("w", encoding="utf-8") as log:
         env = os.environ.copy()
         python_lib = sysconfig.get_config_var("LIBDIR")
@@ -277,6 +306,20 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
     end_tick = int(tick_matches[-1]) if tick_matches else None
     deadlock_match = re.search(r"Possible network deadlock .*? at time: (\d+)", run_log)
     deadlock_tick = int(deadlock_match.group(1)) if deadlock_match else None
+    deadlock_vcs = []
+    for match in re.finditer(
+        r"^EXPRESS_DEADLOCK_VC router=(\d+) inport=(\d+) "
+        r"in_dir=(\S+) vc=(\d+) outport=(-?\d+) out_dir=(\S+) "
+        r"outvc=(-?\d+) src=(-?\d+) dest=(-?\d+) escape=(\d+)$",
+        run_log, re.M,
+    ):
+        values = [int(value) if index not in (2, 5) else value
+                  for index, value in enumerate(match.groups())]
+        deadlock_vcs.append(dict(zip(
+            ("router", "inport", "in_direction", "vc", "outport",
+             "out_direction", "outvc", "source", "destination", "escape"),
+            values,
+        )))
     termination_reason = ("deadlock_panic" if deadlock_match else
                           "simulate_limit" if end_tick is not None else
                           "nonzero_exit" if result.returncode else "completed")
@@ -352,9 +395,14 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
                                if no_progress and end_tick is not None else None),
         "simulation_end_tick": end_tick,
         "termination_reason": termination_reason,
+        "deadlock_vcs": deadlock_vcs,
         "topology": topology, "random_placement_seed": random_placement_seed,
         "dimension": dimension,
         "source_route_candidates": source_route_candidates,
+        "source_mesh_routing": source_mesh_routing,
+        "retain_mesh_candidate": retain_mesh_candidate,
+        "packet_flits": packet_flits,
+        "drain_cycles": drain_cycles,
         "router_latency": router_latency,
         "mesh_link_latency": mesh_link_latency,
         "vcs_per_vnet": vcs_per_vnet,
@@ -465,6 +513,7 @@ def run_one(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
         "p95_link_utilization": ordered[int(0.95 * (len(ordered) - 1))],
         "link_utilization_cv": variance ** 0.5 / mean if mean else 0.0,
         "run_dir": str(outdir),
+        "host_seconds": stat_scalar_or_zero(stats, "hostSeconds"),
     }
     row.update(mapping_stats)
     if (traffic in {"bit_complement", "tornado", "cutstress",
@@ -493,13 +542,17 @@ def cached_result(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
                   source_route_candidates=8, router_latency=1,
                   mesh_link_latency=1, vcs_per_vnet=4,
                   buffers_per_data_vc=4, buffers_per_ctrl_vc=1,
-                  inj_vnet=0, escape_timeout=32):
+                  inj_vnet=0, escape_timeout=32,
+                  source_mesh_routing="xy", retain_mesh_candidate=False,
+                  packet_flits=1, drain_cycles=0, route_cache_dir=None):
     topology, routing, traffic, rate, seed = spec
     tag = run_tag(spec, source_route, source_route_policy, no_escape,
                   random_placement_seed, dimension,
                   source_route_candidates, router_latency,
                   mesh_link_latency, vcs_per_vnet, buffers_per_data_vc,
-                  buffers_per_ctrl_vc, inj_vnet, escape_timeout)
+                  buffers_per_ctrl_vc, inj_vnet, escape_timeout,
+                  source_mesh_routing, retain_mesh_candidate, packet_flits,
+                  drain_cycles)
     tag += configurable_suffix(
         reservation_weight, vc_pressure_weight, express_budget,
         express_max_degree, express_min_wire_length, express_info_mode,
@@ -530,6 +583,10 @@ def cached_result(spec, warmup_cycles, measurement_cycles, deadlock_threshold,
             row.get("buffers_per_ctrl_vc", 1) != buffers_per_ctrl_vc or
             row.get("inj_vnet", 0) != inj_vnet or
             row.get("escape_timeout", 32) != escape_timeout or
+            row.get("source_mesh_routing", "xy") != source_mesh_routing or
+            row.get("retain_mesh_candidate", False) != retain_mesh_candidate or
+            row.get("packet_flits", 1) != packet_flits or
+            row.get("drain_cycles", 0) != drain_cycles or
             row.get("random_placement_seed", 1) != random_placement_seed or
             row.get("topology_file") != str(topology_file) or
             row.get("reservation_weight", 0.5) != reservation_weight or
@@ -577,11 +634,15 @@ def main():
         help="commit one selected top-K route at injection (required)",
     )
     parser.add_argument("--source-route-policy", type=int,
-                        choices=[0, 3, 4], default=4,
+                        choices=[0, 3, 4, 5, 6], default=4,
                         help=("0 static, 3 random top-K candidate, "
-                              "4 q/r pressure-aware"))
+                              "4 q/r pressure-aware, 5 express Dijkstra, "
+                              "6 global-pressure Dijkstra"))
     parser.add_argument("--source-route-candidates", type=int, default=8,
                         help="number K of source-route candidates per pair")
+    parser.add_argument("--source-mesh-routing", choices=["xy", "adaptive"],
+                        default="xy")
+    parser.add_argument("--retain-mesh-candidate", action="store_true")
     parser.add_argument("--no-escape", action="store_true",
                         help="use all four VCs as adaptive VCs")
     parser.add_argument("--random-placement-seed", type=int, default=1,
@@ -621,6 +682,9 @@ def main():
     parser.add_argument("--inj-vnet", type=int, choices=[0, 1, 2], default=0,
                         help="vnet 0/1 uses one-flit packets; vnet 2 uses five")
     parser.add_argument("--escape-timeout", type=int, default=32)
+    parser.add_argument("--packet-flits", type=int, default=1)
+    parser.add_argument("--drain-cycles", type=int, default=0)
+    parser.add_argument("--route-cache-dir", type=Path)
     args = parser.parse_args()
     if args.dimension <= 1:
         parser.error("--dimension must be greater than one")
@@ -653,7 +717,9 @@ def main():
             args.source_route_candidates, args.router_latency,
             args.mesh_link_latency, args.vcs_per_vnet,
             args.buffers_per_data_vc, args.buffers_per_ctrl_vc,
-            args.inj_vnet, args.escape_timeout) if args.resume else None
+            args.inj_vnet, args.escape_timeout, args.source_mesh_routing,
+            args.retain_mesh_candidate, args.packet_flits,
+            args.drain_cycles, args.route_cache_dir) if args.resume else None
         if cached is None:
             pending.append(spec)
         else:
@@ -676,7 +742,9 @@ def main():
             args.source_route_candidates, args.router_latency,
             args.mesh_link_latency, args.vcs_per_vnet,
             args.buffers_per_data_vc, args.buffers_per_ctrl_vc,
-            args.inj_vnet, args.escape_timeout): spec for spec in pending}
+            args.inj_vnet, args.escape_timeout, args.source_mesh_routing,
+            args.retain_mesh_candidate, args.packet_flits,
+            args.drain_cycles, args.route_cache_dir): spec for spec in pending}
         for index, future in enumerate(as_completed(futures), 1):
             spec = futures[future]
             try:

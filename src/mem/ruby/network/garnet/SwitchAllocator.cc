@@ -206,6 +206,9 @@ SwitchAllocator::arbitrate_outports()
                     const PortDirection direction = output_unit->get_direction();
                     if (direction.compare(0, 9, "ExpressTo") == 0) {
                         m_router->get_net_ptr()->incrementExpressLinkTraversal();
+                    }
+                    if (!t_flit->get_route().dynamic_route_routers.empty() ||
+                        direction.compare(0, 9, "ExpressTo") == 0) {
                         input_unit->advanceSourceRouteStage(invc);
                     }
                     if (t_flit->get_route().escape_vc)

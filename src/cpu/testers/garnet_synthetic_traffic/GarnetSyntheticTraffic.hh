@@ -54,6 +54,7 @@ enum TrafficType {BIT_COMPLEMENT_ = 0,
                   CUTSTRESS_ = 8,
                   CUTSTRESS_BIDIRECTIONAL_ = 9,
                   HOTSPOT_ = 10,
+                  SOC_HETEROGENEOUS_ = 11,
                   NUM_TRAFFIC_PATTERNS_};
 
 class Packet;
@@ -124,6 +125,7 @@ class GarnetSyntheticTraffic : public ClockedObject
     int numDestinations;
     Tick simCycles;
     int numPacketsMax;
+    int64_t injectionStopCycles;
     int numPacketsSent;
     int singleSender;
     int singleDest;
