@@ -69,8 +69,11 @@ scp ubuntu@REMOTE_HOST:~/Express_mesh/express_mesh_project/results/\
 garnet_full_paper_suite/garnet_full_paper_results.tar.gz .
 ```
 
-The current plan contains 9,640 logical samples, deduplicated to 9,240 Garnet
-executions; 380 existing Table-3--5 runs are imported, leaving 8,860 new runs.
+The current five-layout 16×16 plan contains 9,610 logical samples,
+deduplicated to 9,242 Garnet executions; 380 existing Table-3--5 runs are
+imported, leaving 8,862 new runs. The initial downloaded archive used ten
+16×16 Random layouts; its outstanding watchdog cases are handled separately
+by [the supplement runner](GARNET_WATCHDOG_SUPPLEMENT.md).
 Using the local calibration gives about 164 CPU-hours, or an optimistic 41
 hours at perfect four-way utilization. Allow roughly 2--3 days on the stated
 VM for 16x16 initialization, virtualization variance, result serialization,

@@ -20,6 +20,7 @@ import csv
 from functools import lru_cache
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -79,8 +80,21 @@ def topology_behavior(path: Path) -> dict:
     }
 
 
-def materialize_topology(path: Path, output: Path) -> tuple[Path, str]:
-    behavior = topology_behavior(path)
+def materialize_topology(path: Path, output: Path, options: dict) -> tuple[Path, str]:
+    # The standalone runner can override express latency at run time, whereas
+    # Garnet reads each express edge's latency from the topology JSON.  Bake a
+    # requested length-aware model into the compact Garnet input so scaling
+    # Random placements receive the same treatment as Greedy and SA inputs.
+    behavior = json.loads(json.dumps(topology_behavior(path)))
+    if options.get("express_latency_mode") == "length-aware":
+        wire_per_cycle = int(options.get("express_wire_per_cycle", 4))
+        if wire_per_cycle <= 0:
+            raise ValueError("express_wire_per_cycle must be positive")
+        behavior["latency_model"] = "length-aware"
+        for edge in behavior["express_links"]:
+            edge["latency"] = max(
+                1, math.ceil(int(edge["wire_length"]) / wire_per_cycle)
+            )
     encoded = json.dumps(behavior, sort_keys=True,
                          separators=(",", ":")).encode()
     digest = hashlib.sha256(encoded).hexdigest()
@@ -167,9 +181,12 @@ def build_executions(cases: Iterable[suite.Case], sections: set[str],
         if case.section not in sections:
             continue
         original = Path(case.topology_file).resolve()
-        topology, behavior_hash = materialize_topology(original, output)
+        options = runtime_options(case)
+        topology, behavior_hash = materialize_topology(
+            original, output, options
+        )
         execution = Execution(case, topology, behavior_hash,
-                              runtime_options(case))
+                              options)
         use = {
             "section": case.section,
             "topology_label": case.topology_label,
@@ -406,7 +423,8 @@ def aggregate_rows(rows: list[dict]) -> list[dict]:
         ) / len(samples)
         for metric in metrics:
             values = [float(row[metric]) for row in samples
-                      if row.get(metric) is not None]
+                      if row.get("termination_reason") == "simulate_limit"
+                      and row.get(metric) is not None]
             if values:
                 record[metric + "_mean"] = statistics.fmean(values)
                 record[metric + "_sd"] = (statistics.stdev(values)
@@ -505,6 +523,11 @@ def main() -> None:
     parser.add_argument("--plan-only", action="store_true")
     parser.add_argument("--max-executions", type=int,
                         help="debug/smoke-test limit; omit for paper data")
+    parser.add_argument(
+        "--case-label-regex",
+        help=("run only logical cases whose topology label fully matches this "
+              "regular expression; useful for targeted correction runs"),
+    )
     parser.add_argument("--seconds-per-8x8-run", type=float,
                         default=DEFAULT_SECONDS_8X8)
     args = parser.parse_args()
@@ -519,6 +542,13 @@ def main() -> None:
     catalog = suite.topology_catalog(output)
     executions = build_executions(all_cases(catalog, output),
                                   set(args.sections), output)
+    if args.case_label_regex:
+        pattern = re.compile(args.case_label_regex)
+        executions = [
+            execution for execution in executions
+            if any(pattern.fullmatch(use["topology_label"])
+                   for use in execution.uses)
+        ]
 
     if not args.skip_build and not args.plan_only:
         build_garnet(args.build_jobs)

@@ -570,7 +570,9 @@ def scaling_cases(output: Path) -> list[Case]:
                         str(topology), traffic, rate, seed,
                         overrides=params,
                     ))
-            for topology_seed in range(1, 11):
+            # Scaling uses five independent Random layouts per 16x16 row;
+            # main/cross 8x8 comparisons retain their ten-layout baseline.
+            for topology_seed in range(1, 6):
                 topology = corrected / f"random_p{topology_seed}.json"
                 for seed in (5, 6):
                     params = dict(overrides)
