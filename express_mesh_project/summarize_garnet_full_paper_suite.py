@@ -2,16 +2,16 @@
 """Compare the full Garnet paper suite with standalone and draw arXiv assets.
 
 The script treats a Garnet ``deadlock_panic`` as a censored run, never as a
-zero-throughput observation.  Targeted correction runs can replace matching
-logical rows from the downloaded archive.  The downloaded 16-by-16
-length-aware Random row is explicitly invalidated because its topology JSON
-still encoded unit-latency express links.
+zero-throughput observation. Targeted correction and watchdog-supplement runs
+replace matching logical rows from the downloaded archive. The downloaded 16-by-16
+length-aware Random inputs are invalidated unless replaced by corrected
+supplemental runs, because their topology JSON encoded unit-latency links.
 """
 
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict
+from collections import Counter, defaultdict
 import json
 import math
 from pathlib import Path
@@ -41,9 +41,11 @@ DEFAULT_STANDALONE = (PROJECT / "results" / "20260831" /
                       "standalone_suite" / "results.json")
 DEFAULT_CORRECTION = (PROJECT / "results" / "20260914" /
                       "garnet_length_aware_random_correction_row6")
+DEFAULT_SUPPLEMENT = (PROJECT / "results" / "20260915" /
+                      "garnet_watchdog_supplement_downloaded")
 DEFAULT_OUTPUT = PROJECT / "report" / "arxiv_assets"
 DEFAULT_REPORT = (PROJECT / "docs" /
-                  "GARNET_FULL_PAPER_COMPARISON_20260914_ZH.md")
+                  "GARNET_FULL_PAPER_COMPARISON_20260915_ZH.md")
 
 COLORS = {"mesh": "#4c78a8", "random": "#9c9c9c",
           "greedy": "#f58518", "sa": "#54a24b"}
@@ -81,29 +83,61 @@ def completed(frame: pd.DataFrame, *, standalone: bool = False) -> pd.Series:
     return reason.eq("simulate_limit")
 
 
+def replace_matching(base: pd.DataFrame, replacement: pd.DataFrame) -> pd.DataFrame:
+    keys = set(tuple(row) for row in replacement[SEMANTIC_KEY].itertuples(
+        index=False, name=None))
+    keep = [tuple(row) not in keys for row in base[SEMANTIC_KEY].itertuples(
+        index=False, name=None)]
+    return pd.concat([base.loc[keep], replacement], ignore_index=True,
+                     sort=False)
+
+
 def load_inputs(garnet_dir: Path, standalone_path: Path,
-                correction_dir: Path | None) -> tuple[pd.DataFrame, pd.DataFrame]:
+                correction_dir: Path | None,
+                supplement_dir: Path | None = None
+                ) -> tuple[pd.DataFrame, pd.DataFrame]:
     garnet = load_json_frame(garnet_dir / "results.json")
+    garnet["result_source"] = "original"
+    garnet["supplemented"] = False
     garnet["corrected_after_download"] = False
     if correction_dir is not None and (correction_dir / "results.json").exists():
         correction = load_json_frame(correction_dir / "results.json")
         if correction.empty:
             raise RuntimeError("length-aware correction file is empty")
+        correction["result_source"] = "length_correction"
+        correction["supplemented"] = False
         correction["corrected_after_download"] = True
-        keys = set(tuple(row) for row in correction[SEMANTIC_KEY].itertuples(
-            index=False, name=None))
-        keep = [tuple(row) not in keys for row in garnet[SEMANTIC_KEY].itertuples(
-            index=False, name=None)]
-        garnet = pd.concat([garnet.loc[keep], correction], ignore_index=True,
-                           sort=False)
+        garnet = replace_matching(garnet, correction)
+    garnet["original_complete_50k"] = completed(garnet)
+    garnet["original_deadlock_vcs"] = garnet["deadlock_vcs"]
+    garnet["original_termination_reason"] = garnet["termination_reason"]
+    garnet["original_no_progress_cycle"] = garnet["no_progress_cycle"]
+    if supplement_dir is not None and (supplement_dir / "results.json").exists():
+        supplement = load_json_frame(supplement_dir / "results.json")
+        if supplement.empty:
+            raise RuntimeError("watchdog supplement file is empty")
+        original_status = garnet[
+            SEMANTIC_KEY + [
+                "original_complete_50k", "original_deadlock_vcs",
+                "original_termination_reason", "original_no_progress_cycle",
+            ]
+        ].drop_duplicates(SEMANTIC_KEY)
+        supplement = supplement.merge(
+            original_status, on=SEMANTIC_KEY, how="left", validate="one_to_one")
+        if supplement.original_complete_50k.isna().any():
+            raise RuntimeError("supplement contains unmatched logical rows")
+        supplement["result_source"] = "watchdog_supplement"
+        supplement["supplemented"] = True
+        supplement["corrected_after_download"] = False
+        garnet = replace_matching(garnet, supplement)
     standalone = load_json_frame(standalone_path)
     # Row 4 Random in the downloaded suite accidentally reused the unit-latency
-    # JSON from row 3.  Exclude all twenty logical samples, including watchdog
-    # terminations, rather than reporting a selectively completed wrong config.
+    # JSON from row 3. Exclude only unreplaced original rows; the supplement
+    # materializes the requested latency and replaces the fixed p1--p5 cohort.
     invalid_length_random = (
         garnet.section.eq("scaling") &
         garnet.topology_label.str.startswith("row4:random") &
-        ~garnet.corrected_after_download
+        garnet.result_source.eq("original")
     )
     garnet["invalid_config"] = invalid_length_random
     garnet["complete"] = completed(garnet) & ~invalid_length_random
@@ -368,22 +402,16 @@ def plot_escape(garnet: pd.DataFrame, output: Path) -> None:
     for label, color in zip(order, palette):
         item = data[data.topology_label.eq(label)].sort_values(
             "configured_injection_rate")
-        fraction = item.completed / item.samples
         axes[0].plot(item.configured_injection_rate, item.throughput,
                      marker="o", ms=3, color=color,
                      label=label.replace("on_t", "$T_{esc}=$"))
-        incomplete = item[fraction < 1]
-        if not incomplete.empty:
-            axes[0].scatter(incomplete.configured_injection_rate,
-                            incomplete.throughput, s=27, facecolors="none",
-                            edgecolors=color, linewidths=1.1, zorder=4)
-        axes[1].plot(item.configured_injection_rate, fraction,
+        axes[1].plot(item.configured_injection_rate, item.latency,
                      marker="o", ms=3, color=color,
                      label=label.replace("on_t", "$T_{esc}=$"))
     axes[0].set(xlabel="Configured injection rate",
-                ylabel="Accepted throughput\n(completed runs only)")
+                ylabel="Accepted throughput")
     axes[1].set(xlabel="Configured injection rate",
-                ylabel="Completion fraction", ylim=(-.03, 1.04))
+                ylabel="Latency (cycles)")
     axes[0].legend(fontsize=7, ncol=2)
     for axis in axes:
         axis.grid(alpha=.22)
@@ -424,15 +452,84 @@ def garnet_wait_cycle(row: pd.Series) -> list[dict]:
 
 
 def plot_deadlock_cycle(garnet: pd.DataFrame, output: Path) -> int:
-    row = garnet[
-        garnet.section.eq("escape_deadlock_contrast") &
-        garnet.topology_label.eq("off") & garnet.seed.eq(1)
-    ].iloc[0]
+    candidates = garnet[
+        (
+            garnet.section.eq("escape_off")
+            & garnet.traffic.eq("uniform_random")
+            & garnet.topology_label.eq("off")
+            & np.isclose(garnet.configured_injection_rate, .8)
+            & garnet.seed.eq(10)
+        )
+    ]
+    if len(candidates) != 1:
+        raise RuntimeError("expected one four-VC escape-off deadlock sample")
+    row = candidates.iloc[0].copy()
+    dump = row.get("original_deadlock_vcs", row.deadlock_vcs)
+    if not isinstance(dump, list) or not dump:
+        raise RuntimeError("four-VC escape-off sample has no original VC dump")
+    row["deadlock_vcs"] = dump
     cycle = garnet_wait_cycle(row)
+    occupied_by_input = defaultdict(list)
+    for vc in dump:
+        occupied_by_input[(int(vc["router"]), vc["in_direction"])].append(vc)
+    downstream_channels = []
+    for requestor in cycle:
+        target, input_direction = next_hop(
+            int(requestor["router"]), requestor["out_direction"],
+            int(row.dimension))
+        blockers = sorted(
+            occupied_by_input[(target, input_direction)],
+            key=lambda vc: int(vc["vc"]),
+        )
+        downstream_channels.append((target, input_direction, blockers))
+    cycle_inputs = {
+        (target, input_direction)
+        for target, input_direction, _blockers in downstream_channels
+    }
+    occupancies = Counter(
+        (int(vc["router"]), vc["in_direction"]) for vc in dump
+    )
+    if len(cycle_inputs) != len(cycle) or any(
+        occupancies[channel] != int(row.vcs_per_vnet)
+        for channel in cycle_inputs
+    ):
+        raise RuntimeError("deadlock cycle is not fully occupied on every VC")
+
+    row_by_input = {
+        (target, input_direction): number
+        for number, (target, input_direction, _blockers)
+        in enumerate(downstream_channels, 1)
+    }
+    component_vcs = [
+        vc for vc in dump
+        if (int(vc["router"]), vc["in_direction"]) in cycle_inputs
+    ]
+    if len(component_vcs) != len(cycle) * int(row.vcs_per_vnet):
+        raise RuntimeError("unexpected deadlock component size")
+    component_graph = nx.DiGraph()
+    component_graph.add_nodes_from(range(len(component_vcs)))
+    component_by_input = defaultdict(list)
+    for index, vc in enumerate(component_vcs):
+        component_by_input[
+            (int(vc["router"]), vc["in_direction"])
+        ].append(index)
+    for index, vc in enumerate(component_vcs):
+        target, input_direction = next_hop(
+            int(vc["router"]), vc["out_direction"], int(row.dimension))
+        requested = (target, input_direction)
+        if requested not in row_by_input:
+            raise RuntimeError("deadlock component has an external dependency")
+        component_graph.add_edges_from(
+            (index, blocker)
+            for blocker in component_by_input[requested]
+        )
+    if not nx.is_strongly_connected(component_graph):
+        raise RuntimeError("60-VC deadlock component is not strongly connected")
+
     n = int(row.dimension)
     fig, (axis, detail) = plt.subplots(
-        1, 2, figsize=(11.4, 6.6),
-        gridspec_kw={"width_ratios": [1.28, 1.0]},
+        1, 2, figsize=(13.2, 7.0),
+        gridspec_kw={"width_ratios": [1.06, 1.24]},
     )
     for value in range(n):
         axis.plot([0, n-1], [value, value], color="#e5e7eb",
@@ -445,7 +542,7 @@ def plot_deadlock_cycle(garnet: pd.DataFrame, output: Path) -> int:
         axis.scatter(x, y, s=330, facecolor="white", edgecolor="#111827",
                      linewidth=1.45, zorder=5)
         axis.text(x, y, f"R{router}", ha="center", va="center",
-                  fontsize=8.2, fontweight="bold", zorder=6)
+                  fontsize=9.0, fontweight="bold", zorder=6)
     for number, vc in enumerate(cycle, 1):
         router = int(vc["router"])
         target, _ = next_hop(router, vc["out_direction"], n)
@@ -470,20 +567,20 @@ def plot_deadlock_cycle(garnet: pd.DataFrame, output: Path) -> int:
         else:
             dx, dy = end[0]-start[0], end[1]-start[1]
             # Keep the label beside, rather than on top of, the arrowhead.
-            offset = .29 if number not in (4, 10, 13) else -.31
+            offset = .29
             mx += -dy*offset
             my += dx*offset
         axis.text(
-            mx, my, f"{number} · VC{int(vc['vc'])}", color=color,
-            fontsize=7.7, ha="center", va="center", zorder=7,
-            bbox={"boxstyle": "round,pad=.17", "facecolor": "white",
+            mx, my, f"{number}", color=color,
+            fontsize=9.0, fontweight="bold", ha="center", va="center", zorder=7,
+            bbox={"boxstyle": "round,pad=.20", "facecolor": "white",
                   "edgecolor": color, "alpha": .94, "linewidth": .8},
         )
     axis.plot([], [], color="#2563eb", linewidth=2.1,
               label="occupied mesh channel")
     axis.plot([], [], color="#dc2626", linewidth=3.0,
               label="occupied express channel")
-    axis.legend(loc="upper right", frameon=True, fontsize=8.5)
+    axis.legend(loc="upper right", frameon=True, fontsize=9.2)
     axis.set_xlim(-.7, n-.3)
     axis.set_ylim(n-.25, -.75)
     axis.set_aspect("equal")
@@ -494,35 +591,60 @@ def plot_deadlock_cycle(garnet: pd.DataFrame, output: Path) -> int:
     axis.tick_params(length=0, colors="#6b7280")
 
     detail.axis("off")
-    detail.text(0, .98, "Cycle entries from the Garnet VC dump",
-                fontsize=11.2, fontweight="bold", va="top")
-    y = .915
-    for number, vc in enumerate(cycle, 1):
-        router = int(vc["router"])
-        target, _ = next_hop(router, vc["out_direction"], n)
-        express = vc["out_direction"].startswith("ExpressTo")
-        color = "#dc2626" if express else "#2563eb"
-        kind = "EXPRESS" if express else "mesh"
-        # Separate fixed x positions make the 1--13 index and the start of the
-        # flit field align exactly.  Every entry is VC0 in this dump, so that
-        # redundant column is omitted.
-        detail.text(.055, y, f"{number}.", ha="right", fontsize=8.2,
-                    color=color, family="monospace", va="top")
-        detail.text(.075, y, f"R{router}→R{target}", fontsize=8.2,
-                    color=color, family="monospace", va="top")
-        detail.text(.315, y,
-                    f"flit {int(vc['source'])}→{int(vc['destination'])}",
-                    fontsize=8.2, color=color, family="monospace", va="top")
-        detail.text(.635, y, f"[{kind}]", fontsize=8.2, color=color,
-                    family="monospace", va="top")
-        y -= .054
+    detail.set_xlim(0, 1)
+    detail.set_ylim(0, 1)
+    detail.text(0, .985, "Closed 60-VC dependency component",
+                fontsize=12.2, fontweight="bold", va="top")
     detail.text(
-        0, y-.012,
-        "Entry i requests the channel drawn as arrow i; one of its\n"
-        "blocking downstream VCs is entry i+1.  Entry 13 closes\n"
-        "the cycle back to entry 1, and every eligible adaptive\n"
-        "output VC in each request is occupied.",
-        fontsize=9.0, color="#111827", va="top", linespacing=1.35,
+        0, .945,
+        "Each filled cell shows the resident flit's source→destination",
+        fontsize=8.8, color="#4b5563", va="top",
+    )
+    x_cells = (.34, .49, .64, .79)
+    for vc_index, x in enumerate(x_cells):
+        detail.text(x, .905, f"VC{vc_index}", fontsize=9.2,
+                    fontweight="bold", ha="center", va="center")
+    detail.text(.0, .905, "occupied channel",
+                fontsize=9.2, fontweight="bold", va="center")
+
+    row_height = .049
+    first_y = .862
+    cell_width = .132
+    cell_height = .039
+    for number, (requestor, downstream) in enumerate(
+            zip(cycle, downstream_channels), 1):
+        target, input_direction, blockers = downstream
+        router = int(requestor["router"])
+        express = requestor["out_direction"].startswith("ExpressTo")
+        color = "#dc2626" if express else "#2563eb"
+        facecolor = "#fee2e2" if express else "#dbeafe"
+        y = first_y - (number - 1) * row_height
+        detail.text(
+            0, y, f"{number:02d}  R{router}→R{target}",
+            fontsize=8.7, color=color, family="monospace",
+            fontweight="bold", va="center",
+        )
+        for x, blocker in zip(x_cells, blockers):
+            box = plt.Rectangle(
+                (x - cell_width / 2, y - cell_height / 2),
+                cell_width, cell_height,
+                transform=detail.transAxes,
+                facecolor=facecolor, edgecolor=color, linewidth=.85,
+            )
+            detail.add_patch(box)
+            detail.text(
+                x, y,
+                f"{int(blocker['source'])}→{int(blocker['destination'])}",
+                fontsize=7.5, family="monospace", ha="center", va="center",
+                color="#111827",
+            )
+        if len(blockers) != 4 or [int(vc["vc"]) for vc in blockers] != list(range(4)):
+            raise RuntimeError("deadlock channel does not contain VC0--VC3")
+
+    detail.text(
+        0, .075,
+        "All 60 cells are occupied; the numbered channels form a closed wait-for cycle.",
+        fontsize=9.0, color="#111827", va="top", linespacing=1.3,
         bbox={"boxstyle": "round,pad=.48", "facecolor": "#f9fafb",
               "edgecolor": "#9ca3af"},
     )
@@ -805,14 +927,15 @@ def make_report(garnet: pd.DataFrame, standalone: pd.DataFrame,
                      ["traffic","topology_class","configured_injection_rate"])
     scale = scaling.copy()
     lines = [
-        "# Garnet 全量论文实验与 standalone 对比（2026-09-14）", "",
+        "# Garnet 全量论文实验与 standalone 对比（2026-09-15）", "",
         "## 1. 数据完整性与统计口径", "",
-        ("下载包包含 **9240 个唯一 Garnet 执行 / 9640 个逻辑样本**；最终 "
-         "`failures.json` 为空。最初的 15 份 failure log 是重试前遗留文件，"
-         "不能解释成最终仍有 15 个缺失命令。"), "",
+        ("原下载包包含 **9240 个唯一 Garnet 执行 / 9640 个逻辑样本**；补跑包"
+         "对其中 161 个配置重新测量，补跑最终为 161/161 成功。两个包内残留的 "
+         "failure log 都是成功重试前的旧日志，最终 `failures.json` 均为空。"), "",
         ("下表中的“有效完成”首先要求 `termination_reason=simulate_limit`，并排除已经"
-         "确认参数错误的样本。`deadlock_panic` 是 Garnet watchdog 对长期无进展的中止，"
-         "统计时作为删失样本，不填成 throughput=0，也不混入 latency 均值。"), "",
+         "确认参数错误的样本。补跑的 200k no-progress 阈值长于完整 120k-cycle 运行，"
+         "因此它给出固定窗口数据，而不是稳态或 deadlock-free 证明。未补跑的 "
+         "`deadlock_panic` 仍按删失样本处理。"), "",
         "| section | 逻辑样本 | 有效完成 | watchdog/无效配置 |", "|---|---:|---:|---:|",
     ]
     for section, row in sections.iterrows():
@@ -840,13 +963,11 @@ def make_report(garnet: pd.DataFrame, standalone: pd.DataFrame,
                "Uniform、Tornado、BitComp、CutStress 四列均由 matched SA 严格取胜，"
                "Mixture 几何均值也由 Mixture SA 严格取胜。"), "",
               "## 3. 不符合预期或必须加注的结果", "",
-              "1. **Length-aware Random 生成错误（生成器已修复）。** 原下载包中 "
-              "`16x16-B256-L4` 的 20 个 Random 样本与理想 1-cycle 行完全重复，"
-              "`8x8-B64-L2` 的 Random 也仍是 latency=1。原因是 standalone 支持运行时"
-              "覆盖 latency，而 Garnet 只读取 topology JSON；Greedy/SA JSON 已经正确，"
-              "只有 Random 错。生成器现已把 `ceil(wire_length/wire_per_cycle)` 烘焙进"
-              "Garnet 输入；8x8 的四个样本已定向补跑，16x16 的错误数据则从 arXiv 图中"
-              "剔除并标作 N/A，避免把错误配置或选择性完成样本当作 Random expectation。", "",
+              "1. **Length-aware Random 生成错误（已修复并补跑）。** 原下载包中 "
+              "`16x16-B256-L4` Random 仍使用 unit-latency JSON。原因是 standalone 可在"
+              "运行时覆盖 latency，而 Garnet 只读取 topology JSON。生成器现已把 "
+              "`ceil(wire_length/wire_per_cycle)` 烘焙进输入；论文固定的 p1--p5 共 10 个"
+              "样本全部按正确配置补跑并纳入，未采用的 p6--p10 旧样本继续标作无效。", "",
               "2. **Random-placement 百分位的旧对照口径有误（已修复）。** Garnet 中有 "
               f"{random_stats['measurable']}/400 个 layout 可形成 topology mean；Greedy "
               f"超过 {random_stats['greedy_beats']}/{random_stats['measurable']} 个可测 layout "
@@ -859,25 +980,24 @@ def make_report(garnet: pd.DataFrame, standalone: pd.DataFrame,
               "为 0.29344、约处于 99.0th percentile，与 standalone 的 98.8th percentile 一致；"
               "两套 Random 分布的中位数也分别为 0.28340/0.28349。这不是 placement/routing "
               "实现差异，而是后处理时没有配对 seed。", "",
-              "3. **Watchdog 不是命令失败，也不自动等于已证明的协议死锁。** 210 个 panic "
-              "中，125 个来自 Tesc=8/16 的高负载 escape sweep，43 个来自 scaling Random/"
-              "SoC overload，17 个来自 400-layout Random 分布，2 个来自 LocalMeshAdaptive，"
-              "3 个来自正常 escape-off 高负载；这些更适合解释为长期 starvation/拥塞删失。"
-              "只有受控两-VC escape-off 对照显示 20/20 panic、escape-on 20/20 完成，并从"
-              f"Garnet VC dump 中恢复出 {cycle_length}-channel 闭环，构成直接的死锁证据。", "",
+              "3. **补跑把 watchdog 删失与固定窗口性能分开。** 125 个 Tesc=8/16、"
+              "3 个普通 escape-off、2 个 LocalMeshAdaptive 和 31 个论文采用的 scaling "
+              "样本在 200k 阈值下全部到达固定窗口末尾；低 timeout 和 16x16 Random 的"
+              "性能仍明显 collapse。普通 escape-off 中还有一个 R=0.8 样本在整个 100k "
+              "measurement 内零交付；其原始四-VC Garnet VC dump 可恢复出"
+              f"{cycle_length}-channel、{4 * cycle_length}-VC 的封闭依赖分量，"
+              "构成直接的协议死锁证据。", "",
               "4. **Cross 中有一个明显的亚稳态离群组。** Uniform、R=0.65 的 Mixture "
               "Greedy 在 Garnet 中只有 0.2440，而 standalone 为 0.2859；Garnet 的 seed 7 "
               "尤其低至 0.1970。相同 topology 在 R=0.80 又回到 0.2807，说明 delayed "
               "feedback 进入了不同的拥塞吸引域，而不是 topology 容量随 offered load "
               "单调变化。它不影响 matched-SA/mixture-SA winner，但这一个点不应被用作"
               "模型精确一致性的证据。", "",
-              "5. **Scaling 的 Random 柱并非统一精度的 expectation。** 原下载包的 "
-              "16x16 行使用 10 个 layout×2 seed；论文固定取编号 1--5 的五个 layout"
-              "×2 seed，而多数 8x8 行只使用一个 Random layout×4 seed。"
-              "原 16x16-B256/L4 的 20 个错误配置样本全部剔除，当前五-layout SoC "
-              "Random 只有 2/10 完成；"
-              "图中必须给出有效完成比例，并把其余有删失的柱高解释成 completed-run "
-              "conditional mean。", "",
+              "5. **16x16 Random 的完整均值显著低于 Mesh。** 论文固定取 p1--p5 五个 "
+              "layout×2 seed；补跑后三个 16x16 Random cohort 均为 10/10 固定窗口数据。"
+              "其 throughput 分别为 0.1388、0.1846 和 0.0941，均低于对应 Mesh。逐 topology "
+              "对照显示部分 layout 在 Garnet 和 standalone 都 collapse，另有少数 seed 位于"
+              "不同拥塞吸引域；这不是统一方向的参数漏传，而说明随机加边缺乏鲁棒性。", "",
               "6. **2-flit scaling 是最大的正常模型差异。** Garnet 的四类 topology throughput "
               "均比 standalone 低约 35%，latency 高 46--58%，但仍保持 "
               "Mesh < Random < Greedy < SA。Garnet 的 flits/packets 恰为 2，证明命令行宽度"
@@ -890,8 +1010,8 @@ def make_report(garnet: pd.DataFrame, standalone: pd.DataFrame,
               " instant 的 throughput 最大下降 2.9%，latency 最大增加 12.0%；效果仍属较小，"
               "但旧文的“0.9%/5.1%以内”必须更新。", "",
               "## 4. Garnet scaling 摘要", "",
-              ("以下 throughput/latency 仅对完成样本取均值；C/N 明示完成比例。"
-               "因此有删失的 Random/SoC 数字偏乐观，不能视作无条件期望。"), "",
+              ("以下 throughput/latency 对论文固定 cohort 取均值；C/N 明示到达固定"
+               "窗口末尾的样本数。三个 16x16 Random 行均包含完整的五-layout×两-seed。"), "",
               "| 配置 | Mesh | Random | Greedy | SA |", "|---|---:|---:|---:|---:|" ]
     for row_number in SCALING_ORDER:
         cells=[]
@@ -906,13 +1026,11 @@ def make_report(garnet: pd.DataFrame, standalone: pd.DataFrame,
                              f"({int(r.completed)}/{int(r.samples)})")
         lines.append(f"| {SCALING_LABELS[row_number]} | " + " | ".join(cells) + " |")
     lines += ["", "## 5. 总结", "",
-              ("可以用 Garnet 数据支持核心结论，但表述必须收窄为：主实验高负载下"
-               "Greedy 高于 Random expectation，SA 再稳定提高 Greedy；SA 的 Random 分布"
-               "优势和 cross-matrix matched 优势很强。配对 seed 后，Greedy 约位于 Garnet "
-               "可测 Random layout 的 99.0th percentile；仍不能隐去高压 ablation/scaling "
-               "的 watchdog 删失。"
-               "修正/剔除 length-aware Random 后，其余异常均能由饱和非线性、watchdog 删失或"
-               "standalone 的多-flit 简化解释，没有发现主 routing/escape 数据路径的新 bug。"), ""]
+              ("Garnet 数据继续支持核心结论：主实验高负载下 Greedy 高于 Random "
+               "expectation，SA 再稳定提高 Greedy；cross matrix 和 400-Random study 也保持。"
+               "Scaling 的更准确结论是每行都保持 Mesh < Greedy <= SA，而 Random 在三个 "
+               "16x16 cohort 中明显退化。补跑消除了论文采用 scaling cohort 的选择性完成，"
+               "但 2-flit 的系统差异和饱和微时序敏感性仍须保留说明。"), ""]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines), encoding="utf-8")
 
@@ -923,10 +1041,13 @@ def main() -> None:
     parser.add_argument("--standalone", type=Path, default=DEFAULT_STANDALONE)
     parser.add_argument("--correction-dir", type=Path, default=DEFAULT_CORRECTION)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--supplement-dir", type=Path, default=DEFAULT_SUPPLEMENT)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     args = parser.parse_args()
     correction = args.correction_dir if args.correction_dir.exists() else None
-    garnet, standalone = load_inputs(args.garnet_dir, args.standalone, correction)
+    supplement = args.supplement_dir if args.supplement_dir.exists() else None
+    garnet, standalone = load_inputs(
+        args.garnet_dir, args.standalone, correction, supplement)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     figures = args.output_dir / "figures"
     figures.mkdir(exist_ok=True)
