@@ -422,9 +422,15 @@ def aggregate_rows(rows: list[dict]) -> list[dict]:
             row.get("termination_reason") == "simulate_limit" for row in samples
         ) / len(samples)
         for metric in metrics:
+            # A completed fixed-window run can legitimately have an undefined
+            # diagnostic (for example, latency or hops when it delivered no
+            # packets). Garnet serializes that value as NaN. Keep the raw row,
+            # but exclude non-finite observations from this metric's aggregate
+            # so one undefined diagnostic cannot abort final archive creation.
             values = [float(row[metric]) for row in samples
                       if row.get("termination_reason") == "simulate_limit"
-                      and row.get(metric) is not None]
+                      and row.get(metric) is not None
+                      and math.isfinite(float(row[metric]))]
             if values:
                 record[metric + "_mean"] = statistics.fmean(values)
                 record[metric + "_sd"] = (statistics.stdev(values)
