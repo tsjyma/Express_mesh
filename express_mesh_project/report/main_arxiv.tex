@@ -213,10 +213,9 @@ set of injection rates $\mathcal{R}_{\rm SA}$.  In general form, the score is
 \end{equation}
 where $T_G$ and $L_G$ are accepted throughput and packet latency,
 $T_{\rm off}(R)$ is the offered throughput at configured rate $R$ before
-network backpressure, and $W$ is the measurement-window length.  A cycle-level lightweight replica of the exercised
-Garnet datapath makes these
-repeated evaluations practical; finalists are re-ranked with longer runs and
-independent seeds.
+network backpressure, and $W$ is the measurement-window length.  The lightweight
+C++ simulator makes repeated evaluations practical; finalists are re-ranked
+with longer runs and independent seeds.
 
 \begin{algorithm}[H]
 \centering
@@ -309,9 +308,10 @@ dependencies.  No escape channel waits for an adaptive channel, so adding
 adaptive-to-escape dependencies cannot create a cycle containing the escape
 subnetwork.  Any adaptive dependency cycle can eventually be broken when one
 blocked packet acquires its escape successor.  Therefore the network is
-deadlock-free under Garnet's existing credit flow control and round-robin
-input/output switch arbitration.
+deadlock-free under credit-based flow control and fair round-robin input/output
+switch arbitration.
 
+\iffalse % Implementation details intentionally omitted from the paper.
 \section{Implementation}
 
 We implement Budgeted Express-Mesh by extending the Garnet NoC model in gem5
@@ -506,8 +506,15 @@ SA therefore always uses the standalone model for its thousands of objective
 evaluations, after which the selected placement JSON is loaded unchanged by
 Garnet.  All reported experimental data are measured with Garnet.
 
+\fi
+
 \section{Evaluation}
 
+
+We implement Budgeted Express-Mesh by extending the Garnet NoC model in gem5.
+Simulated annealing evaluates candidate placements with a lightweight
+cycle-level C++ simulator, while all reported performance results are measured
+in Garnet.
 \subsection{Traffic Patterns}
 
 We mainly evaluate one general random workload and three structured patterns that
@@ -652,7 +659,7 @@ BitComp & \cellcolor{red!22}0.1498/12799 & \cellcolor{yellow!18}0.1678/8110 & \c
 CutStress & \cellcolor{red!22}0.1875/4069 & \cellcolor{yellow!18}0.1935/1962 & \cellcolor{speedblue!7}$+3.2\%$ & \cellcolor{green!30}0.1999/11 & \cellcolor{speedblue!7}$+3.3\%$ & \cellcolor{green!30}0.1999/11 & \cellcolor{gray!12}$+0.0\%$\\
 \bottomrule
 \end{tabular}
-\caption{Garnet main results at configured injection rate 0.40.
+\caption{Main results at configured injection rate 0.40.
 $\Delta_{\rm R/M}$, $\Delta_{\rm G/R}$, and $\Delta_{\rm S/G}$ denote the
 throughput gains of Random over Mesh, Greedy over Random, and SA over Greedy.}
 \label{tab:rate04}
@@ -672,7 +679,7 @@ BitComp & \cellcolor{red!22}0.1298/36082 & \cellcolor{yellow!18}0.1584/30544 & \
 CutStress & \cellcolor{red!22}0.1875/21342 & \cellcolor{orange!18}0.2072/19161 & \cellcolor{speedblue!13}$+10.5\%$ & \cellcolor{green!30}0.2760/9373 & \cellcolor{speedblue!31}$+33.2\%$ & \cellcolor{green!30}0.2786/9543 & \cellcolor{speedblue!5}$+0.9\%$\\
 \bottomrule
 \end{tabular}
-\caption{Garnet main results at configured injection rate 0.70.}
+\caption{Main results at configured injection rate 0.70.}
 \label{tab:rate07}
 \end{table}
 
@@ -690,7 +697,7 @@ BitComp & \cellcolor{red!22}0.1283/39760 & \cellcolor{yellow!18}0.1572/34750 & \
 CutStress & \cellcolor{red!22}0.1875/24845 & \cellcolor{orange!18}0.2070/23171 & \cellcolor{speedblue!12}$+10.4\%$ & \cellcolor{green!30}0.2791/14626 & \cellcolor{speedblue!32}$+34.8\%$ & \cellcolor{green!30}0.2827/13795 & \cellcolor{speedblue!5}$+1.3\%$\\
 \bottomrule
 \end{tabular}
-\caption{Garnet main results at configured injection rate 0.80.}
+\caption{Main results at configured injection rate 0.80.}
 \label{tab:rate08}
 \end{table}
 
@@ -739,8 +746,8 @@ SA exceeds all 400.  The figure displays the 387 samples at or above 0.265.
 
 \begin{figure}[H]
 \centering
-\svginsert[0.96\linewidth]{random_distribution}
-\caption{Central Garnet Uniform rate-0.8 throughput distribution over 400
+\svginsert[0.86\linewidth]{random_distribution}
+\caption{Uniform rate-0.8 throughput distribution over 400
 random placements; only the 387 samples at or above 0.265 are shown.}
 \label{fig:random-dist}
 \end{figure}
@@ -762,15 +769,15 @@ per packet need not rise monotonically with injection rate.
 
 The heatmaps average the two directed channels of each physical link and use a
 single color scale, exposing how placement changes corridors rather than only
-total activity.  In the displayed Garnet Uniform run at $R=0.8$ (traffic seed
+total activity.  In the displayed Uniform run at $R=0.8$ (traffic seed
 5), SA reduces the maximum direction-averaged physical-link load from 0.562 in
 Mesh to 0.516; Greedy reaches 0.563, while the representative Random layout
 creates a hotter 0.604 bottleneck.
 
 \begin{figure}[H]
 \centering
-\svginsert[0.98\linewidth]{directed_link_load}
-\caption{Garnet physical-link load with the two directions combined and a
+\svginsert[0.75\linewidth]{directed_link_load}
+\caption{Physical-link load with the two directions combined and a
 shared color scale.}
 \label{fig:load}
 \end{figure}
@@ -820,7 +827,7 @@ Random & \cellcolor{sagreen!20}1.062 & \cellcolor{sagreen!8}1.032 & \cellcolor{s
 \bottomrule
 \end{tabular}}
 \end{minipage}
-\caption{Garnet placement--traffic cross evaluation at two loads.  Each
+\caption{Placement--traffic cross evaluation at two loads.  Each
 optimized entry is Greedy/SA accepted throughput normalized to Mesh; Random
 reports its expectation; Mixture reports the geometric mean of the four
 ratios.  Color follows the better of Greedy and SA, and bold marks the
